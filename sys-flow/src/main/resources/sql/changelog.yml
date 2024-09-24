@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: flowable_app_config
+      labels: flowable
+      author: shanhm1991
+      comment: flowable app用户
+      changes:
+        - sqlFile:
+            splitStatements: true
+            stripComments: false
+            path: sql/act_adm_server_config.sql

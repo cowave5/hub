@@ -1,0 +1,7 @@
+truncate table act_adm_server_config;
+INSERT INTO act_adm_server_config VALUES ('ba7cfc34-dd18-11ed-91e2-e470b842144f', 'Flowable Process app', 'Flowable Process REST config', 'http://localhost', 19020, '/flow', 'process-api', 'cowave', 'aq/KUxbA1wye/2bP36yk/g==', 1, NULL);
+INSERT INTO act_adm_server_config VALUES ('ba7d4a55-dd18-11ed-91e2-e470b842144f', 'Flowable CMMN app', 'Flowable CMMN REST config', 'http://localhost', 19020, '/flow', 'cmmn-api', 'cowave', 'aq/KUxbA1wye/2bP36yk/g==', 5, NULL);
+INSERT INTO act_adm_server_config VALUES ('ba7d7166-dd18-11ed-91e2-e470b842144f', 'Flowable App app', 'Flowable App REST config', 'http://localhost', 19020, '/flow', 'app-api', 'cowave', 'aq/KUxbA1wye/2bP36yk/g==', 6, NULL);
+INSERT INTO act_adm_server_config VALUES ('ba7d9877-dd18-11ed-91e2-e470b842144f', 'Flowable DMN app', 'Flowable DMN REST config', 'http://localhost', 19020, '/flow', 'dmn-api', 'cowave', 'aq/KUxbA1wye/2bP36yk/g==', 2, NULL);
+INSERT INTO act_adm_server_config VALUES ('ba7dbf88-dd18-11ed-91e2-e470b842144f', 'Flowable Form app', 'Flowable Form REST config', 'http://localhost', 19020, '/flow', 'form-api', 'cowave', 'aq/KUxbA1wye/2bP36yk/g==', 3, NULL);
+INSERT INTO act_adm_server_config VALUES ('ba7e0da9-dd18-11ed-91e2-e470b842144f', 'Flowable Content app', 'Flowable Content REST config', 'http://localhost', 19020, '/flow', 'content-api', 'cowave', 'aq/KUxbA1wye/2bP36yk/g==', 4, NULL);

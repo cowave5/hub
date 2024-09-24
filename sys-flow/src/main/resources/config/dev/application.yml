@@ -1,0 +1,43 @@
+server:
+  port: 19020
+  servlet:
+    context-path: /flow
+
+info:
+  cluster:
+    id: 10
+    level: 1
+    name: default
+
+spring:
+  liquibase:
+    enabled: true
+    change-log: sql/changelog.yml
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://127.0.0.1:5432/sys-admin
+    username: postgres
+    password: postgres
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 10.64.4.74:8848
+
+flowable:
+  database-schema-update: true
+  admin:
+    app:
+      security:
+        encryption:
+          credentialsIVSpec: cowave@123456789
+          credentialsSecretSpec: cowave@123456789
+  idm:
+    app:
+      admin:
+        first-name: cowave
+        last-name: Administrator
+        user-id: cowave
+        password: cowave@123
+        email: shanhuiming@cowave.com
