@@ -1,0 +1,75 @@
+package ${package}.api.entity;
+
+#if($excelModel == 1)
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.alibaba.excel.annotation.write.style.ContentStyle;
+import com.alibaba.excel.annotation.write.style.HeadFontStyle;
+import com.alibaba.excel.annotation.write.style.HeadRowHeight;
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
+#end
+#if($accessModel == 1)
+import com.cowave.commons.framework.access.AccessUser;
+import lombok.EqualsAndHashCode;
+#end
+import lombok.Data;
+
+#foreach ($import in $imports)
+import ${import};
+#end
+
+/**
+ * ${classComment}
+ *
+ * @author ${commentAuthor}
+ * @date ${commentDate}
+ */
+#if($excelModel == 1)
+@ExcelIgnoreUnannotated
+@HeadRowHeight(20)
+@ColumnWidth(20)
+@HeadFontStyle(fontHeightInPoints = 10)
+@ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
+#end
+#if($accessModel == 1)
+@Data
+@EqualsAndHashCode(callSuper=false)
+public class ${className} extends AccessUser {
+#else
+@Data
+public class ${className} {
+#end
+
+#foreach ($field in $fields)
+    /**
+     * $field.fieldComment
+     */
+    #if($excelModel == 1 && $field.isExcel == 1)
+    #if($field.excelWidth != 20)
+    @ColumnWidth($field.excelWidth)
+    #end
+    #if($field.excelName != $null)
+    #if($field.excelConverter != $null)
+    @ExcelProperty(value = "$field.excelName", converter = $field.excelConverter)
+    #else
+    @ExcelProperty(value = "$field.excelName")
+    #end
+    #else
+    #if($field.excelConverter != $null)
+    @ExcelProperty(converter = $field.excelConverter)
+    #else
+    @ExcelProperty
+    #end
+    #end
+    #end
+    #if($field.isNotnull == 1 && ($field.isIncrement == $null || $field.isIncrement == 0))
+    @NotNull(message = "$field.fieldName can't be null")
+    #end
+    #if($field.fieldTypeName == 'Date')
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    #end
+    private $field.fieldTypeName $field.fieldName;
+
+#end
+}

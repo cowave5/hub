@@ -1,0 +1,44 @@
+import request from '@/utils/request'
+
+// 列表
+export function list${className}(data) {
+  return request({
+    url: '${httpContext}${apiContext}/list',
+    method: 'post',
+    params: data
+  })
+}
+
+// 详情
+export function info${className}(${pk.fieldName}) {
+  return request({
+    url: '${httpContext}${apiContext}/info/' + ${pk.fieldName},
+    method: 'get'
+  })
+}
+
+// 新增
+export function add${className}(data) {
+  return request({
+    url: '${httpContext}${apiContext}/add',
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改
+export function edit${className}(data) {
+  return request({
+    url: '${httpContext}${apiContext}/edit',
+    method: 'post',
+    data: data
+  })
+}
+
+// 删除
+export function del${className}(${pk.fieldName}s) {
+  return request({
+    url: '${httpContext}${apiContext}/delete/' + ${pk.fieldName}s,
+    method: 'get'
+  })
+}

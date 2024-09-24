@@ -1,0 +1,50 @@
+#foreach($seq in $sequences)
+create sequence $seq.sequenceName increment by $seq.incrementBy minvalue $seq.minValue maxvalue $seq.maxValue start with $seq.lastNumber;
+#end
+
+#set($index = 0)
+#foreach ($table in $tables)
+#set($index = $index + 1)
+-- ${index}. ${table.tableName}
+#set($nameLength = 0)
+#foreach ($column in $table.columns)
+    #if ($column.columnName.length() > $nameLength)
+        #set($nameLength = $column.columnName.length())
+    #end
+#end
+#set($typeLength = 0)
+#foreach ($column in $table.columns)
+    #if ($column.pgType.length() > $typeLength)
+        #set($typeLength = $column.pgType.length())
+    #end
+#end
+#set($primaryKeys = '')
+#foreach ($column in $table.columns)
+    #if ($column.isPrimary == 1)
+        #set($tempkey = '"' + $column.columnName + '"')
+        #set($primaryKeys = "$primaryKeys#if ($primaryKeys != ''), #end${tempkey}")
+    #end
+#end
+drop table if exists "${table.tableName}";
+create table "${table.tableName}" (
+    #foreach($column in $table.columns)
+    "$column.columnName"#set($spaces = " ")#set($spacesCount = $nameLength - $column.columnName.length())#if ($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end#end${spaces}${column.pgType}#if($column.isNotnull == 1 || $column.postgresDefault != $null)#set($spaces = "")#set($spacesCount = $typeLength - $column.pgType.length())#if ($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end${spaces}#end#end#if($column.isNotnull == 1) not null#end#if($column.postgresDefault != $null) default #if($column.quotmark)'#end${column.postgresDefault}#if($column.quotmark)'#end#end#if(!$foreach.last || $primaryKeys != ''),#end
+    #end
+    #if ($primaryKeys != '')
+    primary key (${primaryKeys})
+    #end
+);
+#foreach($index in $table.indexs)
+create#if($index.isUnique == 1) unique#end index ${index.indexName} on "${index.tableName}" using btree(#foreach($indexcolumn in $index.columns)"${indexcolumn}"#if(!$foreach.last),#end#end);
+#end
+#if($table.tableComment != $null)comment on table  "${table.tableName}"    #set($spaces = "")#set($spacesCount = $nameLength)#if ($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end#end${spaces}is '${table.tableComment}';
+#end
+#foreach ($column in $table.columns)
+#if($column.columnComment != $null)
+comment on column "${table.tableName}"."${column.columnName}" #set($spaces = "")#set($spacesCount = $nameLength - $column.columnName.length())#if ($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end#end${spaces}is '${column.columnComment}';
+#end
+#end
+
+#end
+
+

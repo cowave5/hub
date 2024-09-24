@@ -1,0 +1,60 @@
+#set($nameLength = 0)
+#foreach ($column in $columns)
+    #if ($column.columnName.length() > $nameLength)
+        #set($nameLength = $column.columnName.length())
+    #end
+#end
+#set($typeLength = 0)
+#foreach ($column in $columns)
+    #if ($column.mysqlType.length() > $typeLength)
+        #set($typeLength = $column.mysqlType.length())
+    #end
+#end
+#set($primaryKeys = '')
+#foreach ($column in $columns)
+    #if ($column.isPrimary == 1)
+        #set($primaryKeys = "$primaryKeys#if ($primaryKeys != ''), #end`$column.columnName`")
+    #end
+#end
+#set($preLength = 0)
+#foreach($column in $columns)
+    #set($commentPre = '')
+    #if ($column.isNotnull == 1)
+        #set($commentPre = "$commentPre not null")
+    #end
+    #if ($column.isIncrement == 1)
+        #set($commentPre = "$commentPre auto_increment")
+    #end
+    #if($column.mysqlDefault != $null)
+        #set($commentPre = "$commentPre default #if($column.quotmark)'#end${column.mysqlDefault}#if($column.quotmark)'#end")
+    #end
+    #if ($commentPre.length() > $preLength)
+        #set($preLength = $commentPre.length())
+    #end
+#end
+drop table if exists `${tableName}`;
+create table `${tableName}` (
+    #foreach($column in $columns)
+        #set($commentPre = '')
+        #if ($column.isNotnull == 1)
+            #set($commentPre = "$commentPre not null")
+        #end
+        #if ($column.isIncrement == 1)
+            #set($commentPre = "$commentPre auto_increment")
+        #end
+        #if($column.mysqlDefault != $null)
+            #set($commentPre = "$commentPre default #if($column.quotmark)'#end${column.mysqlDefault}#if($column.quotmark)'#end")
+        #end
+        #set($commentPreLength = $commentPre.length())
+    `$column.columnName`#set($spaces = " ")#set($spacesCount = $nameLength - $column.columnName.length())#if($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end#end${spaces}${column.mysqlType}#if($column.isNotnull == 1 || $column.isIncrement == 1 || $column.mysqlDefault != $null || $column.columnComment != $null)#set($spaces = "")#set($spacesCount = $typeLength - $column.mysqlType.length())#if($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end#end${spaces}#end${commentPre}#if($column.columnComment != $null)#set($spaces = "")#set($spacesCount = $preLength - $commentPreLength)#if($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end#end${spaces} comment '${column.columnComment}'#end#if(!$foreach.last || $primaryKeys != ''),#end
+    #end
+    #if ($primaryKeys != '')
+    primary key (${primaryKeys})
+    #end
+) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_0900_ai_ci#if($tableComment != $null) comment='${tableComment}'#end;
+
+#foreach($index in $indexs)
+create#if($index.isUnique == 1) unique#end index ${index.indexName} on `${index.tableName}`(#foreach($indexcolumn in $index.columns)`${indexcolumn}`#if(!$foreach.last),#end#end);
+#end
+
+

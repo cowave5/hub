@@ -1,0 +1,47 @@
+package ${package}.api.service;
+
+import java.util.List;
+
+import ${package}.api.entity.${className};
+
+/**
+ * ${classComment}
+ *
+ * @author ${commentAuthor}
+ * @date ${commentDate}
+ */
+public interface ${className}Service {
+
+    /**
+     * 列表
+     */
+    List<${className}> list(${className} ${instanceName});
+
+    /**
+     * 详情
+     */
+    ${className} info(${pk.fieldTypeName} ${pk.fieldName});
+
+    /**
+     * 新增
+     */
+    void add(${className} ${instanceName});
+
+    /**
+     * 修改
+     */
+    #if($logModel == 1)
+    ${className} edit(${className} ${instanceName});
+    #else
+    void edit(${className} ${instanceName});
+    #end
+
+    /**
+     * 删除
+     */
+    #if($logModel == 1)
+    List<${className}> delete(${pk.fieldTypeName}[] ${pk.fieldName}s);
+    #else
+    void delete(${pk.fieldTypeName}[] ${pk.fieldName}s);
+    #end
+}

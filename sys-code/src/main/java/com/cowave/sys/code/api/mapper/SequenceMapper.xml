@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.code.api.mapper.SequenceMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into db_sequence(db_id, sequence_name, min_value, max_value, increment_by, last_number)
+        values (#{dbId}, #{sequenceName}, #{minValue}, #{maxValue}, #{incrementBy}, #{lastNumber})
+    </insert>
+
+    <select id="list" resultType="com.cowave.sys.code.api.entity.DbSequence">
+        select sequence_name sequenceName, min_value as minValue, max_value as maxValue,
+               increment_by as incrementBy, last_number as lastNumber
+        from db_sequence where db_id = #{dbId}
+    </select>
+
+    <delete id="deleteDbSequence">
+        delete from db_sequence where db_id = #{dbId}
+    </delete>
+</mapper>

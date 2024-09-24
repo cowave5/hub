@@ -1,0 +1,60 @@
+#set($dollarSign = '$')
+info:
+  application:
+    name: ${projectCode}-${appCode}
+    version: 0.0.0
+    build: 2022-11-09 14:32:33
+  commit:
+    version: master xxxx
+    Author: xxx
+    Time: 1970-01-01 00:00:00
+    Msg: create
+  maintainer:
+    "[${commentAuthor}@cowave.com]": ${commentAuthor}
+
+spring:
+  application:
+    name: ${projectCode}-${appCode}
+  messages:
+    basename: META-INF/i18n/messages,META-INF/i18n/messages-frame
+  jackson:
+    time-zone: GMT+8
+#if($isDb)
+  liquibase:
+    enabled: true
+    change-log: sql/changelog.yml
+#end
+  cloud:
+    discovery:
+      client:
+        composite-indicator:
+          enabled: false
+    nacos:
+      discovery:
+        metadata:
+          path: ${dollarSign}{server.servlet.context-path}
+          management:
+            context-path: ${dollarSign}{server.servlet.context-path}/actuator
+
+mybatis-plus:
+  global-config:
+    banner: false
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+  health:
+    mail:
+      enabled: false
+    ping:
+      enabled: false
+    diskSpace:
+      enabled: false

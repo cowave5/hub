@@ -1,0 +1,148 @@
+#set($pkfield = $pk.fieldName)
+#set($firstChar = $pkfield.substring(0, 1).toUpperCase())
+#set($remainingChars = $pkfield.substring(1))
+#set($capitalizedField = $firstChar + $remainingChars)
+#set($maxColumnLength = 0)
+#foreach ($field in $fields)
+  #if ($field.columnName != $null && $field.columnName.length() > $maxColumnLength)
+    #set($maxColumnLength = $field.columnName.length())
+  #end
+#end
+#set($maxFieldLength = 0)
+#foreach ($field in $fields)
+  #if ($field.columnName != $null && $field.fieldName.length() > $maxFieldLength)
+    #set($maxFieldLength = $field.fieldName.length())
+  #end
+#end
+#set($selectTab = "      ")
+#set($insertTab = "             ")
+#set($tableLen = $tableName.length())
+#foreach($i in [1..$tableLen])
+  #set($insertTab = "$insertTab ")
+#end
+#set($valuesTab = "       ")
+#set($setTab = "    ")
+#set($hasWhere = 0)
+#foreach ($field in $fields)
+  #if ($field.columnName != $null && $field.isWhere == 1 && $field.whereType != $null)
+      #set($hasWhere = 1)
+  #end
+#end
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package}.api.mapper.${className}Mapper">
+    <resultMap id="${instanceName}Map" type="${package}.api.entity.${className}">
+        #foreach ($field in $fields)
+        #if ($field.columnName != $null)
+        #set($spaces = "")
+        #set($spacesCount = $maxColumnLength - $field.columnName.length())
+        #if ($spacesCount > 0)
+            #foreach($i in [1..$spacesCount])
+                #set($spaces = "$spaces ")
+            #end
+        #end
+        #set($spaces2 = "")
+        #set($spacesCount2 = $maxFieldLength - $field.fieldName.length())
+        #if ($spacesCount2 > 0)
+            #foreach($i in [1..$spacesCount2])
+                #set($spaces2 = "$spaces2 ")
+            #end
+        #end
+        <result column="${field.columnName}" ${spaces} property="${field.fieldName}" ${spaces2} />
+        #end
+        #end
+    </resultMap>
+
+    <select id="list" resultMap="${instanceName}Map">
+        select#foreach($field in $fields)#if($field.isList == 1) t.$field.columnName#if($foreach.count != $fields.size()),
+        ${selectTab}#end#end#end
+        from ${tableName} t
+        #if ($hasWhere == 1)
+        <where>
+        #foreach ($field in $fields)
+        #if ($field.columnName != $null && $field.isWhere == 1)
+        #if($field.whereType == "==")
+            <if test="${field.fieldName} != null#if($field.fieldTypeName == 'String' ) and ${field.fieldName} != ''#end">
+                and t.${field.columnName} = #{${field.fieldName}}
+            </if>
+        #elseif($field.whereType == "!=")
+            <if test="${field.fieldName} != null#if($field.fieldTypeName == 'String' ) and ${field.fieldName} != ''#end">
+                and t.${field.columnName} != #{${field.fieldName}}
+            </if>
+        #elseif($field.whereType == ">")
+            <if test="${field.fieldName} != null#if($field.fieldTypeName == 'String' ) and ${field.fieldName} != ''#end">
+                <![CDATA[
+                and t.${field.columnName} > #{${field.fieldName}}
+                ]]>
+            </if>
+        #elseif($field.whereType == ">=")
+            <if test="${field.fieldName} != null#if($field.fieldTypeName == 'String' ) and ${field.fieldName} != ''#end">
+                <![CDATA[
+                and t.${field.columnName} >= #{${field.fieldName}}
+                ]]>
+            </if>
+        #elseif($field.whereType == "<")
+            <if test="${field.fieldName} != null#if($field.fieldTypeName == 'String' ) and ${field.fieldName} != ''#end">
+                <![CDATA[
+                and t.${field.columnName} < #{${field.fieldName}}
+                ]]>
+            </if>
+        #elseif($field.whereType == "<=")
+            <if test="${field.fieldName} != null#if($field.fieldTypeName == 'String' ) and ${field.fieldName} != ''#end">
+                <![CDATA[
+                and t.${field.columnName} <= #{${field.fieldName}}
+                ]]>
+            </if>
+        #elseif($field.whereType == "like")
+            <if test="${field.fieldName} != null#if($field.fieldTypeName == 'String' ) and ${field.fieldName} != ''#end">
+                and t.${field.columnName} like concat('%', #{${field.fieldName}}, '%')
+            </if>
+        #end
+        #end
+        #end
+        </where>
+        #end
+    </select>
+
+    <select id="info" resultMap="${instanceName}Map">
+        select#foreach($field in $fields)#if($field.isInfo == 1) t.$field.columnName#if($foreach.count != $fields.size()),
+        ${selectTab}#end#end#end
+        from ${tableName} t
+        where t.${pk.columnName} = #{${pk.fieldName}}
+    </select>
+
+    <insert id="insert" #if($pk.isIncrement == 1)useGeneratedKeys="true" keyProperty="${pk.fieldName}" keyColumn="${pk.columnName}"#end>
+        insert into ${tableName}(#foreach($field in $fields)#if($field.isInsert == 1 && !($pk.isIncrement == 1 && $field.fieldName == $pk.fieldName))$field.columnName#if($foreach.count != $fields.size()),
+        ${insertTab}#end#end#end)
+        values(#foreach($field in $fields)#if($field.isInsert == 1 && !($pk.isIncrement == 1 && $field.fieldName == $pk.fieldName))#{$field.fieldName}#if($foreach.count != $fields.size()),
+        ${valuesTab}#end#end#end)
+    </insert>
+
+    <update id="update">
+        update ${tableName}
+        set #foreach($field in $fields)#if($field.isEdit == 1 && $field.fieldName != $pk.fieldName)${field.columnName}#set($spaces = " ")#set($spacesCount = $maxColumnLength - $field.columnName.length())#if ($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end#end${spaces}= #{$field.fieldName}#if($foreach.count != $fields.size()),
+        ${setTab}#end#end#end
+        where ${pk.columnName} = #{${pk.fieldName}}
+    </update>
+
+    <delete id="delete">
+        delete from ${tableName} where ${pk.columnName} in
+        <foreach item="${pk.fieldName}" collection="array" open="(" separator="," close=")">
+            #{${pk.fieldName}}
+        </foreach>
+    </delete>
+
+    #if($logModel == 1)
+    <select id="listBy${capitalizedField}s" resultMap="${instanceName}Map">
+        select#foreach($field in $fields)#if($field.isList == 1) t.$field.columnName#if($foreach.count != $fields.size()),
+        ${selectTab}#end#end#end
+        from ${tableName} t
+        where t.${pk.columnName} in
+        <foreach item="${pk.fieldName}" collection="array" open="(" separator="," close=")">
+            #{${pk.fieldName}}
+        </foreach>
+    </select>
+    #end
+</mapper>

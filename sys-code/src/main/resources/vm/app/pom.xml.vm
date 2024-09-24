@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.cowave.commons</groupId>
+        <artifactId>commons-parent</artifactId>
+        <version>3.0.0</version>
+    </parent>
+
+    <groupId>com.cowave.${projectCode}</groupId>
+    <artifactId>${projectCode}-${appCode}</artifactId>
+    <version>${version}-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>${projectCode}-${appCode}</name>
+    <url>https://www.cowave.com/</url>
+    <description>${appName}</description>
+
+    <scm>
+        <tag>HEAD</tag>
+        <url>https://gitlab.cowave.com/${projectCode}/${projectCode}-${appCode}</url>
+        <connection>scm:git:https://gitlab.cowave.com/${projectCode}/${projectCode}-${appCode}.git</connection>
+        <developerConnection>scm:git:https://gitlab.cowave.com/${projectCode}/${projectCode}-${appCode}.git</developerConnection>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>cowave</id>
+            <name>releases</name>
+            <url>http://10.64.4.74:8081/repository/maven-releases/</url>
+            <uniqueVersion>true</uniqueVersion>
+        </repository>
+        <snapshotRepository>
+            <id>cowave</id>
+            <name>snapshots</name>
+            <url>http://10.64.4.74:8081/repository/maven-snapshots/</url>
+            <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.cowave.commons</groupId>
+            <artifactId>commons-framework</artifactId>
+        </dependency>
+#if(1 == $isSecurity)
+        <!-- security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
+#end
+#if($isDb)
+    #if('postgresql' == $dbType)
+        <!-- postgresql -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+    #end
+    #if('mysql' == $dbType)
+        <!-- mysql -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+    #end
+    #if('oscar' == $dbType)
+        <!-- oscar -->
+        <dependency>
+            <groupId>org.cowave</groupId>
+            <artifactId>oscarJDBC</artifactId>
+        </dependency>
+    #end
+#end
+        <!-- pagehelper -->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+        </dependency>
+#if($isDb)
+        <!-- liquibase -->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+#end
+        <!-- easyexcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+        </dependency>
+    </dependencies>
+</project>

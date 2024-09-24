@@ -1,0 +1,79 @@
+#set($pkfield = $pk.fieldName)
+#set($firstChar = $pkfield.substring(0, 1).toUpperCase())
+#set($remainingChars = $pkfield.substring(1))
+#set($capitalizedField = $firstChar + $remainingChars)
+package ${package}.api.service.impl;
+
+import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+#if(!($pk.isNotnull == 1 && ($pk.isIncrement == $null || $pk.isIncrement == 0)) || $logModel == 1)
+import com.cowave.commons.framework.util.Asserts;
+#end
+import ${package}.api.entity.${className};
+import ${package}.api.mapper.${className}Mapper;
+import ${package}.api.service.${className}Service;
+
+/**
+ * ${classComment}
+ *
+ * @author ${commentAuthor}
+ * @date ${commentDate}
+ */
+@RequiredArgsConstructor
+@Service
+public class ${className}ServiceImpl implements ${className}Service {
+
+    private final ${className}Mapper ${instanceName}Mapper;
+
+    @Override
+    public List<${className}> list(${className} ${instanceName}) {
+        return ${instanceName}Mapper.list(${instanceName});
+    }
+
+    @Override
+    public ${className} info(${pk.fieldTypeName} ${pk.fieldName}) {
+        return ${instanceName}Mapper.info(${pk.fieldName});
+    }
+
+    @Override
+    public void add(${className} ${instanceName}) {
+        ${instanceName}Mapper.insert(${instanceName});
+    }
+
+    @Override
+    #if($logModel == 1)
+    public ${className} edit(${className} ${instanceName}) {
+        #if(!($pk.isNotnull == 1 && ($pk.isIncrement == $null || $pk.isIncrement == 0)))
+        Asserts.notNull(${instanceName}.get${capitalizedField}(), "${pk.fieldName} can't be null");
+        #end
+        ${className} prev${className} = ${instanceName}Mapper.info(${instanceName}.get${capitalizedField}());
+        Asserts.notNull(prev${className}, "不存在的${modelName}[" + ${instanceName}.get${capitalizedField}() + "]");
+        ${instanceName}Mapper.update(${instanceName});
+        return prev${className};
+    }
+    #else
+    public void edit(${className} ${instanceName}) {
+        #if(!($pk.isNotnull == 1 && ($pk.isIncrement == $null || $pk.isIncrement == 0)))
+        Asserts.notNull(${instanceName}.get${capitalizedField}(), "${pk.fieldName} can't be null");
+        #end
+        ${instanceName}Mapper.update(${instanceName});
+    }
+    #end
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    #if($logModel == 1)
+    public List<${className}> delete(${pk.fieldTypeName}[] ${pk.fieldName}s) {
+        List<${className}> list = ${instanceName}Mapper.listBy${capitalizedField}s(${pk.fieldName}s);
+        ${instanceName}Mapper.delete(${pk.fieldName}s);
+        return list;
+    }
+    #else
+    public void delete(${pk.fieldTypeName}[] ${pk.fieldName}s) {
+        ${instanceName}Mapper.delete(${pk.fieldName}s);
+    }
+    #end
+}

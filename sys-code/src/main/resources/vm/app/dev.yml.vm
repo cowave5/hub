@@ -1,0 +1,19 @@
+server:
+  port: ${httpPort}
+  servlet:
+    context-path: ${httpContext}
+
+info:
+  cluster:
+    id: 10
+    level: 1
+    name: default
+
+#if($isDb)
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${dbUrl}
+    username: ${dbUser}
+    password: ${dbPasswd}
+#end

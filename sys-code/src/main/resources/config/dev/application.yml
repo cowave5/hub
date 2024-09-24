@@ -1,0 +1,20 @@
+server:
+  port: 19030
+  servlet:
+    context-path: /code
+
+info:
+  cluster:
+    id: 10
+    level: 1
+    name: default
+
+spring:
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/sys-code
+    username: postgres
+    password: postgres
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 10.64.4.74:8848

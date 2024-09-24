@@ -1,0 +1,52 @@
+#set($pkfield = $pk.fieldName)
+#set($firstChar = $pkfield.substring(0, 1).toUpperCase())
+#set($remainingChars = $pkfield.substring(1))
+#set($capitalizedField = $firstChar + $remainingChars)
+package ${package}.api.mapper;
+
+import java.util.List;
+import org.apache.ibatis.annotations.Mapper;
+
+import ${package}.api.entity.${className};
+
+/**
+ * ${classComment}
+ *
+ * @author ${commentAuthor}
+ * @date ${commentDate}
+ */
+@Mapper
+public interface ${className}Mapper {
+
+    /**
+     * 列表
+     */
+    List<${className}> list(${className} ${instanceName});
+
+    /**
+     * 详情
+     */
+    ${className} info(${pk.fieldTypeName} ${pk.fieldName});
+
+    /**
+     * 新增
+     */
+    void insert(${className} ${instanceName});
+
+    /**
+     * 修改
+     */
+    void update(${className} ${instanceName});
+
+    /**
+     * 删除
+     */
+    void delete(${pk.fieldTypeName}[] array);
+
+    #if($logModel == 1)
+    /**
+     * 挑选列表
+     */
+    List<${className}> listBy${capitalizedField}s(${pk.fieldTypeName}[] array);
+    #end
+}

@@ -1,0 +1,39 @@
+#set($nameLength = 0)
+#foreach ($column in $columns)
+    #if ($column.columnName.length() > $nameLength)
+        #set($nameLength = $column.columnName.length())
+    #end
+#end
+#set($typeLength = 0)
+#foreach ($column in $columns)
+    #if ($column.oscarType.length() > $typeLength)
+        #set($typeLength = $column.oscarType.length())
+    #end
+#end
+#set($primaryKeys = '')
+#foreach ($column in $columns)
+    #if ($column.isPrimary == 1)
+        #set($tempkey = '"' + $column.columnName + '"')
+        #set($primaryKeys = "$primaryKeys#if ($primaryKeys != ''), #end${tempkey}")
+    #end
+#end
+drop table if exists "${tableName}";
+create table "${tableName}" (
+    #foreach($column in $columns)
+    "${column.columnName}"#set($spaces = " ")#set($spacesCount = $nameLength - $column.columnName.length())#if($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end#end${spaces}${column.oscarType}#if($column.isNotnull == 1 || $column.oscarDefault != $null)#set($spaces = "")#set($spacesCount = $typeLength - $column.oscarType.length())#if ($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end${spaces}#end#end#if($column.isNotnull == 1) not null#end#if($column.isIncrement == 1) auto_increment#end#if($column.oscarDefault != $null) default #if($column.quotmark)'#end${column.oscarDefault}#if($column.quotmark)'#end#end#if(!$foreach.last || $primaryKeys != ''),#end
+    #end
+    #if ($primaryKeys != '')
+    primary key (${primaryKeys})
+    #end
+);
+#if($tableComment != $null)comment on table  "${tableName}"    #set($spaces = "")#set($spacesCount = $nameLength)#if ($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end#end${spaces}is '${tableComment}';
+#end
+#foreach ($column in $columns)
+#if($column.columnComment != $null)
+comment on column "${tableName}"."${column.columnName}" #set($spaces = "")#set($spacesCount = $nameLength - $column.columnName.length())#if ($spacesCount > 0)#foreach($i in [1..$spacesCount])#set($spaces = "$spaces ")#end#end${spaces}is '${column.columnComment}';
+#end
+#end
+
+#foreach($index in $indexs)
+create#if($index.isUnique == 1) unique#end index ${index.indexName} on ${index.tableName} using btree(#foreach($indexcolumn in $index.columns)${indexcolumn}#if(!$foreach.last),#end#end);
+#end
