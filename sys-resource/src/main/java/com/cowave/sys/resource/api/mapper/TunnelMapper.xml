@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.resource.api.mapper.TunnelMapper">
+
+    <sql id="tunnelField">
+        t.sat_id      satId,
+        t.beam_id     beamId,
+		t.tunnel_id   tunnelId,
+        t.tunnel_name tunnelName,
+		t.tunnel_version tunnelVersion,
+        t.tunnel_type    tunnelType,
+        t.freq_type      freqType,
+        t.freq_begin     freqBegin,
+        t.freq_end       freqEnd,
+        t.bandwidth      bandwidth,
+        t.usage_unit     usageUnit,
+        t.create_user as    createUser,
+        t.create_username   createUsername,
+        t.create_dept       createDept,
+        t.create_deptname   createDeptname,
+        t.create_time       createTime,
+        t.update_user       updateUser,
+        t.update_username   updateUsername,
+        t.update_dept       updateDept,
+        t.update_deptname   updateDeptname,
+        t.update_time       updateTime
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="tunnelId" keyColumn="tunnel_id">
+        insert into info_tunnel(sat_id,
+                                beam_id,
+                                tunnel_name,
+                                tunnel_type,
+                                freq_type,
+                                freq_begin,
+                                freq_end,
+                                bandwidth,
+                                usage_unit,
+                                create_user,
+                                create_username,
+                                create_dept,
+                                create_deptname,
+                                create_time,
+                                update_user,
+                                update_username,
+                                update_dept,
+                                update_deptname,
+                                update_time)
+        values(#{satId},
+               #{beamId},
+               #{tunnelName},
+               #{tunnelType},
+               #{freqType},
+               #{freqBegin},
+               #{freqEnd},
+               #{bandwidth},
+               #{usageUnit},
+               #{accessUser},
+               #{accessUsername},
+               #{accessDept},
+               #{accessDeptname},
+               #{accessTime},
+               #{accessUser},
+               #{accessUsername},
+               #{accessDept},
+               #{accessDeptname},
+               #{accessTime})
+    </insert>
+
+    <update id="update">
+        update info_tunnel set sat_id  = #{satId},
+                               beam_id = #{beamId},
+                               tunnel_name = #{tunnelName},
+                               tunnel_type = #{tunnelType},
+                               freq_type   = #{freqType},
+                               freq_begin  = #{freqBegin},
+                               freq_end    = #{freqEnd},
+                               bandwidth   = #{bandwidth},
+                               usage_unit  = #{usageUnit},
+                               tunnel_version  = tunnel_version + 1,
+                               update_user     =  #{accessUser},
+                               update_username =  #{accessUsername},
+                               update_dept     =  #{accessDept},
+                               update_deptname =  #{accessDeptname},
+                               update_time     =  #{accessTime}
+        where tunnel_id = #{tunnelId}
+    </update>
+
+    <update id="updateUpPool">
+        update resource_pool
+        set up_tunnel_name = t.tunnel_name,
+            up_tunnel_type = t.tunnel_type,
+            up_tunnel_version = t.tunnel_version,
+            up_freq_type      = t.freq_type,
+            update_user     =  #{accessUser},
+            update_username =  #{accessUsername},
+            update_dept     =  #{accessDept},
+            update_deptname =  #{accessDeptname},
+            update_time     =  #{accessTime}
+        from(select tunnel_name, tunnel_type, tunnel_version, freq_type
+               from info_tunnel where tunnel_id = #{tunnelId}) t
+        where up_tunnel_id = #{tunnelId}
+    </update>
+
+    <update id="updateDownPool">
+        update resource_pool
+        set down_tunnel_name = t.tunnel_name,
+            down_tunnel_type = t.tunnel_type,
+            down_tunnel_version = t.tunnel_version,
+            down_freq_type      = t.freq_type,
+            update_user     =  #{accessUser},
+            update_username =  #{accessUsername},
+            update_dept     =  #{accessDept},
+            update_deptname =  #{accessDeptname},
+            update_time     =  #{accessTime}
+            from(select tunnel_name, tunnel_type, tunnel_version, freq_type
+                   from info_tunnel where tunnel_id = #{tunnelId}) t
+        where down_tunnel_id = #{tunnelId}
+    </update>
+
+    <delete id="delete">
+        delete from info_tunnel where tunnel_id = #{tunnelId}
+    </delete>
+
+    <select id="existTspdName" resultType="String">
+        select t.tspd_name from(select tspd_name from info_transponder where up_tunnel_id = #{tunnelId}
+                    union all select tspd_name from info_transponder where down_tunnel_id = #{tunnelId}
+        ) t limit 1
+    </select>
+
+    <select id="info" resultType="com.cowave.sys.model.resource.Tunnel">
+        select
+        s.sat_name     satName,
+        b.beam_name    beamName,
+        <include refid="tunnelField"/>
+        from info_tunnel t, info_beam b, info_satellite s
+        where t.tunnel_id = #{tunnelId} and t.beam_id = b.beam_id and t.sat_id = s.sat_id
+    </select>
+</mapper>
+
+
+
+
+
+
+
+

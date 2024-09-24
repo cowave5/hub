@@ -1,0 +1,13 @@
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+    metadata-map:
+      management.context-path: ${server.servlet.context-path}/actuator
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:19001/eureka
+    register-with-eureka: false
+    fetch-registry: false

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.resource.api.mapper.SatelliteMapper">
+
+    <sql id="satelliteField">
+        s.sat_id       satId,
+        s.sat_name     satName,
+        s.sat_version  satVersion,
+        s.sat_type     satType,
+        s.sat_orbit    satOrbit,
+        s.sat_plat     satPlat,
+        s.beacon       beacon,
+        s.freq_type    freqType,
+        s.manufacturer manufacturer,
+        s.maintainer   maintainer,
+        s.operator as  operator,
+        s.longitude    longitude,
+        s.latitude     latitude,
+        s.altitude     altitude,
+        s.launch_date       launchDate,
+        s.orbit_date        orbitDate,
+        s.service_years     serviceYears,
+        s.create_user as    createUser,
+        s.create_username   createUsername,
+        s.create_dept       createDept,
+        s.create_deptname   createDeptname,
+        s.create_time       createTime,
+        s.update_user       updateUser,
+        s.update_username   updateUsername,
+        s.update_dept       updateDept,
+        s.update_deptname   updateDeptname,
+        s.update_time       updateTime
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="satId" keyColumn="sat_id">
+        insert into info_satellite(sat_name,
+                                   sat_type,
+                                   sat_orbit,
+                                   sat_plat,
+                                   beacon,
+                                   freq_type,
+                                   manufacturer,
+                                   maintainer,
+                                   operator,
+                                   longitude,
+                                   latitude,
+                                   altitude,
+                                   launch_date,
+                                   orbit_date,
+                                   service_years,
+                                   create_user,
+                                   create_username,
+                                   create_dept,
+                                   create_deptname,
+                                   create_time,
+                                   update_user,
+                                   update_username,
+                                   update_dept,
+                                   update_deptname,
+                                   update_time)
+        values(#{satName},
+               #{satType},
+               #{satOrbit},
+               #{satPlat},
+               #{beacon},
+               #{freqType},
+               #{manufacturer},
+               #{maintainer},
+               #{operator},
+               #{longitude},
+               #{latitude},
+               #{altitude},
+               #{launchDate},
+               #{orbitDate},
+               #{serviceYears},
+               #{accessUser},
+               #{accessUsername},
+               #{accessDept},
+               #{accessDeptname},
+               #{accessTime},
+               #{accessUser},
+               #{accessUsername},
+               #{accessDept},
+               #{accessDeptname},
+               #{accessTime})
+    </insert>
+
+    <update id="update">
+        update info_satellite set
+                    sat_name  = #{satName},
+                    sat_type  = #{satType},
+                    sat_orbit = #{satOrbit},
+                    sat_plat  = #{satPlat},
+                    beacon    = #{beacon},
+                    freq_type = #{freqType},
+                    manufacturer = #{manufacturer},
+                    maintainer = #{maintainer},
+                    operator   = #{operator},
+                    longitude  = #{longitude},
+                    latitude   = #{latitude},
+                    altitude   = #{altitude},
+                    launch_date = #{launchDate},
+                    orbit_date  = #{orbitDate},
+                    service_years = #{serviceYears},
+                    sat_version = sat_version + 1,
+                    update_user     =  #{accessUser},
+                    update_username =  #{accessUsername},
+                    update_dept     =  #{accessDept},
+                    update_deptname =  #{accessDeptname},
+                    update_time     =  #{accessTime}
+        where sat_id = #{satId}
+    </update>
+
+    <update id="updatePool">
+        update resource_pool set sat_name = t.sat_name,
+                                 sat_version = t.sat_version,
+                                 update_user     =  #{accessUser},
+                                 update_username =  #{accessUsername},
+                                 update_dept     =  #{accessDept},
+                                 update_deptname =  #{accessDeptname},
+                                 update_time     =  #{accessTime}
+              from(select sat_name, sat_version from info_satellite where sat_id = #{satId}) t
+        where sat_id = #{satId}
+    </update>
+
+    <delete id="delete">
+        delete from info_satellite where sat_id = #{satId}
+    </delete>
+
+    <select id="existTspdName" resultType="String">
+        select tspd_name from info_transponder where sat_id = #{satId} limit 1
+    </select>
+
+    <select id="treeSatellites" resultType="com.cowave.sys.resource.api.entity.TreeNode">
+        select 0 as pid, sat_id as id, sat_name as name from info_satellite
+    </select>
+
+    <select id="treeBeams" resultType="com.cowave.sys.resource.api.entity.TreeNode">
+        select sat_id as pid, beam_id as id, beam_name as name from info_beam
+    </select>
+
+    <select id="treeTunnels" resultType="com.cowave.sys.resource.api.entity.TreeNode">
+        select beam_id as pid, tunnel_id as id, tunnel_name as name from info_tunnel
+    </select>
+
+    <select id="info" resultType="com.cowave.sys.model.resource.Satellite">
+        select
+        <include refid="satelliteField"/>
+        from info_satellite s where s.sat_id = #{satId}
+    </select>
+</mapper>
+
+
+
+
+
+
+
+

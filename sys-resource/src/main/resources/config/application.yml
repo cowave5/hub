@@ -1,0 +1,18 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import:
+      - dev\application.yml
+      - dev\application-apollo.yml
+      - dev\application-eureka.yml
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import:
+      - prod\application.yml
+      - prod\application-apollo.yml
+      - prod\application-eureka.yml
