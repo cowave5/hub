@@ -1,0 +1,57 @@
+server:
+  port: 19010
+  servlet:
+    context-path: /admin
+
+info:
+  cluster:
+    id: 10
+    level: 1
+    name: default
+
+spring:
+  liquibase:
+    enabled: true
+    change-log: sql/changelog.yml
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://10.64.4.74:5432/sys-admin
+    username: postgres
+    password: postgres
+  redis:
+    host: 10.64.4.74
+    port: 6379
+  minio:
+    endpoint: http://10.64.4.74:39000
+    accessKey: admin
+    secretKey: admin123
+  socket-io:
+    port: 19011
+  mail:
+    host: smtp.163.com
+    username: cowaveAdmin@163.com
+    password: TQQWRIRSQLTEELPT
+  application:
+    token:
+      header: Authorization
+      salt: admin@cowave.com
+      conflict: false
+      accessExpire: 3600
+      refreshExpire: 36000
+      ignoreUrls:
+        - /api/v1/auth/login
+        - /api/v1/auth/logon
+        - /api/v1/auth/refresh
+        - /api/v1/auth/register
+        - /api/v1/auth/captcha
+        - /api/v1/auth/captcha/email
+        - /api/v1/oauth/callback/**
+        - /api/v1/flow/designer/**
+        - /designer/**
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 10.64.4.74:8848
+
+flowable:
+  database-schema-update: true

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.admin.api.mapper.OAuthMapper">
+    <resultMap id="configMap" type="com.cowave.sys.admin.api.entity.oauth.OAuthConfig">
+        <result column="id"              property="id"/>
+        <result column="status"          property="status"/>
+        <result column="user_role"       property="userRole"/>
+        <result column="app_type"        property="appType"/>
+        <result column="app_id"          property="appId"/>
+        <result column="app_secret"      property="appSecret"/>
+        <result column="auth_url"        property="authUrl"/>
+        <result column="redirect_url"    property="redirectUrl"/>
+        <result column="grant_type"      property="grantType"/>
+        <result column="response_type"   property="responseType"/>
+        <result column="auth_scope"      property="authScope"/>
+        <result column="create_user"     property="createUser"/>
+        <result column="update_user"     property="updateUser"/>
+        <result column="create_dept"     property="createDept"/>
+        <result column="update_dept"     property="updateDept"/>
+        <result column="create_time"     property="createTime"/>
+        <result column="update_time"     property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="userMap" type="com.cowave.sys.admin.api.entity.oauth.OAuthUser">
+        <result column="id"               property="id"/>
+        <result column="app_type"         property="appType"/>
+        <result column="user_role"        property="userRole"/>
+        <result column="role_name"        property="roleName"/>
+        <result column="user_name"        property="userName"/>
+        <result column="user_account"     property="userAccount"/>
+        <result column="user_avatar"      property="userAvatar"/>
+        <result column="user_email"       property="userEmail"/>
+        <result column="user_dept"        property="userDept" />
+        <result column="create_time"      property="createTime"/>
+        <result column="update_time"      property="updateTime"/>
+    </resultMap>
+
+    <insert id="saveConfig">
+        insert into oauth_config(status,app_type,app_id,app_secret,user_role,
+                                 auth_url,redirect_url,grant_type,response_type,auth_scope,
+                                 create_user,update_user,create_dept,update_dept,create_time,update_time)
+        values (#{status},#{appType},#{appId},#{appSecret},#{userRole},
+                #{authUrl},#{redirectUrl},#{grantType},#{responseType},#{authScope},
+                #{accessUserId},#{accessUserId},#{accessDeptId},#{accessDeptId},#{accessTime},#{accessTime})
+    </insert>
+
+    <delete id="deleteConfig">
+        delete from oauth_config where app_type = #{appType}
+    </delete>
+
+    <select id="getConfig" resultMap="configMap">
+        select id,status,app_type,app_id,app_secret,user_role,
+               auth_url,redirect_url,grant_type,response_type,auth_scope
+        from oauth_config where app_type = #{appType}
+    </select>
+
+    <select id="listConfig" resultMap="configMap">
+        select id,status,app_type,app_id,app_secret,user_role,
+               auth_url,redirect_url,grant_type,response_type,auth_scope
+        from oauth_config where status = 1
+    </select>
+
+    <select id="listUser" resultMap="userMap">
+        select id,app_type,user_name,user_account,user_avatar,user_email,user_dept,user_role,
+               u.create_time, u.update_time, r.role_name
+        from oauth_user u, sys_role r
+        where app_type = #{appType} and u.user_role = r.role_id
+        <if test="userAccount != null and userAccount != ''">
+            and user_account like concat('%', #{userAccount}, '%')
+        </if>
+    </select>
+
+    <insert id="saveUser" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into oauth_user(app_type,user_name,user_account,user_avatar,user_email,user_dept,user_role,create_time,update_time)
+        values (#{appType},#{userName},#{userAccount},#{userAvatar},#{userEmail},#{userDept},#{userRole},#{createTime},#{updateTime})
+            on conflict(app_type, user_account)
+        do update set
+            app_type  = excluded.app_type,
+            user_name = excluded.user_name,
+            user_account  = excluded.user_account,
+            user_avatar   = excluded.user_avatar,
+            user_email    = excluded.user_email,
+            user_dept     = excluded.user_dept,
+            update_time   = excluded.update_time
+    </insert>
+
+    <select id="infoUser" resultMap="userMap">
+        select id,app_type,user_name,user_account,user_avatar,user_email,user_dept,user_role
+        from oauth_user where id = #{id}
+    </select>
+
+    <select id="permits" resultType="java.lang.String">
+        select distinct m.menu_permit
+        from oauth_user u, sys_role_menu rm, sys_menu m
+        where (u.id = #{userId} and u.user_role = rm.role_id and rm.menu_id = m.menu_id) or m.is_protected = 0
+    </select>
+
+    <select id="roleCode" resultType="java.lang.String">
+        select r.role_code
+        from oauth_user u, sys_role r
+        where u.id = #{userId} and u.user_role = r.role_id
+    </select>
+
+    <update id="changeUserRole">
+        update oauth_user
+        set user_role     = #{roleId},
+            update_time   = #{updateTime}
+        where id = #{userId}
+    </update>
+
+    <delete id="deleteUser">
+        delete from oauth_user where id = #{userId}
+    </delete>
+</mapper>
+

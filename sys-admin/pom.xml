@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.cowave.commons</groupId>
+		<artifactId>commons-parent</artifactId>
+		<version>2.8.2</version>
+	</parent>
+
+	<groupId>com.cowave.sys</groupId>
+	<artifactId>sys-admin</artifactId>
+	<version>1.0.3</version>
+	<packaging>jar</packaging>
+
+	<name>sys-admin</name>
+	<url>https://www.cowave.com/</url>
+	<description>系统管理</description>
+
+	<scm>
+		<tag>HEAD</tag>
+		<url>https://gitlab.cowave.com/java/sys</url>
+		<connection>scm:git:https://gitlab.cowave.com/java/sys.git</connection>
+		<developerConnection>scm:git:https://gitlab.cowave.com/java/sys.git</developerConnection>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>cowave</id>
+			<name>releases</name>
+			<url>http://10.64.4.74:8081/repository/maven-releases/</url>
+			<uniqueVersion>true</uniqueVersion>
+		</repository>
+		<snapshotRepository>
+			<id>cowave</id>
+			<name>snapshots</name>
+			<url>http://10.64.4.74:8081/repository/maven-snapshots/</url>
+			<uniqueVersion>true</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.cowave.sys</groupId>
+			<artifactId>sys-model</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+		<!-- redis -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<!-- mail -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<!-- security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<!-- jwt -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+		</dependency>
+		<!-- ldap -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-ldap</artifactId>
+		</dependency>
+		<!-- jdbc -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<!-- liquibase -->
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+		</dependency>
+		<!-- postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<!-- mybatis	-->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-boot-starter</artifactId>
+		</dependency>
+		<!-- kafka -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+		<!-- minio -->
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+		</dependency>
+		<!-- socketio -->
+		<dependency>
+			<groupId>com.corundumstudio.socketio</groupId>
+			<artifactId>netty-socketio</artifactId>
+		</dependency>
+		<!-- nacos -->
+		<dependency>
+			<groupId>com.alibaba.cloud</groupId>
+			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-loadbalancer</artifactId>
+		</dependency>
+		<!-- Captcha -->
+		<dependency>
+			<groupId>com.github.penggle</groupId>
+			<artifactId>kaptcha</artifactId>
+		</dependency>
+		<!-- prometheus -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+		<!-- flowable -->
+		<dependency>
+			<groupId>org.flowable</groupId>
+			<artifactId>flowable-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flowable</groupId>
+			<artifactId>flowable-json-converter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flowable</groupId>
+			<artifactId>flowable-bpmn-layout</artifactId>
+		</dependency>
+		<!-- test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- test security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://java.testcontainers.org/modules/ -->
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>minio</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>kafka</artifactId>
+			<version>1.19.7</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

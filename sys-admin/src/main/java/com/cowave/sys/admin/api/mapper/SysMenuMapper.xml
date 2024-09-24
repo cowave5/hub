@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.admin.api.mapper.SysMenuMapper">
+	<sql id="menuField">
+		m.menu_id     menuId,
+		m.parent_id   parentId,
+    	m.menu_name   menuName,
+    	m.menu_order  menuOrder,
+    	m.menu_permit menuPermit,
+    	m.menu_path   menuPath,
+		m.menu_param  menuParam,
+		m.menu_type   menuType,
+		m.menu_icon   menuIcon,
+		m.menu_status menuStatus,
+		m.component,
+		m.is_frame      isFrame,
+		m.is_cache      isCache,
+		m.is_visible    isVisible,
+		m.is_protected  isProtected,
+		m.read_only     readOnly,
+		m.create_user   createUser,
+        m.create_dept   createDept,
+        m.create_time   createTime,
+        m.update_user   updateUser,
+        m.update_dept   updateDept,
+        m.update_time   updateTime,
+    	m.remark
+	</sql>
+
+	<select id="list" resultType="com.cowave.sys.model.admin.SysMenu">
+		select
+		<include refid="menuField"/>
+		from sys_menu m
+		where 1 = 1
+		<if test="visible != null">
+			and is_visible = #{visible}
+		</if>
+		<if test="menuName != null">
+			and m.menu_name like concat('%', #{menuName}, '%')
+		</if>
+		<if test="menuStatus != null">
+			and m.menu_status = #{menuStatus}
+		</if>
+		order by parent_id, menu_order
+	</select>
+
+	<select id="userMenus" resultType="com.cowave.sys.model.admin.SysMenu">
+		select distinct
+		<include refid="menuField"/>
+		from sys_menu m
+		left join sys_role_menu rm on m.menu_id = rm.menu_id
+		left join sys_user_role ur on rm.role_id = ur.role_id
+		where (m.is_protected = 0 or ur.user_id = #{userId})
+		<if test="visible != null">
+			and is_visible = #{visible}
+		</if>
+		<if test="menuName != null">
+			and m.menu_name like concat('%', #{menuName}, '%')
+		</if>
+		<if test="menuStatus != null">
+			and m.menu_status = #{menuStatus}
+		</if>
+		order by m.parent_id, m.menu_order
+	</select>
+
+	<select id="oauthMenus" resultType="com.cowave.sys.model.admin.SysMenu">
+		select <include refid="menuField"/>
+		from sys_menu m where is_protected = 0
+		union
+		select <include refid="menuField"/>
+		from oauth_user u, sys_role_menu rm, sys_menu m
+		where u.id = #{userId} and u.user_role = rm.role_id and rm.menu_id = m.menu_id
+		order by parentId, menuOrder
+	</select>
+
+	<select id="info" resultType="com.cowave.sys.model.admin.SysMenu">
+	    select
+		<include refid="menuField"/>
+		from sys_menu m where m.menu_id = #{menuId}
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="menuId" keyColumn="menu_id">
+		insert into sys_menu(parent_id,menu_name,menu_order,menu_permit,menu_param,menu_type,
+		        <if test="menuIcon != null">
+			        menu_icon,
+		        </if>
+		        <if test="menuPath != null">
+		        	menu_path,
+		        </if>
+		        menu_status,component,is_frame,is_cache,is_visible,remark,is_protected,
+		        create_user, create_dept, create_time, update_user, update_dept, update_time)
+		values(#{parentId},#{menuName},#{menuOrder},#{menuPermit},#{menuParam},#{menuType},
+		        <if test="menuIcon != null">
+					#{menuIcon},
+		        </if>
+		        <if test="menuPath != null">
+					#{menuPath},
+		        </if>
+		       #{menuStatus},#{component},#{isFrame},#{isCache},#{isVisible},#{remark},#{isProtected},
+		       #{accessUserId},#{accessDeptId},#{accessTime},#{accessUserId},#{accessDeptId},#{accessTime})
+	</insert>
+
+	<update id="update">
+		update sys_menu set
+		       parent_id   = #{parentId},
+		       menu_name   = #{menuName},
+		       menu_order  = #{menuOrder},
+		       menu_permit = #{menuPermit},
+		       menu_path   = #{menuPath},
+		       menu_param  = #{menuParam},
+		       menu_type   = #{menuType},
+			   menu_icon   = #{menuIcon},
+		       component   = #{component},
+			   menu_status = #{menuStatus},
+		       is_frame    = #{isFrame},
+			   is_cache    = #{isCache},
+			   is_visible  = #{isVisible},
+			   is_protected = #{isProtected},
+		       remark      = #{remark},
+			   update_user = #{accessUserId},
+			   update_dept = #{accessDeptId},
+			   update_time = #{accessTime}
+		where menu_id = #{menuId}
+	</update>
+
+    <update id="changeReadonly">
+		update sys_menu set read_only = #{readOnly},
+							update_user = #{accessUserId}, update_dept = #{accessDeptId}, update_time = #{accessTime}
+		where menu_id = #{menuId}
+	</update>
+
+    <delete id="deleteMenus">
+        with recursive tree (menu_id, parent_id) as
+        (select m1.menu_id, m1.parent_id from sys_menu m1 where parent_id = #{menuId} or menu_id = #{menuId}
+         union
+         select m2.menu_id, m2.parent_id from sys_menu m2 join tree on m2.parent_id = tree.menu_id)
+        delete from sys_role_menu rm using tree where rm.menu_id = tree.menu_id
+    </delete>
+
+    <delete id="deletes">
+        with recursive tree (menu_id, parent_id) as
+        (select m1.menu_id, m1.parent_id from sys_menu m1 where parent_id = #{menuId} or menu_id = #{menuId}
+         union
+         select m2.menu_id, m2.parent_id from sys_menu m2 join tree on m2.parent_id = tree.menu_id)
+        delete from sys_menu m using tree where m.menu_id = tree.menu_id
+    </delete>
+
+    <sql id="roleField">
+        r.role_id      roleId,
+        r.role_name    roleName,
+        r.role_code    roleCode,
+        r.read_only    readOnly,
+        r.create_user  createUser,
+        r.create_dept  createDept,
+        r.create_time  createTime,
+        r.update_user  updateUser,
+        r.update_dept  updateDept,
+        r.update_time  updateTime,
+        r.remark
+    </sql>
+
+    <select id="roleAuthed" resultType="com.cowave.sys.model.admin.SysRole">
+        select DISTINCT on(r.role_id)
+        <include refid="roleField"/>
+        from sys_role_menu m
+        left join sys_role r on m.role_id = r.role_id
+        where m.menu_id = #{menuId}
+        <if test="roleName != null and roleName != ''">
+            and r.role_name like concat('%', #{roleName}, '%')
+        </if>
+    </select>
+
+    <select id="roleUnAuthed" resultType="com.cowave.sys.model.admin.SysRole">
+        with rids as(select role_id from sys_role except select role_id from sys_role_menu where menu_id = #{menuId})
+        select DISTINCT on(r.role_id)
+        <include refid="roleField"/>
+        from rids
+        left join sys_role r on rids.role_id = r.role_id
+        <if test="roleName != null and roleName != ''">
+            where r.role_name like concat('%', #{roleName}, '%')
+        </if>
+    </select>
+
+    <insert id="grant">
+        insert into sys_role_menu(role_id, menu_id) values
+        <foreach  collection="roleIds" item="roleId" index="index" separator=",">
+            (#{roleId}, #{menuId})
+        </foreach>
+        on conflict do nothing
+    </insert>
+
+    <delete id="cancel">
+        delete from sys_role_menu where menu_id = #{menuId} and role_id in
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,35 @@
+server:
+  port: 19010
+  servlet:
+    context-path: /admin
+
+info:
+  cluster:
+    id: 10
+    level: 1
+    name: default
+
+spring:
+  liquibase:
+    enabled: true
+    change-log: testsql/changelog.yml
+  socket-io:
+    port: 19011
+  mail:
+    host: smtp.163.com
+    username: cowaveAdmin@163.com
+    password: TQQWRIRSQLTEELPT
+  application:
+    token:
+      header: Authorization
+      salt: admin@cowave.com
+      conflict: false
+      clientExpire: 3600
+      serverExpire: 36000
+      ignoreUrls:
+        - /api/v1/auth/login
+        - /api/v1/auth/logon
+        - /api/v1/auth/register
+        - /api/v1/auth/captcha
+        - /api/v1/auth/captcha/email
+        - /api/v1/oauth/callback/**

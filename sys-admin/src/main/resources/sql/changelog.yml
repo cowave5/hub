@@ -1,0 +1,73 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1.0.0.ddl
+      labels: 1.0.0.ddl
+      author: shanhm1991
+      comment: 初始化
+      changes:
+        - sqlFile:
+            splitStatements: true
+            stripComments: false
+            path: sql/1.0.0.ddl.sql
+        - tagDatabase:
+            tag: 1.0.0
+  - changeSet:
+      id: 1.0.0.dml
+      labels: 1.0.0.dml
+      author: shanhm1991
+      comment: 数据初始化
+      changes:
+        - sqlFile:
+            splitStatements: true
+            stripComments: false
+            path: sql/1.0.0.dml.sql
+        - tagDatabase:
+            tag: 1.0.0
+  - changeSet:
+      id: 1.0.1.oauth
+      labels: 1.0.1.oauth
+      author: shanhm1991
+      comment: 添加OAuth授权
+      changes:
+        - sqlFile:
+            splitStatements: true
+            stripComments: false
+            path: sql/1.0.1.oauth.sql
+        - tagDatabase:
+            tag: 1.0.1
+  - changeSet:
+      id: 1.0.2.ldap
+      labels: 1.0.2.ldap
+      author: shanhm1991
+      comment: 添加Ldap认证
+      changes:
+        - sqlFile:
+            splitStatements: true
+            stripComments: false
+            path: sql/1.0.2.ldap.sql
+        - tagDatabase:
+            tag: 1.0.2
+  - changeSet:
+      id: 1.0.3.flow
+      labels: 1.0.3.flow
+      author: shanhm1991
+      comment: 添加流程
+      changes:
+        - sqlFile:
+            splitStatements: true
+            stripComments: false
+            path: sql/1.0.3.flow.sql
+        - tagDatabase:
+            tag: 1.0.3
+  - changeSet:
+      id: 1.0.3.gitlab
+      labels: 1.0.3.gitlab
+      author: shanhuiming
+      comment: 更新gitlab回调地址
+      changes:
+        - sqlFile:
+            splitStatements: true
+            stripComments: false
+            path: sql/1.0.3.gitlab.sql
+        - tagDatabase:
+            tag: 1.0.3

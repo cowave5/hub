@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.admin.api.mapper.SysConfigMapper">
+    <sql id="configField">
+        c.config_id     configId,
+        c.config_name   configName,
+        c.config_key    configKey,
+        c.config_value  configValue,
+        c.value_parser  valueParser,
+        c.value_param   valueParam,
+        c.is_default    isDefault,
+        c.create_user  createUser,
+        c.create_dept  createDept,
+        c.create_time  createTime,
+        c.update_user  updateUser,
+        c.update_dept  updateDept,
+        c.update_time  updateTime,
+        c.remark
+    </sql>
+
+    <select id="list" resultType="com.cowave.sys.model.admin.SysConfig">
+        select
+        <include refid="configField"/>
+        from sys_config c
+        where 1 = 1
+        <if test="config.configName != null and config.configName != ''">
+            and config_name like concat('%', #{config.configName}, '%')
+        </if>
+        <if test="config.beginTime != null">
+            <![CDATA[
+                and create_time >= #{config.beginTime}
+            ]]>
+        </if>
+        <if test="config.endTime != null">
+            <![CDATA[
+                and create_time <= #{config.endTime}
+            ]]>
+        </if>
+        order by config_id
+    </select>
+
+    <select id="choose" resultType="com.cowave.sys.model.admin.SysConfig">
+        select
+        <include refid="configField"/>
+        from sys_config c where config_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="info" resultType="com.cowave.sys.model.admin.SysConfig">
+        select
+        <include refid="configField"/>
+        from sys_config c where config_id = #{configId}
+    </select>
+
+    <insert id="insert">
+        insert into sys_config(config_name, config_key, config_value, is_default, remark, value_parser, value_param,
+                               create_user, create_dept, create_time, update_user, update_dept, update_time)
+        values(#{configName}, #{configKey}, #{configValue}, #{isDefault}, #{remark}, #{valueParser}, #{valueParam},
+               #{accessUserId},#{accessDeptId},#{accessTime},#{accessUserId},#{accessDeptId},#{accessTime})
+    </insert>
+
+    <update id="update">
+        update sys_config set config_name = #{configName},
+                              config_key = #{configKey},
+                              config_value = #{configValue},
+                              value_parser = #{valueParser},
+                              value_param = #{valueParam},
+                              is_default = #{isDefault},
+                              remark = #{remark},
+                              update_user = #{accessUserId},
+                              update_dept = #{accessDeptId},
+                              update_time = #{accessTime}
+        where config_id = #{configId}
+    </update>
+
+    <delete id="delete">
+        delete from sys_config where config_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

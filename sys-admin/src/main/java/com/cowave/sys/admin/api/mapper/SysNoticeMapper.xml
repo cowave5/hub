@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.admin.api.mapper.SysNoticeMapper">
+    <resultMap id="infoMap" type="com.cowave.sys.model.admin.SysNotice">
+        <result column="notice_id"        property="noticeId"/>
+        <result column="notice_title"     property="noticeTitle"/>
+        <result column="notice_status"    property="noticeStatus"/>
+        <result column="notice_type"      property="noticeType"/>
+        <result column="notice_level"     property="noticeLevel"/>
+        <result column="content"          property="content"/>
+        <result column="is_system"        property="isSystem"/>
+        <result column="stat_total"       property="statTotal"/>
+        <result column="stat_read"        property="statRead"/>
+        <result column="goals_all"        property="goalsAll"/>
+        <result column="goals_dept"       property="goalsDept" typeHandler="com.cowave.commons.framework.support.mybatis.ArrayTypeHandler"/>
+        <result column="goals_role"       property="goalsRole" typeHandler="com.cowave.commons.framework.support.mybatis.ArrayTypeHandler"/>
+        <result column="goals_user"       property="goalsUser" typeHandler="com.cowave.commons.framework.support.mybatis.ArrayTypeHandler"/>
+        <result column="publish_time"     property="publishTime"/>
+        <result column="create_user"      property="createUser"/>
+        <result column="update_user"      property="updateUser"/>
+        <result column="create_dept"      property="createDept"/>
+        <result column="update_dept"      property="updateDept"/>
+        <result column="create_time"      property="createTime"/>
+        <result column="update_time"      property="updateTime"/>
+        <result column="read_status"      property="readStatus"/>
+        <result column="read_back"        property="readBack"/>
+        <result column="createUserName"   property="createUserName"/>
+        <collection property="attachs" javaType="list" ofType="com.cowave.sys.model.admin.SysAttach">
+            <result column="attach_id"      property="attachId"/>
+            <result column="master_id"      property="masterId"/>
+            <result column="attach_group"   property="attachGroup"/>
+            <result column="attach_type"    property="attachType"/>
+            <result column="attach_name"    property="attachName"/>
+            <result column="attach_path"    property="attachPath"/>
+        </collection>
+    </resultMap>
+
+    <select id="list" resultType="com.cowave.sys.model.admin.SysNotice">
+        select case n.is_system when 1 then '系统' else u.user_name end createUserName,
+               n.notice_id      noticeId,
+               n.notice_title   noticeTitle,
+               n.notice_type    noticeType,
+               n.notice_level   noticeLevel,
+               n.notice_status  noticeStatus,
+               n.is_system      isSystem,
+               n.stat_total     statTotal,
+               n.stat_read      statRead,
+               n.publish_time   publishTime,
+               n.create_user    createUser,
+               n.create_time    createTime
+        from sys_notice n
+        left join sys_user u on n.create_user = u.user_id
+        where 1 = 1
+        <if test="notice.noticeType != null">
+            and n.notice_type = #{notice.noticeType}
+        </if>
+        <if test="notice.noticeStatus != null">
+            and n.notice_status = #{notice.noticeStatus}
+        </if>
+        <if test="notice.noticeTitle != null and notice.noticeTitle != ''">
+            and n.notice_title like concat('%', #{notice.noticeTitle}, '%')
+        </if>
+        order by n.create_time desc
+    </select>
+
+    <select id="listOfUser" resultType="com.cowave.sys.model.admin.SysNotice">
+        select case n.is_system when 1 then '系统' else u.user_name end createUserName,
+               n.notice_id      noticeId,
+               n.notice_title   noticeTitle,
+               n.notice_type    noticeType,
+               n.notice_level   noticeLevel,
+               n.notice_status  noticeStatus,
+               n.is_system      isSystem,
+               n.stat_total     statTotal,
+               n.stat_read      statRead,
+               n.publish_time   publishTime,
+               n.create_user    createUser,
+               n.create_time    createTime
+        from sys_notice n
+        left join sys_user u on n.create_user = u.user_id
+        where n.create_user = #{userId}
+        <if test="notice.noticeType != null">
+            and n.notice_type = #{notice.noticeType}
+        </if>
+        <if test="notice.noticeStatus != null">
+            and n.notice_status = #{notice.noticeStatus}
+        </if>
+        <if test="notice.noticeTitle != null and notice.noticeTitle != ''">
+            and n.notice_title like concat('%', #{notice.noticeTitle}, '%')
+        </if>
+        order by n.create_time desc
+    </select>
+
+    <select id="info" resultMap="infoMap">
+        select case n.is_system when 1 then '系统' else u.user_name end createUserName,
+               a.attach_id, a.master_id, a.attach_group, a.attach_type, a.attach_name, a.attach_path,
+               n.notice_id,n.notice_title,n.notice_status,n.notice_type,n.notice_level,n.content,n.is_system,
+               n.stat_total,n.stat_read,n.goals_all,n.goals_dept,n.goals_role,n.goals_user,n.publish_time,
+               n.create_user, n.update_user, n.create_dept, n.update_dept, n.create_time, n.update_time
+        from sys_notice n
+        left join sys_attach a on a.attach_group = 'sys-notice' and a.master_id = n.notice_id
+        left join sys_user u on n.create_user = u.user_id
+        where notice_id = #{noticeId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="noticeId" keyColumn="notice_id">
+        insert into sys_notice(notice_title,
+                               notice_status,
+                               notice_type,
+                               notice_level,
+                               content,
+                               is_system,
+                               goals_all,
+                               goals_dept,
+                               goals_role,
+                               goals_user,
+                               publish_time,
+                               stat_total,
+                               create_user, update_user, create_dept, update_dept, create_time, update_time)
+        values(#{noticeTitle},
+               #{noticeStatus},
+               #{noticeType},
+               #{noticeLevel},
+               #{content},
+               #{isSystem},
+               #{goalsAll},
+               #{goalsDept,jdbcType=OTHER,typeHandler=com.cowave.commons.framework.support.mybatis.ArrayTypeHandler},
+               #{goalsRole,jdbcType=OTHER,typeHandler=com.cowave.commons.framework.support.mybatis.ArrayTypeHandler},
+               #{goalsUser,jdbcType=OTHER,typeHandler=com.cowave.commons.framework.support.mybatis.ArrayTypeHandler},
+               #{publishTime},
+               #{statTotal},
+               #{accessUserId},#{accessUserId},#{accessDeptId},#{accessDeptId},#{accessTime},#{accessTime})
+    </insert>
+
+    <insert id="createNotice" useGeneratedKeys="true" keyProperty="noticeId" keyColumn="notice_id">
+        insert into sys_notice(notice_title,
+                               notice_status,
+                               notice_type,
+                               notice_level,
+                               content,
+                               is_system,
+                               goals_all,
+                               goals_dept,
+                               goals_role,
+                               goals_user,
+                               publish_time,
+                               stat_total,
+                               create_user, create_time)
+        values(#{noticeTitle},
+               #{noticeStatus},
+               #{noticeType},
+               #{noticeLevel},
+               #{content},
+               #{isSystem},
+               #{goalsAll},
+               #{goalsDept,jdbcType=OTHER,typeHandler=com.cowave.commons.framework.support.mybatis.ArrayTypeHandler},
+               #{goalsRole,jdbcType=OTHER,typeHandler=com.cowave.commons.framework.support.mybatis.ArrayTypeHandler},
+               #{goalsUser,jdbcType=OTHER,typeHandler=com.cowave.commons.framework.support.mybatis.ArrayTypeHandler},
+               #{publishTime},
+               #{statTotal},
+               #{createUser},#{createTime})
+    </insert>
+
+    <update id="update">
+        update sys_notice set
+                              notice_title   = #{noticeTitle},
+                              notice_type    = #{noticeType},
+                              notice_level   = #{noticeLevel},
+                              content    = #{content},
+                              goals_all  = #{goalsAll},
+                              goals_dept = #{goalsDept,jdbcType=OTHER,typeHandler=com.cowave.commons.framework.support.mybatis.ArrayTypeHandler},
+                              goals_role = #{goalsRole,jdbcType=OTHER,typeHandler=com.cowave.commons.framework.support.mybatis.ArrayTypeHandler},
+                              goals_user = #{goalsUser,jdbcType=OTHER,typeHandler=com.cowave.commons.framework.support.mybatis.ArrayTypeHandler},
+                              update_user = #{accessUserId},
+                              update_dept = #{accessDeptId},
+                              update_time = #{accessTime}
+        where notice_id = #{noticeId}
+    </update>
+
+    <delete id="delete">
+        delete from sys_notice where notice_id = #{noticeId}
+    </delete>
+
+    <delete id="msgClear">
+        delete from sys_notice_read where notice_id = #{noticeId}
+    </delete>
+
+    <update id="updateStatus">
+        update sys_notice set notice_status = #{noticeStatus} where notice_id = #{noticeId}
+    </update>
+
+    <update id="msgRecall">
+        update sys_notice_read
+        set read_status = case when read_status = 0 then 2
+                               when read_status = 10 then 12
+                               else read_status end
+        where notice_id = #{noticeId}
+    </update>
+
+    <insert id="insertReadOfAll">
+        insert into sys_notice_read(notice_id, user_id)
+        select #{noticeId}, user_id from sys_user where user_status = 1
+        on conflict(user_id, notice_id) do nothing
+    </insert>
+
+    <insert id="insertReadOfDept">
+        insert into sys_notice_read(notice_id, user_id)
+        select #{noticeId}, u.user_id
+        from sys_user_dept d
+        left join sys_user u on d.user_id = u.user_id
+        where u.user_status = 1 and d.dept_id in
+        <foreach collection="list" item="deptId" open="(" separator="," close=")">
+            #{deptId}
+        </foreach>
+        on conflict(user_id, notice_id) do nothing
+    </insert>
+
+    <insert id="insertReadOfRole">
+        insert into sys_notice_read(notice_id, user_id)
+        select #{noticeId}, u.user_id
+        from sys_user_role r
+        left join sys_user u on r.user_id = u.user_id
+        where u.user_status = 1 and r.role_id in
+        <foreach collection="list" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+        on conflict(user_id, notice_id) do nothing
+    </insert>
+
+    <insert id="insertReadOfUser">
+        insert into sys_notice_read(notice_id, user_id)
+        select #{noticeId}, u.user_id from sys_user u where u.user_id in
+        <foreach collection="list" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+        on conflict(user_id, notice_id) do nothing
+    </insert>
+
+    <update id="updatePublishTotal">
+        update sys_notice set notice_status = #{noticeStatus},
+                              publish_time = #{publishTime},
+                              stat_total = (select count(1) from sys_notice_read where notice_id = #{noticeId})
+        where notice_id = #{noticeId}
+    </update>
+
+    <select id="readList" resultType="com.cowave.sys.model.admin.SysNoticeRead">
+        select u.user_name userName, r.id, r.notice_id noticeId, r.user_id userId,
+               r.read_status readStatus, r.read_back readBack, r.read_time readTime
+        from sys_notice_read r
+        left join sys_user u on r.user_id = u.user_id
+        where r.notice_id = #{noticeId}
+    </select>
+
+    <select id="msgList" resultMap="infoMap">
+        select case n.is_system when 1 then '系统' else u.user_name end createUserName,
+               r.read_status, r.read_back,
+               n.notice_id,n.notice_title,n.notice_status,n.notice_type,n.notice_level,n.content,
+               n.is_system,n.publish_time
+        from sys_notice_read r, sys_notice n
+        left join sys_user u on n.create_user = u.user_id
+        where n.notice_id = r.notice_id
+          and r.read_status in (0, 10)
+          and r.user_id = #{userId}
+        order by n.publish_time desc
+    </select>
+
+    <update id="msgRead">
+        update sys_notice_read set read_status = #{noticeStatus}, read_time = #{readTime}
+        where user_id = #{userId} and notice_id = #{noticeId} and read_status = 0
+    </update>
+
+    <update id="msgBack">
+        update sys_notice_read set read_back = #{readBack} where user_id = #{userId} and notice_id = #{noticeId}
+    </update>
+
+    <update id="updateReadStat">
+        update sys_notice set stat_read = t.count
+        from (select count(1) from sys_notice_read where read_status >= 10 and notice_id = #{noticeId}) t
+        where notice_id = #{noticeId}
+    </update>
+
+    <update id="msgDelete">
+        update sys_notice_read
+        set read_status = case when read_status = 0 then 1
+                               when read_status = 10 then 11
+                               else read_status end
+        where user_id = #{userId} and notice_id = #{noticeId}
+    </update>
+
+    <select id="countUserUnRead" resultType="Integer">
+        select count(1) from sys_notice_read r where r.user_id = #{userId} and r.read_status = 0
+    </select>
+
+    <select id="publishUserIds" resultType="java.lang.Long">
+        select user_id from sys_notice_read where notice_id = #{noticeId}
+    </select>
+</mapper>

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.admin.api.mapper.SysRoleMapper">
+	<sql id="roleField">
+        r.role_id     roleId,
+        r.role_name   roleName,
+        r.role_code   roleCode,
+        r.role_type   roleType,
+        r.read_only   readOnly,
+        r.create_user  createUser,
+        r.create_dept  createDept,
+        r.create_time  createTime,
+        r.update_user  updateUser,
+        r.update_dept  updateDept,
+        r.update_time  updateTime,
+        r.remark
+	</sql>
+
+	<resultMap id="roleMap" type="com.cowave.sys.model.admin.SysRole">
+        <result column="roleId"       property="roleId"/>
+        <result column="roleName"     property="roleName"/>
+        <result column="roleCode"     property="roleCode"/>
+        <result column="roleType"     property="roleType"/>
+        <result column="readOnly"     property="readOnly"/>
+        <result column="remark"       property="remark"/>
+        <result column="createBy"   property="createBy"/>
+        <result column="updateBy"   property="updateBy"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateTime" property="updateTime"/>
+        <collection property="menuIds" javaType="list" ofType="java.lang.Long">
+            <result column="menuId"/>
+        </collection>
+    </resultMap>
+
+    <select id="list" resultType="com.cowave.sys.model.admin.SysRole">
+		select
+		<include refid="roleField"/>
+		from SYS_ROLE r
+		<where>
+		    <if test="role.roleName != null">
+			    and r.role_name like concat('%', #{role.roleName}, '%')
+		    </if>
+		    <if test="role.roleCode != null">
+			    and r.role_code like concat('%', #{role.roleCode}, '%')
+		    </if>
+		</where>
+		order by r.role_id
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="roleId" keyColumn="role_id">
+		insert into sys_role(role_name,role_code,role_type,remark,
+                             create_user, update_user, create_dept, update_dept, create_time, update_time)
+		values(#{roleName},#{roleCode},#{roleType},#{remark},
+               #{accessUserId},#{accessUserId},#{accessDeptId},#{accessDeptId},#{accessTime},#{accessTime})
+	</insert>
+
+	<select id="info" resultMap="roleMap">
+	    select
+	    m.menu_id menuId,
+	    <include refid="roleField"/>
+	    from sys_role r
+	    left join sys_role_menu m on r.role_id = m.role_id
+	    where r.role_id = #{roleId}
+	</select>
+
+	<select id="countRoleName" resultType="java.lang.Integer">
+        select count(1) from sys_role where role_name = #{roleName}
+		<if test="roleId != null">
+			and role_id != #{roleId}
+		</if>
+	</select>
+
+	<select id="countRoleCode" resultType="java.lang.Integer">
+		select count(1) from sys_role where role_code = #{roleCode}
+		<if test="roleId != null">
+			and role_id != #{roleId}
+		</if>
+	</select>
+
+	<update id="update">
+		update sys_role set
+		       role_name = #{roleName},
+		       role_code = #{roleCode},
+               role_type = #{roleType},
+		       remark    = #{remark},
+               update_user   = #{accessUserId},
+               update_dept = #{accessDeptId},
+		       update_time = #{updateTime}
+		where role_id = #{roleId}
+	</update>
+
+    <update id="changeReadonly">
+        update sys_role set read_only = #{readOnly},
+                            update_user = #{accessUserId}, update_dept = #{accessDeptId}, update_time = #{accessTime}
+        where role_id = #{roleId}
+    </update>
+
+    <delete id="delete">
+        delete from sys_role where role_id = #{roleId}
+    </delete>
+
+	<delete id="deleteUsers">
+	    delete from sys_user_role where role_id = #{roleId}
+	</delete>
+
+	<sql id="userField">
+        u.user_id      userId,
+        u.user_name    userName,
+        u.user_account userAccount,
+        u.user_sex     userSex,
+        u.user_phone   userPhone,
+        u.user_status  userStatus,
+        u.read_only    readOnly,
+        u.rank
+    </sql>
+
+    <resultMap id="userInfo" type="com.cowave.sys.model.admin.SysUser">
+        <result column="userId"       property="userId"/>
+        <result column="userName"     property="userName"/>
+        <result column="userAccount"  property="userAccount"/>
+        <result column="userPasswd"   property="userPasswd"/>
+        <result column="userSex"    property="userSex"/>
+        <result column="userPhone"  property="userPhone"/>
+        <result column="userStatus" property="userStatus"/>
+        <result column="readOnly"   property="readOnly"/>
+        <result column="loginIp"    property="loginIp"/>
+        <result column="loginTime"  property="loginTime"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateTime" property="updateTime"/>
+        <result column="deptId"     property="deptId"/>
+        <result column="deptName"   property="deptName"/>
+        <result column="postId"     property="postId"/>
+        <result column="postName"   property="postName"/>
+        <result column="parentId"   property="parentId"/>
+        <result column="parentName" property="parentName"/>
+    </resultMap>
+
+	<select id="userAuthed" resultMap="userInfo">
+        select DISTINCT on(u.user_id)
+        d.dept_id deptId, d.dept_name deptName, p.post_id postId, p.post_name postName,
+        <include refid="userField"/>
+        from sys_user_role r
+        left join sys_user u on r.user_id = u.user_id
+        left join sys_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
+        left join sys_dept d on ud.dept_id = d.dept_id
+        left join sys_post p on ud.post_id = p.post_id
+        where r.role_id = #{roleId}
+        <if test="userName != null and userName != ''">
+            and u.user_name like concat('%', #{userName}, '%')
+        </if>
+        <if test="userPhone != null and userPhone != ''">
+            and u.user_phone like concat('%', #{userPhone}, '%')
+        </if>
+	</select>
+
+	<select id="userUnAuthed" resultMap="userInfo">
+		with uids as(select user_id from sys_user except select user_id from sys_user_role where role_id = #{roleId})
+        select DISTINCT on(u.user_id)
+        d.dept_id deptId, d.dept_name deptName, p.post_id postId, p.post_name postName,
+        <include refid="userField"/>
+        from uids
+        left join sys_user u on uids.user_id = u.user_id
+        left join sys_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
+        left join sys_dept d on ud.dept_id = d.dept_id
+        left join sys_post p on ud.post_id = p.post_id
+        where u.user_id > 1
+        <if test="userName != null and userName != ''">
+            and u.user_name like concat('%', #{userName}, '%')
+        </if>
+        <if test="userPhone != null and userPhone != ''">
+            and u.user_phone like concat('%', #{userPhone}, '%')
+        </if>
+	</select>
+
+    <insert id="grant">
+        insert into sys_user_role(role_id, user_id) values
+        <foreach  collection="userIds" item="userId" index="index" separator=",">
+            (#{roleId}, #{userId})
+        </foreach>
+        on conflict do nothing
+    </insert>
+
+	<delete id="cancel">
+		delete from sys_user_role where role_id = #{roleId} and user_id in
+		<foreach collection="userIds" item="userId" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+    <select id="countReadOnlyByIdArray" resultType="java.lang.Integer">
+        select count(1) from sys_role where read_only = 1 and role_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryByIdArray" resultType="com.cowave.sys.model.admin.SysRole">
+        select
+        <include refid="roleField"/>
+        from sys_role r where role_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="deleteByIdArray">
+        delete from sys_role where role_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRoleMenusByIdArray">
+        delete from sys_role_menu where role_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRoleUsersByIdArray">
+        delete from sys_user_role where role_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRoleMenus">
+        delete from sys_role_menu where role_id = #{roleId}
+    </delete>
+
+    <insert id="insertRoleMenus">
+        insert into sys_role_menu(role_id, menu_id) values
+        <foreach item="menuId" index="index" collection="list" separator=",">
+            (#{roleId}, #{menuId})
+        </foreach>
+    </insert>
+
+    <select id="queryCodeById" resultType="java.lang.String">
+        select role_code from sys_role where role_id = #{id}
+    </select>
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.admin.api.mapper.SysPostMapper">
+    <sql id="postField">
+        p.post_id     postId,
+        p.post_code   postCode,
+        p.post_name   postName,
+        p.post_level  postLevel,
+	    p.post_type   postType,
+        p.post_status postStatus,
+        p.read_only   readOnly,
+        p.create_user  createUser,
+        p.create_dept  createDept,
+        p.create_time  createTime,
+        p.update_user  updateUser,
+        p.update_dept  updateDept,
+        p.update_time  updateTime,
+        p.remark
+    </sql>
+
+    <resultMap id="optionsMap" type="com.cowave.sys.admin.api.entity.TreeChildren">
+        <result column="dept_id"     property="pid"/>
+        <collection property="children" javaType="list" ofType="cn.hutool.core.lang.tree.Tree">
+            <result column="child_id"     property="id"/>
+            <result column="post_name"    property="label"/>
+            <result column="content"      property="content"/>
+        </collection>
+    </resultMap>
+
+    <select id="deptPostOptions" resultMap="optionsMap">
+        select d.dept_id,
+               d.dept_id || '-' || p.post_id child_id,
+               p.post_name,
+               d.dept_name || '/' || p.post_name as content
+        from sys_dept d
+        left join sys_dept_post dp on d.dept_id = dp.dept_id
+        left join sys_post p on dp.post_id = p.post_id
+    </select>
+
+    <select id="list" resultType="com.cowave.sys.model.admin.SysPost">
+        select <include refid="postField"/>
+        <choose>
+            <when test="post.deptId != null">
+                from sys_dept_post dp, sys_post p where dp.dept_id = #{post.deptId} and p.post_id = dp.post_id
+            </when>
+            <otherwise>
+                from sys_post p where 1 = 1
+            </otherwise>
+        </choose>
+        <if test="post.postType != null">
+            and p.post_type = #{post.postType}
+        </if>
+        <if test="post.postName != null and post.postName != ''">
+            and p.post_name like concat('%', #{post.postName}, '%')
+        </if>
+        order by p.post_type, p.post_id
+    </select>
+
+    <select id="info" resultType="com.cowave.sys.model.admin.SysPost">
+        select
+        t.parent_id parentId,
+        <include refid="postField"/>
+        from sys_post p
+        left join sys_post_tree t on p.post_id = t.post_id
+        where p.post_id = #{postId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="postId" keyColumn="post_id">
+        INSERT INTO sys_post(post_code,post_type,post_level,post_name,post_status,remark,
+                             create_user, update_user, create_dept, update_dept, create_time, update_time)
+        values(#{postCode},#{postType},#{postLevel},#{postName},#{postStatus},#{remark},
+               #{accessUserId},#{accessUserId},#{accessDeptId},#{accessDeptId},#{accessTime},#{accessTime})
+    </insert>
+
+    <insert id="insertPostParent">
+        insert into sys_post_tree(post_id, parent_id) values (#{postId}, #{parentId})
+    </insert>
+
+    <update id="update">
+		update sys_post set
+		       post_code   = #{postCode},
+               post_type   = #{postType},
+		       post_name   = #{postName},
+		       post_level  = #{postLevel},
+		       post_status = #{postStatus},
+               remark      = #{remark},
+               update_user = #{accessUserId},
+               update_dept = #{accessDeptId},
+		       update_time = #{accessTime}
+		where post_id = #{postId}
+	</update>
+
+    <select id="countUserByIdArray" resultType="java.lang.Integer">
+        select count(1) from sys_user_dept where post_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+	</select>
+
+    <select id="countReadOnlyByIdArray" resultType="java.lang.Integer">
+        select count(1) from sys_post where read_only = 1 and post_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="delete">
+        delete from sys_post where post_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deletePostParentsByIdArray">
+        delete from sys_post_tree where post_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deletePostChildsByIdArray">
+        delete from sys_post_tree where parent_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deletePostParents">
+        delete from sys_post_tree where post_id = #{postId}
+    </delete>
+
+    <select id="childIds" resultType="java.lang.Long">
+        with recursive tree (post_id, parent_id) as
+            (select t1.post_id, t1.parent_id from sys_post_tree t1 where post_id = #{postId} union
+            select t2.post_id, t2.parent_id from sys_post_tree t2 join tree on t2.parent_id = tree.post_id)
+        select distinct tree.post_id from tree JOIN sys_post u on tree.post_id = u.post_id
+    </select>
+
+    <select id="listTree" resultType="com.cowave.sys.admin.api.entity.TreeNode">
+        select sys_post_tree.post_id   id,
+               sys_post_tree.parent_id pid,
+               sys_post.post_name as   label
+        from sys_post_tree
+        left join sys_post ON sys_post_tree.post_id = sys_post.post_id
+        order by sys_post_tree.parent_id, sys_post_tree.post_id
+    </select>
+
+    <select id="queryByIdArray" resultType="com.cowave.sys.model.admin.SysPost">
+        select
+        <include refid="postField"/>
+        from sys_post p where p.post_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <update id="changeReadonly">
+        update sys_post set read_only = #{readOnly},
+                            update_user = #{accessUserId}, update_dept = #{accessDeptId}, update_time = #{accessTime}
+        where post_id = #{postId}
+    </update>
+
+    <select id="getUsersByCode" resultType="com.cowave.sys.model.admin.SysUser">
+        select u.user_id userId, u.user_name userName
+        from sys_user u, sys_post p, sys_user_dept up
+        where p.post_code = #{postCode} and p.post_id = up.post_id and up.user_id = u.user_id
+    </select>
+</mapper>

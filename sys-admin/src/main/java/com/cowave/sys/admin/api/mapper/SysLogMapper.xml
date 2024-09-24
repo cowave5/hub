@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.admin.api.mapper.SysLogMapper">
+
+    <resultMap id="logMap" type="com.cowave.sys.model.admin.SysLog">
+        <result column="id"         property="id"/>
+        <result column="user_id"    property="userId"/>
+        <result column="user_name"  property="userName"/>
+        <result column="dept_id"    property="deptId"/>
+        <result column="dept_name"  property="deptName"/>
+        <result column="log_group"     property="groupCode"/>
+        <result column="group_name"    property="groupName"/>
+        <result column="log_type"      property="typeCode"/>
+        <result column="type_name"     property="typeName"/>
+        <result column="view_key"     property="viewKey"/>
+        <result column="log_action"    property="actionCode"/>
+        <result column="action_name"    property="actionName"/>
+        <result column="ip"            property="ip"/>
+        <result column="url"           property="url"/>
+        <result column="log_status"    property="logStatus"/>
+        <result column="log_time"      property="logTime"/>
+        <result column="log_desc"      property="logDesc"/>
+        <result column="log_content"   property="logContent" typeHandler="com.cowave.commons.framework.support.mybatis.JsonTypeHandler"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into sys_log(log_group,log_type,log_action,user_id,dept_id,
+                            ip,url,log_status,log_time,log_desc,
+                            log_content)
+        select parent_code,#{typeCode},#{actionCode},#{userId},#{deptId},
+               #{ip},#{url},#{logStatus},#{logTime},#{logDesc},
+               #{logContent,jdbcType=OTHER,typeHandler=com.cowave.commons.framework.support.mybatis.JsonTypeHandler}
+        from sys_dict where dict_code = #{typeCode}
+    </insert>
+
+    <select id="list" resultMap="logMap">
+        select
+            g.dict_label group_name, t.dict_label type_name, t.dict_value view_key, d.dict_label action_name,
+            l.id,l.user_id,u.user_name,l.dept_id,de.dept_name,l.log_group,l.log_type,l.log_action,
+            l.ip,l.url,l.log_status,l.log_time,l.log_desc
+        from sys_log l
+        <if test="log.userName != null">
+            join sys_user u on l.user_id = u.user_id
+        </if>
+        <if test="log.userName == null">
+            left join sys_user u on l.user_id = u.user_id
+        </if>
+        <if test="log.groupCode != null">
+            join sys_dict g on l.log_group = g.dict_code
+        </if>
+        <if test="log.groupCode == null">
+            left join sys_dict g on l.log_group = g.dict_code
+        </if>
+        <if test="log.typeCode != null">
+            join sys_dict t on l.log_type  = t.dict_code
+        </if>
+        <if test="log.typeCode == null">
+            left join sys_dict t on l.log_type  = t.dict_code
+        </if>
+        left join sys_dept de on l.dept_id = de.dept_id
+        left join sys_dict d on l.log_action = d.dict_code
+        where 1 = 1
+        <if test="log.groupCode != null">
+            and g.dict_code = #{log.groupCode}
+        </if>
+        <if test="log.typeCode != null">
+            and t.dict_code = #{log.typeCode}
+        </if>
+        <if test="log.userName != null">
+            and u.user_name like concat('%', #{log.userName}, '%')
+        </if>
+        <if test="log.beginTime != null">
+            <![CDATA[
+                and l.log_time >= #{log.beginTime}
+            ]]>
+        </if>
+        <if test="log.endTime != null">
+            <![CDATA[
+                and l.log_time <= #{log.endTime}
+            ]]>
+        </if>
+        ORDER BY l.log_time DESC
+    </select>
+
+    <select id="info" resultMap="logMap">
+        select
+        g.dict_label group_name, t.dict_label type_name, d.dict_label action_name,
+        l.id,l.user_id,u.user_name,l.dept_id,de.dept_name,l.log_group,l.log_type,l.log_action,
+        l.ip,l.url,l.log_status,l.log_time,l.log_desc,l.log_content
+        from sys_log l
+        left join sys_user u on l.user_id = u.user_id
+        left join sys_dept de on l.dept_id = de.dept_id
+        left join sys_dict g on l.log_group = g.dict_code
+        left join sys_dict t on l.log_type  = t.dict_code
+        left join sys_dict d on l.log_action = d.dict_code
+		where l.id = #{id}
+    </select>
+
+    <delete id="delete">
+        delete from sys_log where id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="clean">
+        truncate table sys_log
+    </delete>
+
+    <select id="queryNameByRoleIds" resultType="java.lang.String">
+        select role_name from sys_role where role_id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryNameByUserIds" resultType="java.lang.String">
+        select user_name from sys_user where user_id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryNameByDeptIds" resultType="java.lang.String">
+        select dept_name from sys_dept where dept_id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryNameByPostId" resultType="java.lang.String">
+        select post_name from sys_post where post_id = #{postId}
+    </select>
+
+    <select id="queryNameOfDeptPost" resultType="java.lang.String">
+        select dept_name || '/' || post_name from sys_dept, sys_post
+        where dept_id = #{deptId} and post_id = #{postId}
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
