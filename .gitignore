@@ -1,14 +1,32 @@
-### eclipse
+### Editor
+.idea/
+*.iml
 .settings/
 .project
 .classpath
-
-### idea
-.idea/
-*.iml
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.local
 
 ### maven
 release.properties
 .checkstyle
 target/
 log/
+logs/
+
+.DS_Store
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+**/*.log
+tests/**/coverage/
+tests/e2e/reports
+selenium-debug.log
+package-lock.json
+yarn.lock

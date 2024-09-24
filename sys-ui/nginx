@@ -1,0 +1,30 @@
+/home/cowave/sys/sys-ui/*.log {
+    # 切换用户
+    su root root
+
+    # 每天滚动日志文件
+    daily
+
+    # 使用日期作为滚动日志文件的后缀
+    dateext
+
+    # 如果日志丢失，不报错继续滚动下一个日志
+    missingok
+
+    # 保留 31 个备份
+    rotate 30
+
+    # 如果日志文件是空的，则不进行rotate
+    notifempty
+
+    # 不压缩
+    compress
+
+    # 整个日志组运行一次的脚本
+    sharedscripts
+
+    # 滚动后的处理
+    postrotate   
+        docker exec sys-ui sh -c "[ ! -f /var/run/nginx.pid ] || (kill -USR1 `docker exec sys-ui cat /var/run/nginx.pid`; echo 'Successfully rotating nginx logs.')"
+    endscript
+}
