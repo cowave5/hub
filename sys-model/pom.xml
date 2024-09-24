@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.cowave.commons</groupId>
+		<artifactId>commons-dependencies</artifactId>
+		<version>2.8.2</version>
+	</parent>
+
+	<groupId>com.cowave.sys</groupId>
+	<artifactId>sys-model</artifactId>
+	<version>1.0.3</version>
+	<packaging>jar</packaging>
+
+	<name>sys-model</name>
+	<url>https://www.cowave.com/</url>
+	<description>模型管理</description>
+
+	<scm>
+		<tag>HEAD</tag>
+		<url>https://gitlab.cowave.com/java/sys</url>
+		<connection>scm:git:https://gitlab.cowave.com/java/sys.git</connection>
+		<developerConnection>scm:git:https://gitlab.cowave.com/java/sys.git</developerConnection>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>cowave</id>
+			<name>releases</name>
+			<url>http://10.64.4.74:8081/repository/maven-releases/</url>
+			<uniqueVersion>true</uniqueVersion>
+		</repository>
+		<snapshotRepository>
+			<id>cowave</id>
+			<name>snapshots</name>
+			<url>http://10.64.4.74:8081/repository/maven-snapshots/</url>
+			<uniqueVersion>true</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.cowave.commons</groupId>
+			<artifactId>commons-framework</artifactId>
+			<version>2.8.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>easyexcel</artifactId>
+		</dependency>
+	</dependencies>
+</project>

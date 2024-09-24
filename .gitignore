@@ -1,0 +1,14 @@
+### eclipse
+.settings/
+.project
+.classpath
+
+### idea
+.idea/
+*.iml
+
+### maven
+release.properties
+.checkstyle
+target/
+log/
