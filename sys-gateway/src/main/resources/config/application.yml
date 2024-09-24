@@ -1,0 +1,83 @@
+spring:
+  application:
+    name: sys-gateway
+  main:
+    web-application-type: reactive
+  liquibase:
+    enabled: false
+  cloud:
+    discovery:
+      client:
+        composite-indicator:
+          enabled: false
+    nacos:
+      discovery:
+        server-addr: ${nacos_server:10.64.4.74:8848}
+        metadata:
+          context-path: ${server.servlet.context-path}
+    gateway:
+      enabled: true
+      routes:
+        - id: admin
+          uri: lb://sys-admin
+          predicates:
+            - Path=/admin/**
+        - id: socket
+          uri: lb:ws://sys-admin
+          predicates:
+            - Path=/socket.io/**
+        - id: quartz
+          uri: lb://sys-quartz
+          predicates:
+            - Path=/quartz/**
+        - id: flow
+          uri: lb://sys-flow
+          predicates:
+            - Path=/flow/**
+        - id: code
+          uri: lb://sys-code
+          predicates:
+            - Path=/code/**
+
+server:
+  port: ${server_port:19000}
+  servlet:
+    context-path: /
+
+info:
+  cluster:
+    id: 10
+    level: 1
+    name: default
+  application:
+    name: sys-gateway
+    version: 0.0.0
+    build: 1970-01-01 00:00:00
+  commit:
+    version: master xxxx
+    Author: xxx
+    Time: 1970-01-01 00:00:00
+    Msg: create
+  maintainer:
+    "[shanhuiming@cowave.com]": 单惠铭
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+  health:
+    mail:
+      enabled: false
+    ping:
+      enabled: false
+    diskSpace:
+      enabled: false
+    gateway:
+      enabled: true
