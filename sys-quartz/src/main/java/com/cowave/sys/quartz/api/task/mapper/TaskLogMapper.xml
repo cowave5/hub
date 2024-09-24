@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2099 Cowave All Rights Reserved.
+
+    For licensing information, please contact: https://www.cowave.com.
+
+    This code is proprietary and confidential.
+    Unauthorized copying of this file, via any medium is strictly prohibited.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.quartz.api.task.mapper.TaskLogMapper">
+	<resultMap type="com.cowave.sys.quartz.api.task.entity.QuartzLog" id="logMap">
+		<id     property="id"         column="id"        />
+		<result property="taskId"     column="task_id"   />
+		<result property="beginTime"  column="begin_time"/>
+		<result property="endTime"    column="end_time"  />
+		<result property="costTime"   column="cost_time" />
+		<result property="content"    column="content"   />
+		<result property="status"     column="status"    />
+		<result property="throwable"  column="throwable" />
+	</resultMap>
+
+	<sql id="logField">
+		l.id, l.task_id, l.begin_time, l.end_time, l.cost_time, l.content, l.status, l.throwable
+    </sql>
+
+	<select id="list" resultMap="logMap">
+		select
+		t.task_name taskName, t.task_group taskGroup, t.invoke_target invokeTarget,
+		<include refid="logField"/>
+		from quartz_task_log l
+		left join quartz_task t on l.task_id = t.id
+		<where>
+			<if test="taskName != null and taskName != ''">
+				AND t.task_name like concat('%', #{taskName}, '%')
+			</if>
+			<if test="taskGroup != null and taskGroup != ''">
+				AND t.task_group = #{taskGroup}
+			</if>
+			<if test="status != null">
+				AND l.status = #{status}
+			</if>
+			<if test="beginTime != null">
+				<![CDATA[
+                     and l.begin_time >= #{beginTime}
+                 ]]>
+			</if>
+			<if test="endTime != null">
+				<![CDATA[
+                     and l.begin_time <= #{endTime}
+                  ]]>
+			</if>
+		</where>
+		order by l.begin_time desc
+	</select>
+
+ 	<delete id="delete">
+ 		delete from quartz_task_log where id in
+ 		<foreach collection="array" item="item" open="(" separator="," close=")">
+ 			#{item}
+        </foreach>
+ 	</delete>
+
+ 	<update id="clean">
+        truncate table quartz_task_log
+    </update>
+
+ 	<insert id="insert">
+ 		insert into quartz_task_log(task_id, begin_time, end_time, cost_time, content, status, throwable)
+ 		values(#{taskId}, #{beginTime}, #{endTime}, #{costTime}, #{content}, #{status}, #{throwable})
+	</insert>
+</mapper>

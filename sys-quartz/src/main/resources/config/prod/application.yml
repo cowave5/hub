@@ -1,0 +1,41 @@
+server:
+  port: ${server_port:19040}
+  servlet:
+    context-path: /quartz
+
+info:
+  cluster:
+    id: ${cluster_id:10}
+    level: ${cluster_level:1}
+    name: ${cluster_name:default}
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${datasource_url:jdbc:postgresql://127.0.0.1:5432/sys-quartz}
+    username: ${datasource_username:postgres}
+    password: ${datasource_password:postgres}
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${nacos_server:10.64.4.74:8848}
+  quartz:
+    job-store-type: jdbc
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: localhost
+            instanceId: AUTO
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            tablePrefix: qrtz_
+            isClustered: true
+            clusterCheckinInterval: 10000
+            useProperties: false
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
