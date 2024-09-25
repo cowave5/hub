@@ -67,6 +67,7 @@ build_docker(){
     sed -i 's#export app_version=.*#export app_version="'"$app_version"'"#' "$app_source"/bin/setenv.sh
     sed -i 's#export code_version=.*#export code_version="'"$codeVersion"'"#' "$app_source"/bin/setenv.sh
     ## 构建镜像
+    cp ../simsun.ttf .
 cat <<EOF > Dockerfile
 FROM ubuntu:20.04
 
@@ -76,7 +77,7 @@ WORKDIR /opt/cowave/${app_name}
 
 RUN mkdir -p /usr/share/fonts/simsun
 
-ADD ../simsun.ttf /usr/share/fonts/simsun
+ADD simsun.ttf /usr/share/fonts/simsun
 ADD ${app_source}/changelog.md /opt/cowave/${app_name}/
 ADD ${app_source}/bin /opt/cowave/${app_name}/bin/
 ADD ${app_source}/lib /opt/cowave/${app_name}/lib/
