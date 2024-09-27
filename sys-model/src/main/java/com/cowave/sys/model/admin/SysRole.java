@@ -50,14 +50,14 @@ public class SysRole extends AccessUser {
 	/**
 	 * 角色编码
 	 */
-	@NotBlank(message = "role.notnull.code")
+	@NotBlank(message = "{role.notnull.code}")
 	@ExcelProperty(value = "角色编码")
 	private String roleCode;
 
 	/**
 	 * 角色名称
 	 */
-	@NotBlank(message = "role.notnull.name")
+	@NotBlank(message = "{role.notnull.name}")
 	@ExcelProperty(value = "角色名称")
 	private String roleName;
 

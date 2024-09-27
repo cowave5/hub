@@ -24,7 +24,7 @@ public class SysDeptPost {
     /**
      * 部门id
      */
-    @NotNull(message = "dept.notnull.id")
+    @NotNull(message = "{dept.notnull.id}")
     private Long deptId;
 
     /**
@@ -40,7 +40,7 @@ public class SysDeptPost {
     /**
      * 岗位id
      */
-    @NotNull(message = "post.notnull.id")
+    @NotNull(message = "{post.notnull.id}")
     private Long postId;
 
     /**

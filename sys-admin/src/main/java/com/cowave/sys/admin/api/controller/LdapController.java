@@ -76,7 +76,7 @@ public class LdapController {
      */
     @PreAuthorize("@permit.hasPermit('sys:ldap:delete')")
     @GetMapping(value = {"/delete"})
-    public Response<Void> delete(@NotNull(message = "user.notnull.id") Integer[] id) {
+    public Response<Void> delete(@NotNull(message = "{user.notnull.id}") Integer[] id) {
         ldapService.delete(id);
         return Response.success();
     }

@@ -64,7 +64,7 @@ public class SysLogController {
 	 * @param id 日志id
 	 */
 	@GetMapping("/delete")
-	public Response<Void> delete(@NotNull(message = "valid.notnull.oper.id") Long[] id) {
+	public Response<Void> delete(@NotNull(message = "{valid.notnull.oper.id}") Long[] id) {
 		sysLogService.delete(id);
 		return Response.success();
 	}

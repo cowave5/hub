@@ -25,7 +25,7 @@ public class RoleAuthed {
     /**
      * 菜单id
      */
-    @NotNull(message = "menu.notnull.id")
+    @NotNull(message = "{menu.notnull.id}")
     private Long menuId;
 
     /**

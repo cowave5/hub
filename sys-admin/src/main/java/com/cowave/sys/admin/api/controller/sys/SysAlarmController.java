@@ -94,7 +94,7 @@ public class SysAlarmController {
 	 * @param id 告警id
 	 */
 	@GetMapping(value = "/info")
-    public Response<SysAlarm> info(@NotNull(message = "valid.notnull.alarm.id") Long id) {
+    public Response<SysAlarm> info(@NotNull(message = "{valid.notnull.alarm.id}") Long id) {
         return Response.success(sysAlarmService.info(id));
     }
 
@@ -104,7 +104,7 @@ public class SysAlarmController {
 	 * @param id 告警id
 	 */
 	@GetMapping("/delete")
-	public Response<Void> delete(@NotNull(message = "valid.notnull.alarm.id") Long id) {
+	public Response<Void> delete(@NotNull(message = "{valid.notnull.alarm.id}") Long id) {
 		sysAlarmService.delete(id);
 		return Response.success();
 	}

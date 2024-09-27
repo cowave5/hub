@@ -28,7 +28,7 @@ public class SysAlarmType {
 	/**
 	 * 类型名称
 	 */
-	@NotBlank(message = "valid.notnull.alarm.typename")
+	@NotBlank(message = "{valid.notnull.alarm.typename}")
 	private String typeName;
 
 	/**

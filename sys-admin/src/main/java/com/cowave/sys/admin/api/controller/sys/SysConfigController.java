@@ -54,7 +54,7 @@ public class SysConfigController {
      * 获取参数值
      */
     @GetMapping(value = "/value/{configKey}")
-    public Response<String> getValue(@PathVariable @NotNull(message = "config.notnull.key") String configKey) {
+    public Response<String> getValue(@PathVariable @NotNull(message = "{config.notnull.key}") String configKey) {
         return Response.success(sysConfigCaches.getValue(configKey));
     }
 
@@ -101,7 +101,7 @@ public class SysConfigController {
      */
     @PreAuthorize("@permit.hasPermit('sys:config:delete')")
     @GetMapping(value = "/delete")
-    public Response<Void> delete(@NotNull(message = "config.notnull.id") Integer[] configId) throws Exception {
+    public Response<Void> delete(@NotNull(message = "{config.notnull.id}") Integer[] configId) throws Exception {
         sysConfigService.delete(configId);
         return Response.success();
     }

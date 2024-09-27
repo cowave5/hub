@@ -137,14 +137,14 @@ public class SysUser extends AccessUser {
 	 * 用户名称
 	 */
 	@ExcelProperty("用户名称")
-	@NotBlank(message = "user.notnull.name")
+	@NotBlank(message = "{user.notnull.name}")
 	private String userName;
 
 	/**
 	 * 用户账号
 	 */
 	@ExcelProperty("用户账号")
-	@NotBlank(message = "user.notnull.account")
+	@NotBlank(message = "{user.notnull.account}")
 	private String userAccount;
 
 	/**

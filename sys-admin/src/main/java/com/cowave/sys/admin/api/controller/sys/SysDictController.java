@@ -91,7 +91,7 @@ public class SysDictController {
 	 * Group子类型选项
 	 */
 	@GetMapping("/group/options")
-	public Response<List<SelectOption>> groupOptions(@NotNull(message = "dict.notnull.groupcode") String groupCode) {
+	public Response<List<SelectOption>> groupOptions(@NotNull(message = "{dict.notnull.groupcode}") String groupCode) {
 		return Response.success(sysDictService.groupOptions(groupCode));
 	}
 
@@ -138,7 +138,7 @@ public class SysDictController {
 	 */
 	@PreAuthorize("@permit.hasPermit('sys:dict:delete')")
 	@GetMapping("/delete")
-	public Response<Void> delete(@NotNull(message = "dict.notnull.id") Long[] dictId) {
+	public Response<Void> delete(@NotNull(message = "{dict.notnull.id}") Long[] dictId) {
 		sysDictService.delete(dictId);
 		return Response.success();
 	}

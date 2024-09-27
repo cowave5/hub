@@ -128,7 +128,7 @@ public class SysUserController {
 	@Operation(type = "admin_user", action = "delete", desc = "删除用户", content = Content.RESP)
 	@PreAuthorize("@permit.hasPermit('sys:user:delete')")
 	@GetMapping(value = {"/delete"})
-	public Response<List<SysUser>> delete(@NotNull(message = "user.notnull.id") Long[] userId) {
+	public Response<List<SysUser>> delete(@NotNull(message = "{user.notnull.id}") Long[] userId) {
 		return Response.success(sysUserService.delete(userId));
 	}
 

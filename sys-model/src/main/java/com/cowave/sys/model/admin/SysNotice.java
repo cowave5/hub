@@ -45,7 +45,7 @@ public class SysNotice extends AccessUser {
 	/**
 	 * 公告标题
 	 */
-	@NotNull(message = "notice.notnul.title")
+	@NotNull(message = "{notice.notnull.title}")
 	private String noticeTitle;
 
 	/**

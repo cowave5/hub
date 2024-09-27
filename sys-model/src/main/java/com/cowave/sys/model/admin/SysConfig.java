@@ -51,7 +51,7 @@ public class SysConfig extends AccessUser {
      * 参数名称
      */
     @ExcelProperty(value = "配置名称")
-    @NotBlank(message = "config.notnull.name")
+    @NotBlank(message = "{config.notnull.name}")
     private String configName;
 
     /**
@@ -59,14 +59,14 @@ public class SysConfig extends AccessUser {
      */
     @ColumnWidth(40)
     @ExcelProperty(value = "配置key")
-    @NotBlank(message = "config.notnull.key")
+    @NotBlank(message = "{config.notnull.key}")
     private String configKey;
 
     /**
      * 参数键值
      */
     @ExcelProperty(value = "配置值")
-    @NotBlank(message = "config.notnull.value")
+    @NotBlank(message = "{config.notnull.value}")
     private String configValue;
 
     /**

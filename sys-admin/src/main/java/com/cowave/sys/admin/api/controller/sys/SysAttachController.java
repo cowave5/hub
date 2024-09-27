@@ -50,7 +50,7 @@ public class SysAttachController {
      * @param attachId 附件id
      */
     @GetMapping("/download")
-    public void download(HttpServletResponse response, @NotNull(message = "attach.notnull.id") Long attachId) throws Exception {
+    public void download(HttpServletResponse response, @NotNull(message = "{attach.notnull.id}") Long attachId) throws Exception {
         sysAttachService.download(response, attachId);
     }
 
@@ -60,7 +60,7 @@ public class SysAttachController {
      * @param attachId 附件id
      */
     @GetMapping("/preview")
-    public Response<String> preview(@NotNull(message = "attach.notnull.id") Long attachId) throws Exception {
+    public Response<String> preview(@NotNull(message = "{attach.notnull.id}") Long attachId) throws Exception {
         return Response.success(sysAttachService.preview(attachId));
     }
 
@@ -73,9 +73,9 @@ public class SysAttachController {
      */
     @GetMapping("/list")
     public Response<List<SysAttach>> list(
-            @NotNull(message = "attach.notnull.master") Long masterId,
-            @NotNull(message = "attach.notnull.group") String attachGroup,
-            @NotNull(message = "attach.notnull.type") String attachType) throws Exception {
+            @NotNull(message = "{attach.notnull.master}") Long masterId,
+            @NotNull(message = "{attach.notnull.group}") String attachGroup,
+            @NotNull(message = "{attach.notnull.type}") String attachType) throws Exception {
         return Response.success(sysAttachService.list(masterId, attachGroup, attachType));
     }
 
@@ -85,7 +85,7 @@ public class SysAttachController {
      * @param attachId 附件id
      */
     @GetMapping("/delete")
-    public Response<Void> delete(@NotNull(message = "attach.notnull.id") Long attachId) throws Exception {
+    public Response<Void> delete(@NotNull(message = "{attach.notnull.id}") Long attachId) throws Exception {
         sysAttachService.delete(attachId);
         return Response.success();
     }

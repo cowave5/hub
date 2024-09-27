@@ -70,7 +70,7 @@ public class OAuthController {
     @PreAuthorize("@permit.hasPermit('oauth:gitlab:user:edit')")
     @GetMapping("/user/role/change")
     public Response<Void> changeUserRole(
-            @NotNull(message = "user.notnull.id") Long userId, @NotNull(message = "role.notnull.id") Long roleId) {
+            @NotNull(message = "{user.notnull.id}") Long userId, @NotNull(message = "{role.notnull.id}") Long roleId) {
         oauthService.changeUserRole(userId, roleId);
         return Response.success();
     }
@@ -82,7 +82,7 @@ public class OAuthController {
      */
     @PreAuthorize("@permit.hasPermit('oauth:gitlab:user:delete')")
     @GetMapping("/user/delete")
-    public Response<Void> deleteUser(@NotNull(message = "user.notnull.id") Long userId) {
+    public Response<Void> deleteUser(@NotNull(message = "{user.notnull.id}") Long userId) {
         oauthService.deleteUser(userId);
         return Response.success();
     }

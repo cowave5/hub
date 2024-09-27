@@ -94,7 +94,7 @@ public class SysMenuController{
      * @param menuId 菜单id
      */
     @GetMapping("/delete")
-    public Response<Void> delete(@NotNull(message = "menu.notnull.id") Long menuId) {
+    public Response<Void> delete(@NotNull(message = "{menu.notnull.id}") Long menuId) {
     	sysMenuService.delete(menuId);
         return Response.success();
     }

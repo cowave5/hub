@@ -53,7 +53,7 @@ public class SysNoticeRead extends AccessUser {
     /**
      * 公告id
      */
-    @NotNull(message = "notice.notnull.id")
+    @NotNull(message = "{notice.notnull.id}")
     private Long noticeId;
 
     /**

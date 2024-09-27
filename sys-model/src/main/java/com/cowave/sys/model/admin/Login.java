@@ -26,14 +26,14 @@ public class Login {
     /**
      * 用户名
      */
-	@NotBlank(message = "user.notnull.account")
+	@NotBlank(message = "{user.notnull.account}")
     private String userAccount;
 
     /**
      * 用户密码
      */
     @JSONField(serialize = false)
-    @NotBlank(message = "user.notnull.passwd")
+    @NotBlank(message = "{user.notnull.passwd}")
     private String passWord;
 
     /**

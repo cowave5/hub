@@ -124,7 +124,7 @@ public class SysPostController {
 	@Operation(type = "admin_post", action = "delete", desc = "删除岗位", content = Content.RESP)
 	@PreAuthorize("@permit.hasPermit('sys:post:delete')")
 	@GetMapping("/delete")
-	public Response<List<SysPost>> delete(@NotNull(message = "post.notnull.id") Long[] postId) {
+	public Response<List<SysPost>> delete(@NotNull(message = "{post.notnull.id}") Long[] postId) {
 		return Response.success(sysPostService.delete(postId));
 	}
 

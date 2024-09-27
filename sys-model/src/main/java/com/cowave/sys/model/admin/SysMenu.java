@@ -58,7 +58,7 @@ public class SysMenu extends AccessUser {
 	/**
 	 * 菜单名称
 	 */
-	@NotBlank(message = "menu.notnull.name")
+	@NotBlank(message = "{menu.notnull.name}")
 	@ExcelProperty("菜单名称")
 	private String menuName;
 
@@ -96,7 +96,7 @@ public class SysMenu extends AccessUser {
 	/**
 	 * 菜单类型
 	 */
-	@NotBlank(message = "menu.notnull.type")
+	@NotBlank(message = "{menu.notnull.type}")
 	@ExcelProperty("菜单类型")
 	private String menuType;
 

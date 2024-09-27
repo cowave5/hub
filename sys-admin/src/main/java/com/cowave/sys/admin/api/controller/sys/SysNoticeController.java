@@ -85,7 +85,7 @@ public class SysNoticeController {
      * @param noticeId 公告ID
      */
     @GetMapping("/delete")
-    public Response<Void> delete(@NotNull(message = "notice.notnull.id") Long[] noticeId) throws Exception {
+    public Response<Void> delete(@NotNull(message = "{notice.notnull.id}") Long[] noticeId) throws Exception {
         sysNoticeService.delete(noticeId);
         return Response.success();
     }
@@ -107,7 +107,7 @@ public class SysNoticeController {
      * @param noticeId 公告ID
      */
     @GetMapping(value = "/read/list")
-    public Response<Response.Page<SysNoticeRead>> readList(@NotNull(message = "notice.notnull.id") Long noticeId) {
+    public Response<Response.Page<SysNoticeRead>> readList(@NotNull(message = "{notice.notnull.id}") Long noticeId) {
         return Response.page(sysNoticeService.readList(noticeId));
     }
 
@@ -136,7 +136,7 @@ public class SysNoticeController {
      * @param noticeId 公告ID
      */
     @GetMapping(value = "/msg/back")
-    public Response<Void> msgBack(@NotNull(message = "notice.notnull.id") Long noticeId, String readBack) {
+    public Response<Void> msgBack(@NotNull(message = "{notice.notnull.id}") Long noticeId, String readBack) {
         sysNoticeService.msgBack(noticeId, readBack);
         return Response.success();
     }
@@ -147,7 +147,7 @@ public class SysNoticeController {
      * @param noticeId 公告ID
      */
     @GetMapping("/msg/delete")
-    public Response<Void> msgDelete(@NotNull(message = "notice.notnull.id") Long noticeId) {
+    public Response<Void> msgDelete(@NotNull(message = "{notice.notnull.id}") Long noticeId) {
         sysNoticeService.msgDelete(noticeId);
         return Response.success();
     }

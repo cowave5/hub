@@ -61,7 +61,7 @@ public class SysDept extends AccessUser {
 	/**
 	 * 部门名称
 	 */
-	@NotBlank(message = "dept.notnull.name")
+	@NotBlank(message = "{dept.notnull.name}")
 	@ColumnWidth(50)
 	@ExcelProperty("部门名称")
 	private String deptName;
@@ -142,7 +142,7 @@ public class SysDept extends AccessUser {
 	/**
 	 * 上级部门Id列表
 	 */
-	@NotEmpty(message = "dept.notnull.prentIds")
+	@NotEmpty(message = "{dept.notnull.prentIds}")
 	private List<Long> parentIds;
 
 	/**

@@ -34,13 +34,13 @@ public class UserRegister {
     /**
      * 用户账号
      */
-    @NotBlank(message = "user.notnull.account")
+    @NotBlank(message = "{user.notnull.account}")
     private String userAccount;
 
     /**
      * 用户邮箱
      */
-    @NotBlank(message = "user.notnull.email")
+    @NotBlank(message = "{user.notnull.email}")
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "user.invalid.email")
     private String userEmail;
 

@@ -25,7 +25,7 @@ public class UserAuthed {
     /**
      * 角色id
      */
-    @NotNull(message = "role.notnull.id")
+    @NotNull(message = "{role.notnull.id}")
     private Long roleId;
 
     /**

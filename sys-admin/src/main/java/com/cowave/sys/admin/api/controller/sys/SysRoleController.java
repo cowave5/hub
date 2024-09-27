@@ -89,7 +89,7 @@ public class SysRoleController {
      */
     @Operation(type = "admin_role", action = "delete", desc = "删除角色", content = Content.RESP)
     @GetMapping("/delete")
-    public Response<List<SysRole>> delete(@NotNull(message = "role.notnull.id") Long[] roleId) {
+    public Response<List<SysRole>> delete(@NotNull(message = "{role.notnull.id}") Long[] roleId) {
         return Response.success(sysRoleService.delete(roleId));
     }
 

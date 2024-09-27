@@ -117,7 +117,7 @@ public class SysDeptController {
     @Operation(type = "admin_dept", action = "delete", desc = "删除部门", content = Content.RESP)
     @PreAuthorize("@permit.hasPermit('sys:dept:delete')")
     @GetMapping("/delete")
-    public Response<List<SysDept>> delete(@NotNull(message = "dept.notnull.id") Long[] deptId) throws Exception {
+    public Response<List<SysDept>> delete(@NotNull(message = "{dept.notnull.id}") Long[] deptId) throws Exception {
         return Response.success(sysDeptService.delete(deptId));
     }
 

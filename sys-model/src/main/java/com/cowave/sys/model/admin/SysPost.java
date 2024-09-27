@@ -76,7 +76,7 @@ public class SysPost extends AccessUser {
 	/**
 	 * 岗位名称
 	 */
-	@NotBlank(message = "post.notnull.name")
+	@NotBlank(message = "{post.notnull.name}")
 	@ExcelProperty(value = "岗位名称")
 	private String postName;
 
