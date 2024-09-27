@@ -22,8 +22,6 @@ import com.cowave.sys.admin.api.mapper.SysAlarmMapper;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 /**
  *
  * @author shanhuiming
@@ -60,7 +58,7 @@ public class SysAlarmServiceImpl implements SysAlarmService, AlarmHandler<SysAla
 
 	@Override
 	public void typeDelete(Long id) {
-	    Asserts.isNull(sysAlarmMapper.selectOne(id), "forbid.delete.alarm.type");
+	    Asserts.isNull(sysAlarmMapper.selectOne(id), "{forbid.delete.alarm.type}");
 	    sysAlarmMapper.deleteType(id);
 	}
 

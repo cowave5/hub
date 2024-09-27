@@ -31,7 +31,7 @@ public class OAuthControllerTest extends SpringTest {
     @BeforeEach
     public void beforeEach() {
         mockMvc = MockMvcBuilders.standaloneSetup(oAuthController)
-                .addFilter(new AccessFilter(transactionIdSetter, accessIdGenerator, messageHelper))
+                .addFilter(new AccessFilter(transactionIdSetter, accessIdGenerator))
                 .addFilter(new TokenAuthenticationFilter(tokenService))
                 .setControllerAdvice(accessAdvice).build();
     }

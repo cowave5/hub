@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
 import cn.hutool.core.lang.tree.Tree;
-import com.cowave.commons.framework.helper.MessageHelper;
+import com.cowave.commons.framework.helper.Messages;
 import com.cowave.commons.framework.helper.operation.Operation;
 import com.cowave.commons.framework.helper.operation.Operation.Content;
 import com.cowave.commons.framework.support.excel.valid.ExcelImportValidListener;
@@ -50,8 +50,6 @@ public class SysUserController {
 	private final SysUserCaches sysUserCaches;
 
 	private final SysUserService sysUserService;
-
-	private final MessageHelper message;
 
 	/**
 	 * 刷新缓存
@@ -219,9 +217,9 @@ public class SysUserController {
 	public Response<Void> importUser(MultipartFile file, boolean updateSupport) throws Exception {
 		try(InputStream inputStream = file.getInputStream()){
 			EasyExcel.read(inputStream).head(SysUser.class).registerReadListener(
-					new ExcelImportValidListener<>(sysUserService, updateSupport, message, true)).sheet().doReadSync();
+					new ExcelImportValidListener<>(sysUserService, updateSupport)).sheet().doReadSync();
 		}
-		return Response.success(null, message.msg("import.success.msg"));
+		return Response.success(null, Messages.get("import.success.msg"));
 	}
 
 	/**

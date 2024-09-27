@@ -64,7 +64,7 @@ public class SysAttachServiceImpl implements SysAttachService {
     @Override
     public String preview(Long attachId) throws Exception {
         SysAttach sysAttach = sysAttachMapper.info(attachId);
-        Asserts.notNull(sysAttach, "attach.notexist");
+        Asserts.notNull(sysAttach, "{attach.notexist}");
         return preview(sysAttach);
     }
 
@@ -99,7 +99,7 @@ public class SysAttachServiceImpl implements SysAttachService {
     @Override
     public void download(HttpServletResponse response, Long attachId) throws Exception {
         SysAttach sysAttach = sysAttachMapper.info(attachId);
-        Asserts.notNull(sysAttach, "attach.notexist");
+        Asserts.notNull(sysAttach, "{attach.notexist}");
         fileService.minioDownload(response, sysAttach.getAttachGroup(), sysAttach.getAttachPath(), sysAttach.getAttachName());
     }
 

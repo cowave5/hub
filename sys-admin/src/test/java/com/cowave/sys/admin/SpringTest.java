@@ -14,11 +14,9 @@ import com.cowave.commons.framework.filter.access.TransactionIdSetter;
 import com.cowave.commons.framework.filter.security.AccessToken;
 import com.cowave.commons.framework.filter.security.Permission;
 import com.cowave.commons.framework.filter.security.TokenService;
-import com.cowave.commons.framework.helper.MessageHelper;
 import com.cowave.commons.framework.support.redis.RedisHelper;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
@@ -87,9 +85,6 @@ public class SpringTest {
 
     @Autowired(required = false)
     protected TransactionIdSetter transactionIdSetter;
-
-    @Autowired
-    protected MessageHelper messageHelper;
 
     @Autowired
     protected AccessAdvice accessAdvice;

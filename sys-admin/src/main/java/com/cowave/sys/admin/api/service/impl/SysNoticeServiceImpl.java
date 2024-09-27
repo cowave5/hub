@@ -72,12 +72,12 @@ public class SysNoticeServiceImpl implements SysNoticeService {
 
     @Override
     public void edit(SysNotice sysNotice) throws Exception {
-        Asserts.notNull(sysNotice.getNoticeId(), "notice.notnull.id");
+        Asserts.notNull(sysNotice.getNoticeId(), "{notice.notnull.id}");
         SysNotice notice = sysNoticeMapper.info(sysNotice.getNoticeId());
-        Asserts.notNull(notice, "notice.notexist", sysNotice.getNoticeId());
-        Asserts.equals(notice.getNoticeStatus(), SysNotice.STATUS_DRAFT, "notice.only.edit.unpublish");
+        Asserts.notNull(notice, "{notice.notexist}", sysNotice.getNoticeId());
+        Asserts.equals(notice.getNoticeStatus(), SysNotice.STATUS_DRAFT, "{notice.only.edit.unpublish}");
         if(!Access.userIsAdmin()){
-            Asserts.equals(notice.getCreateUser(), Access.userId(), "notice.only.edit.self");
+            Asserts.equals(notice.getCreateUser(), Access.userId(), "{notice.only.edit.self}");
         }
         sysNoticeMapper.update(sysNotice);
         filterAttaches(sysNotice);
@@ -118,7 +118,7 @@ public class SysNoticeServiceImpl implements SysNoticeService {
             return;
         }
         if(!Access.userIsAdmin()){
-            Asserts.equals(notice.getCreateUser(), Access.userId(), "notice.only.delete.self");
+            Asserts.equals(notice.getCreateUser(), Access.userId(), "{notice.only.delete.self}");
         }
         if(SysNotice.STATUS_DRAFT == notice.getNoticeStatus()){ // 删除草稿
             sysNoticeMapper.delete(noticeId);
@@ -141,9 +141,9 @@ public class SysNoticeServiceImpl implements SysNoticeService {
     @Override
     public void publish(Long noticeId) {
         SysNotice notice = sysNoticeMapper.info(noticeId);
-        Asserts.notNull(notice, "notice.notexist", noticeId);
+        Asserts.notNull(notice, "{notice.notexist}", noticeId);
         if(!Access.userIsAdmin()){
-            Asserts.equals(notice.getCreateUser(), Access.userId(), "notice.only.publish.self");
+            Asserts.equals(notice.getCreateUser(), Access.userId(), "{notice.only.publish.self}");
         }
         if(SysNotice.STATUS_DRAFT != notice.getNoticeStatus()){
             return;

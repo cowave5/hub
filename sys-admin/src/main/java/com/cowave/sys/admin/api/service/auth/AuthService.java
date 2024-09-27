@@ -90,14 +90,14 @@ public class AuthService {
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userAccount, passWord));
         } catch (BadCredentialsException e) {
-            throw new AssertsException("auth.passwd");
+            throw new AssertsException("{auth.passwd}");
         } catch (InternalAuthenticationServiceException e) {
         	Throwable cause = e.getCause();
             if(cause != null){
                 if(cause instanceof UserNotFoundException) {
                     AccessToken accessToken = ldapService.authenticate(userAccount, passWord);
                     if(accessToken == null){
-                        throw new AssertsException("user.notexist").args(userAccount);
+                        throw new AssertsException("{user.notexist}").args(userAccount);
                     }
                     return accessToken;
                 }
@@ -105,9 +105,9 @@ public class AuthService {
                     throw (AssertsException)cause;
                 }
             }
-        	throw new AssertsException("auth.failed", e);
+        	throw new AssertsException("{auth.failed}", e);
         } catch (Exception e) {
-            throw new AssertsException("auth.failed", e);
+            throw new AssertsException("{auth.failed}", e);
         }
         return (AccessToken) authentication.getPrincipal();
     }

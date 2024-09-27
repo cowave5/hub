@@ -32,7 +32,7 @@ public class SysDeptControllerTest extends SpringTest {
     @BeforeEach
     public void beforeEach() {
         mockMvc = MockMvcBuilders.standaloneSetup(sysDeptController)
-                .addFilter(new AccessFilter(transactionIdSetter, accessIdGenerator, messageHelper))
+                .addFilter(new AccessFilter(transactionIdSetter, accessIdGenerator))
                 .addFilter(new TokenAuthenticationFilter(tokenService))
                 .setControllerAdvice(accessAdvice).build();
     }

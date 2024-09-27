@@ -63,8 +63,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public void resetPasswd(UserProfile userProfile) {
         String passwd = profileMapper.queryPasswd(Access.userId());
-        Asserts.isTrue(passwordEncoder.matches(userProfile.getOldPasswd(), passwd), "user.pwd.failed");
-        Asserts.isFalse(passwordEncoder.matches(userProfile.getNewPasswd(), passwd), "user.pwd.repeat");
+        Asserts.isTrue(passwordEncoder.matches(userProfile.getOldPasswd(), passwd), "{user.pwd.failed}");
+        Asserts.isFalse(passwordEncoder.matches(userProfile.getNewPasswd(), passwd), "{user.pwd.repeat}");
         profileMapper.resetPasswd(Access.userId(), passwordEncoder.encode(userProfile.getNewPasswd()));
     }
 }

@@ -9,7 +9,7 @@
 package com.cowave.sys.admin.api.service.auth.captcha;
 
 import cn.hutool.core.util.IdUtil;
-import com.cowave.commons.framework.helper.MessageHelper;
+import com.cowave.commons.framework.helper.Messages;
 import com.cowave.commons.framework.support.redis.RedisHelper;
 import com.cowave.commons.tools.Asserts;
 import com.cowave.sys.admin.api.caches.SysConfigCaches;
@@ -72,8 +72,6 @@ public class CaptchaService {
 
     private final SysConfigCaches sysConfigCaches;
 
-    private final MessageHelper messageHelper;
-
     private final RedisHelper redisHelper;
 
     private final JavaMailSender mail;
@@ -120,8 +118,8 @@ public class CaptchaService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom("cowaveAdmin@163.com");
         mailMessage.setTo(email);
-        mailMessage.setSubject(messageHelper.msg("captcha.title"));
-        mailMessage.setText(messageHelper.msg("captcha.msg", String.valueOf(code), CAPTCHA_EXPIRATION));
+        mailMessage.setSubject(Messages.get("captcha.title"));
+        mailMessage.setText(Messages.getWithArgs("captcha.msg", String.valueOf(code), CAPTCHA_EXPIRATION));
         mail.send(mailMessage);
         redisHelper.putExpireValue(CAPTCHA_KEY + code, email, CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
     }
@@ -130,17 +128,17 @@ public class CaptchaService {
         boolean captchaOnOff = sysConfigCaches.getValue("sys.account.captchaOnOff");
         if(captchaOnOff){
             String captcha = redisHelper.getValue(CAPTCHA_KEY + login.getCaptchaId());
-            Asserts.notNull(captcha, "captcha.expired");
-            Asserts.equals(captcha, login.getCaptcha(), "captcha.failed");
+            Asserts.notNull(captcha, "{captcha.expired}");
+            Asserts.equals(captcha, login.getCaptcha(), "{captcha.failed}");
         }
     }
 
     public void validEmail(UserRegister userRegister){
         boolean registerOnOff = sysConfigCaches.getValue("sys.account.registerOnOff");
-        Asserts.isTrue(registerOnOff, "register.disable");
+        Asserts.isTrue(registerOnOff, "{register.disable}");
         String email = redisHelper.getValue(CAPTCHA_KEY + userRegister.getCaptcha());
-        Asserts.notNull(email, "captcha.expired");
-        Asserts.equals(email, userRegister.getUserEmail(), "register.failed");
+        Asserts.notNull(email, "{captcha.expired}");
+        Asserts.equals(email, userRegister.getUserEmail(), "{register.failed}");
     }
 
     private static String encode(byte[] binaryData) {

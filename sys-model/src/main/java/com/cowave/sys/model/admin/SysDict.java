@@ -192,11 +192,11 @@ public class SysDict extends AccessUser implements Dict {
 		try {
 			Class<?> parserClass = Class.forName(valueParser);
 			if (!DictValueParser.class.isAssignableFrom(parserClass)) {
-				throw new AssertsException("config.invalid.parser").language(true);
+				throw new AssertsException("{config.invalid.parser}");
 			}
 			return (DictValueParser) parserClass.getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
-			throw new AssertsException("config.notexist.parser").language(true);
+			throw new AssertsException("{config.notexist.parser}");
 		}
 	}
 }

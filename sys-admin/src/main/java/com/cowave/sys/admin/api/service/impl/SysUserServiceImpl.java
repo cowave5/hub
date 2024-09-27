@@ -66,11 +66,11 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(SysUser sysUser) {
-    	Asserts.notNull(sysUser.getUserPasswd(), "user.notnull.passwd");
+    	Asserts.notNull(sysUser.getUserPasswd(), "{user.notnull.passwd}");
     	sysUser.setUserPasswd(bcryptPasswordEncoder.encode(sysUser.getUserPasswd()));
     	// 新增用户
     	sysUserMapper.insert(sysUser);
-    	Asserts.notNull(sysUser.getUserId(), "user.conflict.account", sysUser.getUserAccount());
+    	Asserts.notNull(sysUser.getUserId(), "{user.conflict.account}", sysUser.getUserAccount());
     	// 用户角色
 		inputUserRoles(sysUser, false);
     	// 部门岗位
@@ -84,7 +84,7 @@ public class SysUserServiceImpl implements SysUserService {
     public SysUser edit(SysUser sysUser) {
 		SysUser preUser = assertEditable(sysUser.getUserId());
     	int accountsCount = sysUserMapper.countAccounts(sysUser.getUserId(), sysUser.getUserAccount());
-    	Asserts.equals(0, accountsCount, "user.conflict.account", sysUser.getUserAccount());
+    	Asserts.equals(0, accountsCount, "{user.conflict.account}", sysUser.getUserAccount());
     	// 更新用户
     	sysUserMapper.update(sysUser);
     	// 用户角色
@@ -97,10 +97,10 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
 	private SysUser assertEditable(Long userId){
-		Asserts.notNull(userId, "user.notnull.id");
+		Asserts.notNull(userId, "{user.notnull.id}");
 		SysUser preUser = sysUserMapper.info(userId);
-		Asserts.notNull(preUser, "user.notexist", userId);
-		Asserts.notEquals(1, preUser.getReadOnly(), "user.forbid.edit.readonly", preUser.getUserAccount());
+		Asserts.notNull(preUser, "{user.notexist}", userId);
+		Asserts.notEquals(1, preUser.getReadOnly(), "{user.forbid.edit.readonly}", preUser.getUserAccount());
 		return preUser;
 	}
 
@@ -135,7 +135,7 @@ public class SysUserServiceImpl implements SysUserService {
 			if(overwrite){
 				List<Long> childIds = sysUserMapper.childIds(sysUser.getUserId());
 				childIds.add(sysUser.getUserId());
-				Asserts.isTrue(Collections.disjoint(childIds, parentIds), "user.tree.cycle");
+				Asserts.isTrue(Collections.disjoint(childIds, parentIds), "{user.tree.cycle}");
 			}
 			sysUserMapper.insertUserParents(sysUser.getUserId(), parentIds);
 		}
@@ -159,8 +159,8 @@ public class SysUserServiceImpl implements SysUserService {
 		if(preUser == null) {
 			return null;
 		}
-		Asserts.notEquals(Access.userAccount(), preUser.getUserAccount(), "user.forbid.delete.self");
-		Asserts.notEquals(1, preUser.getReadOnly(), "user.forbid.delete.readonly");
+		Asserts.notEquals(Access.userAccount(), preUser.getUserAccount(), "{user.forbid.delete.self}");
+		Asserts.notEquals(1, preUser.getReadOnly(), "{user.forbid.delete.readonly}");
 		// 删除用户
 		sysUserMapper.delete(userId);
 		// 用户角色
@@ -183,7 +183,7 @@ public class SysUserServiceImpl implements SysUserService {
 	@Override
 	public void changePasswd(SysUser sysUser) {
 		assertEditable(sysUser.getUserId());
-		Asserts.notNull(sysUser.getUserPasswd(), "user.notnull.passwd");
+		Asserts.notNull(sysUser.getUserPasswd(), "{user.notnull.passwd}");
 		sysUser.setUserPasswd(bcryptPasswordEncoder.encode(sysUser.getUserPasswd()));
 		sysUserMapper.changePasswd(sysUser);
 	}

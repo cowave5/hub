@@ -75,10 +75,10 @@ public class SysMenuServiceImpl implements SysMenuService {
 
 	@Override
 	public void edit(SysMenu sysMenu) {
-		Asserts.notNull(sysMenu.getMenuId(), "menu.notnull.id");
+		Asserts.notNull(sysMenu.getMenuId(), "{menu.notnull.id}");
 		SysMenu preMenu = sysMenuMapper.info(sysMenu.getMenuId());
-		Asserts.notNull(preMenu, "menu.notexist", sysMenu.getMenuId());
-		Asserts.notEquals(1, preMenu.getReadOnly(), "menu.forbid.edit.readonly");
+		Asserts.notNull(preMenu, "{menu.notexist}", sysMenu.getMenuId());
+		Asserts.notEquals(1, preMenu.getReadOnly(), "{menu.forbid.edit.readonly}");
 		if(!"C".equals(sysMenu.getMenuType())){
 			sysMenu.setComponent(null);
 		}
@@ -91,7 +91,7 @@ public class SysMenuServiceImpl implements SysMenuService {
 		if(preMenu == null) {
 			return;
 		}
-		Asserts.notEquals(1, preMenu.getReadOnly(), "menu.forbid.delete.readonly");
+		Asserts.notEquals(1, preMenu.getReadOnly(), "{menu.forbid.delete.readonly}");
 		// 删除自己以及子菜单的角色
 		sysMenuMapper.deleteMenus(menuId);
 		// 删除自己以及子菜单
@@ -115,13 +115,13 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public void grant(RoleAuthed roleAuthed) {
-        Asserts.notNull(roleAuthed.getRoleIds(), "menu.notnull.roleIds");
+        Asserts.notNull(roleAuthed.getRoleIds(), "{menu.notnull.roleIds}");
         sysMenuMapper.grant(roleAuthed);
     }
 
     @Override
     public void cancel(RoleAuthed roleAuthed) {
-        Asserts.notNull(roleAuthed.getRoleIds(), "menu.notnull.roleIds");
+        Asserts.notNull(roleAuthed.getRoleIds(), "{menu.notnull.roleIds}");
         sysMenuMapper.cancel(roleAuthed);
     }
 }

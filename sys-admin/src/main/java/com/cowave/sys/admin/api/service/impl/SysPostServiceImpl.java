@@ -54,10 +54,10 @@ public class SysPostServiceImpl implements SysPostService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public SysPost edit(SysPost sysPost) {
-        Asserts.notNull(sysPost.getPostId(), "post.notnull.id");
+        Asserts.notNull(sysPost.getPostId(), "{post.notnull.id}");
         SysPost prePost = sysPostMapper.info(sysPost.getPostId());
-        Asserts.notNull(prePost, "post.notexist", sysPost.getPostId());
-        Asserts.notEquals(1, prePost.getReadOnly(), "post.forbid.edit.readonly", prePost.getPostName());
+        Asserts.notNull(prePost, "{post.notexist}", sysPost.getPostId());
+        Asserts.notEquals(1, prePost.getReadOnly(), "{post.forbid.edit.readonly}", prePost.getPostName());
         // 更新岗位
         sysPostMapper.update(sysPost);
         // 上级岗位
@@ -74,7 +74,7 @@ public class SysPostServiceImpl implements SysPostService {
             if(overwrite){
                 List<Long> childIds = sysPostMapper.childIds(sysPost.getPostId());
                 childIds.add(sysPost.getPostId());
-                Asserts.isFalse(childIds.contains(parentId), "post.tree.cycle");
+                Asserts.isFalse(childIds.contains(parentId), "{post.tree.cycle}");
             }
             sysPostMapper.insertPostParent(sysPost.getPostId(), parentId);
         }
@@ -83,8 +83,8 @@ public class SysPostServiceImpl implements SysPostService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public List<SysPost> delete(Long[] postId) {
-        Asserts.equals(0, sysPostMapper.countUserByIdArray(postId), "post.forbid.delete.hasuser");
-        Asserts.equals(0, sysPostMapper.countReadOnlyByIdArray(postId), "post.forbid.delete.readonly");
+        Asserts.equals(0, sysPostMapper.countUserByIdArray(postId), "{post.forbid.delete.hasuser}");
+        Asserts.equals(0, sysPostMapper.countReadOnlyByIdArray(postId), "{post.forbid.delete.readonly}");
         List<SysPost> list = sysPostMapper.queryByIdArray(postId);
         // 删除岗位
         sysPostMapper.delete(postId);

@@ -54,9 +54,9 @@ public class SysConfigServiceImpl implements SysConfigService {
     @Override
     public void edit(SysConfig sysConfig) throws Exception {
         // 根据id修改，configKey可以改变
-        Asserts.notNull(sysConfig.getConfigId(), "config.notnull.id");
+        Asserts.notNull(sysConfig.getConfigId(), "{config.notnull.id}");
         SysConfig preConfig = sysConfigMapper.info(sysConfig.getConfigId());
-        Asserts.notNull(preConfig, "config.notexist", sysConfig.getConfigId());
+        Asserts.notNull(preConfig, "{config.notexist}", sysConfig.getConfigId());
         // 校验parser
         sysConfigMapper.update(sysConfig);
         sysConfigCaches.putValue(sysConfig);

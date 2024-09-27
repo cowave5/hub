@@ -61,7 +61,7 @@ public class FlowModelService {
     public void add(FlowModel flowModel) throws JsonProcessingException {
         ModelQuery modelQuery = repositoryService.createModelQuery();
         long count = modelQuery.modelKey(flowModel.getKey()).count();
-        Asserts.isTrue(count == 0, "flow.key.duplicate");
+        Asserts.isTrue(count == 0, "{flow.key.duplicate}");
 
         Model model = repositoryService.newModel();
         flowModel.fillModel(model);

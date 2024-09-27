@@ -74,7 +74,7 @@ public class LdapServiceImpl implements LdapService {
                     baseEnvironment -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
             source.afterPropertiesSet();
         }catch(Exception e){
-            throw new AssertsException("ldap.invalid", e);
+            throw new AssertsException("{ldap.invalid}", e);
         }
         return new LdapTemplate(source);
     }
@@ -90,7 +90,7 @@ public class LdapServiceImpl implements LdapService {
         LdapTemplate ldapTemplate = getLdapTemplate(ldapConfig);
         String filter = "(&(objectClass=" + ldapConfig.getUserClass() + ")(" + ldapConfig.getAccountProperty() + "=" + userAccount + "))";
         boolean isAuthenticated = ldapTemplate.authenticate("", filter, passWord);
-        Asserts.isTrue(isAuthenticated, "auth.passwd");
+        Asserts.isTrue(isAuthenticated, "{auth.passwd}");
 
         // 首次Ldap认证成功，创建SysUser
         List<LdapUser> list = ldapTemplate.search(
@@ -152,7 +152,7 @@ public class LdapServiceImpl implements LdapService {
     @Override
     public void changeStatus(Integer id, Integer status) {
         if(status == 1){
-            Asserts.equals(0, ldapMapper.enableCount(id), "ldap.enable.one");
+            Asserts.equals(0, ldapMapper.enableCount(id), "{ldap.enable.one}");
         }
         ldapMapper.changeStatus(id, status);
     }
@@ -166,10 +166,10 @@ public class LdapServiceImpl implements LdapService {
             list = ldapTemplate.search(ldapConfig.getUserDn(),
                     filter, SearchControls.SUBTREE_SCOPE, new LdapAttributesMapper(ldapConfig));
         }catch(Exception e){
-            throw new AssertsException("ldap.failed.exception", e);
+            throw new AssertsException("{ldap.failed.exception}", e);
         }
         if(list.isEmpty()){
-            throw new AssertsException("ldap.failed.user");
+            throw new AssertsException("{ldap.failed.user}");
         }
     }
 

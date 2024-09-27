@@ -49,7 +49,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     public void add(SysRole sysRole) {
     	int codeCount = sysRoleMapper.countRoleCode(sysRole.getRoleCode(), null);
-    	Asserts.equals(0, codeCount, "role.conflict.code", sysRole.getRoleCode());
+    	Asserts.equals(0, codeCount, "{role.conflict.code}", sysRole.getRoleCode());
     	// 新增角色
     	sysRoleMapper.insert(sysRole);
     }
@@ -57,13 +57,13 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public SysRole edit(SysRole sysRole) {
-    	Asserts.notNull(sysRole.getRoleId(), "role.notnull.id");
+    	Asserts.notNull(sysRole.getRoleId(), "{role.notnull.id}");
     	int codeCount = sysRoleMapper.countRoleCode(sysRole.getRoleCode(), sysRole.getRoleId());
-    	Asserts.equals(0, codeCount, "role.conflict.code", sysRole.getRoleCode());
+    	Asserts.equals(0, codeCount, "{role.conflict.code}", sysRole.getRoleCode());
 
     	SysRole preRole = sysRoleMapper.info(sysRole.getRoleId());
-    	Asserts.notNull(preRole, "role.notexist", sysRole.getRoleId());
-    	Asserts.notEquals(1, preRole.getReadOnly(), "role.forbid.edit.readonly", preRole.getRoleName());
+    	Asserts.notNull(preRole, "{role.notexist}", sysRole.getRoleId());
+    	Asserts.notEquals(1, preRole.getReadOnly(), "{role.forbid.edit.readonly}", preRole.getRoleName());
         // 更新角色
     	sysRoleMapper.update(sysRole);
     	return preRole;
@@ -72,7 +72,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public List<SysRole> delete(Long[] roleId) {
-        Asserts.equals(0, sysRoleMapper.countReadOnlyByIdArray(roleId), "role.forbid.delete.readonly");
+        Asserts.equals(0, sysRoleMapper.countReadOnlyByIdArray(roleId), "{role.forbid.delete.readonly}");
         List<SysRole> list = sysRoleMapper.queryByIdArray(roleId);
         // 删除角色
     	sysRoleMapper.deleteByIdArray(roleId);
@@ -86,10 +86,10 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void changeMenus(SysRole sysRole) {
-        Asserts.notNull(sysRole.getRoleId(), "role.notnull.id");
+        Asserts.notNull(sysRole.getRoleId(), "{role.notnull.id}");
         SysRole preRole = sysRoleMapper.info(sysRole.getRoleId());
-        Asserts.notNull(preRole, "role.notexist", sysRole.getRoleId());
-        Asserts.notEquals(1, preRole.getReadOnly(), "role.forbid.edit.readonly", preRole.getRoleName());
+        Asserts.notNull(preRole, "{role.notexist}", sysRole.getRoleId());
+        Asserts.notEquals(1, preRole.getReadOnly(), "{role.forbid.edit.readonly}", preRole.getRoleName());
 
         sysRoleMapper.deleteRoleMenus(sysRole.getRoleId());
         sysRoleMapper.insertRoleMenus(sysRole.getRoleId(), sysRole.getMenuIds());
@@ -107,13 +107,13 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public void grant(UserAuthed userAuthed) {
-        Asserts.notNull(userAuthed.getUserIds(), "role.notnull.userIds");
+        Asserts.notNull(userAuthed.getUserIds(), "{role.notnull.userIds}");
         sysRoleMapper.grant(userAuthed);
     }
 
     @Override
     public void cancel(UserAuthed userAuthed) {
-        Asserts.notNull(userAuthed.getUserIds(), "role.notnull.userIds");
+        Asserts.notNull(userAuthed.getUserIds(), "{role.notnull.userIds}");
         sysRoleMapper.cancel(userAuthed);
     }
 

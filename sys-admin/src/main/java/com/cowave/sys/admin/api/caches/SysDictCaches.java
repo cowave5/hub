@@ -79,7 +79,7 @@ public class SysDictCaches implements ApplicationRunner {
             }
             sysDict.setDictValue(parser.parse(String.valueOf(sysDict.getDictValue()), sysDict.getValueParam()));
         }catch(Exception e){
-            throw new AssertsException("dict.parse.failed");
+            throw new AssertsException("{dict.parse.failed}");
         }
     }
 

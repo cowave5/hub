@@ -60,10 +60,10 @@ public class SysDeptServiceImpl implements SysDeptService {
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public SysDept edit(SysDept sysDept) throws Exception {
-		Asserts.notNull(sysDept.getDeptId(), "dept.notnull.id");
+		Asserts.notNull(sysDept.getDeptId(), "{dept.notnull.id}");
 		SysDept preDept = sysDeptMapper.info(sysDept.getDeptId());
-		Asserts.notNull(preDept, "dept.notexist");
-		Asserts.equals(0, preDept.getReadOnly(), "dept.forbid.edit.readonly");
+		Asserts.notNull(preDept, "{dept.notexist}");
+		Asserts.equals(0, preDept.getReadOnly(), "{dept.forbid.edit.readonly}");
 		// 更新部门
 		sysDeptMapper.update(sysDept);
 		// 上级部门
@@ -80,7 +80,7 @@ public class SysDeptServiceImpl implements SysDeptService {
 			if(overwrite){
 				List<Long> childIds = sysDeptMapper.childIds(sysDept.getDeptId());
 				childIds.add(sysDept.getDeptId());
-				Asserts.isTrue(Collections.disjoint(childIds, parentIds), "user.tree.cycle");
+				Asserts.isTrue(Collections.disjoint(childIds, parentIds), "{user.tree.cycle}");
 			}
 			sysDeptMapper.insertDeptParents(sysDept.getDeptId(), parentIds);
 		}
@@ -89,8 +89,8 @@ public class SysDeptServiceImpl implements SysDeptService {
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public List<SysDept> delete(Long[] deptId) throws Exception {
-		Asserts.equals(0, sysDeptMapper.countReadOnlyByIdArray(deptId), "dept.forbid.delete.readonly");
-		Asserts.equals(0, sysDeptMapper.countChildByIdArray(deptId), "dept.forbid.delete.haschild");
+		Asserts.equals(0, sysDeptMapper.countReadOnlyByIdArray(deptId), "{dept.forbid.delete.readonly}");
+		Asserts.equals(0, sysDeptMapper.countChildByIdArray(deptId), "{dept.forbid.delete.haschild}");
 		List<SysDept> list = sysDeptMapper.queryByIdArray(deptId);
 		// 删除部门
 		sysDeptMapper.deleteByIdArray(deptId);
@@ -120,7 +120,7 @@ public class SysDeptServiceImpl implements SysDeptService {
 				defaultCount++;
 			}
 		}
-		Asserts.isTrue(defaultCount <=1, "dept.post.default.max");
+		Asserts.isTrue(defaultCount <=1, "{dept.post.default.max}");
 		sysDeptMapper.deleteDeptPosts(list.get(0).getDeptId());
 		sysDeptMapper.insertDeptPosts(list);
 	}

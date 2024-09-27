@@ -9,7 +9,7 @@
 package com.cowave.sys.admin;
 
 import com.cowave.commons.framework.support.datasource.DynamicDataSource;
-import com.cowave.commons.framework.support.redis.connection.RedisLettuceConnectionConfiguration;
+import com.cowave.commons.framework.support.redis.connection.LettuceRedisConnectionConfiguration;
 import io.lettuce.core.resource.DefaultClientResources;
 import io.minio.MinioClient;
 import org.springframework.beans.factory.ObjectProvider;
@@ -65,7 +65,7 @@ public class SpringTestConfiguration {
         RedisProperties redisProperties = new RedisProperties();
         redisProperties.setHost(SpringTest.REDIS.getHost());
         redisProperties.setPort(SpringTest.REDIS.getMappedPort(6379));
-        RedisLettuceConnectionConfiguration redisConnectionConfiguration = new RedisLettuceConnectionConfiguration(
+        LettuceRedisConnectionConfiguration redisConnectionConfiguration = new LettuceRedisConnectionConfiguration(
                 redisProperties, sentinelConfigurationProvider, clusterConfigurationProvider);
         return redisConnectionConfiguration.redisConnectionFactory(builderCustomizers, DefaultClientResources.create());
     }

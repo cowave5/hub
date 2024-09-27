@@ -69,10 +69,10 @@ public class SysDictServiceImpl implements SysDictService {
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void edit(SysDict sysDict){
-		Asserts.notNull(sysDict.getId(), "dict.notnull.id");
+		Asserts.notNull(sysDict.getId(), "{dict.notnull.id}");
 		SysDict preDict = sysDictMapper.queryById(sysDict.getId());
-		Asserts.notNull(preDict, "dict.notexist", sysDict.getId());
-		Asserts.notEquals(1, preDict.getReadOnly(), "dict.forbid.edit.readonly");
+		Asserts.notNull(preDict, "{dict.notexist}", sysDict.getId());
+		Asserts.notEquals(1, preDict.getReadOnly(), "{dict.forbid.edit.readonly}");
 		sysDictMapper.update(sysDict);
 		sysDictCaches.parseValue(sysDict);
 		// 组字典
@@ -101,7 +101,7 @@ public class SysDictServiceImpl implements SysDictService {
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void delete(Long[] dictId){
-		Asserts.equals(0, sysDictMapper.countReadOnlyByIdArray(dictId), "dict.forbid.delete.readonly");
+		Asserts.equals(0, sysDictMapper.countReadOnlyByIdArray(dictId), "{dict.forbid.delete.readonly}");
 		List<SysDict> list = sysDictMapper.queryByIdArray(dictId);
 		for(SysDict dict : list){
 			delete(dict);

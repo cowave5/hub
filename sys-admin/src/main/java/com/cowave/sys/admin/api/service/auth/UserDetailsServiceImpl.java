@@ -49,9 +49,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String userAccount) throws UsernameNotFoundException {
     	SysUser sysUser = sysUserMapper.queryByAccount(userAccount);
         if(sysUser == null){
-            throw new UserNotFoundException("user.notexist");
+            throw new UserNotFoundException("{user.notexist}");
         }
-        Asserts.equals(1, sysUser.getUserStatus(), "auth.account.disable", userAccount);
+        Asserts.equals(1, sysUser.getUserStatus(), "{auth.account.disable}", userAccount);
 
         List<String> roleCodes = sysUser.getRoleList().stream().map(SysUserRole::getRoleCode).toList();
         List<String> permits;
