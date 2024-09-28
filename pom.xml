@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.cowave.commons</groupId>
+        <artifactId>commons-parent</artifactId>
+        <version>2.8.2</version>
+    </parent>
+
+    <groupId>com.cowave.sys</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0.3</version>
+    <packaging>pom</packaging>
+
+    <name>sys</name>
+    <url>sys://www.cowave.com/</url>
+    <description>管理应用</description>
+
+    <modules>
+        <module>sys-admin</module>
+        <module>sys-quartz</module>
+        <module>sys-code</module>
+        <module>sys-flow</module>
+        <module>sys-blog</module>
+        <module>sys-resource</module>
+        <module>sys-model</module>
+        <module>sys-eureka</module>
+        <module>sys-gateway</module>
+        <module>sys-ui</module>
+    </modules>
+
+    <distributionManagement>
+        <repository>
+            <id>cowave</id>
+            <name>releases</name>
+            <url>http://10.64.4.74:8081/repository/maven-releases/</url>
+            <uniqueVersion>true</uniqueVersion>
+        </repository>
+        <snapshotRepository>
+            <id>cowave</id>
+            <name>snapshots</name>
+            <url>http://10.64.4.74:8081/repository/maven-snapshots/</url>
+            <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+</project>

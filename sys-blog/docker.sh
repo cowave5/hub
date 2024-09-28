@@ -1,19 +1,25 @@
-#! /bin/bash
+## 已设置环境变量：
+## app_name    默认从pom.xml获取，可以在env.properties中设置覆盖
+## app_version 默认从pom.xml获取，可以在env.properties中设置覆盖
+## app_source="$app_name"_"$app_version"
 
-mvn clean install -DskipTests
-if [ ! $? == 0 ];then
-  exit
-fi
+## app_source目录已创建，内容包括：
+## target/app_source
+##   ├─bin
+##   │  └─env.properties
+##   │  └─run.sh
+##   │  └─setenv.sh
+##   ├─lib
+##   │  └─${app_name}_${app_version}.jar
+##   ├─config
+##   │  └─application.yml
+##   │  └─...
+##   ├─install.sh
+##   └─changelog.md
 
-app_name=`grep -B 4 packaging pom.xml | grep artifactId | awk -F ">" '{print $2}' | awk -F "<" '{print $1}'`
-app_version=`grep -B 4 packaging pom.xml | grep version | awk -F ">" '{print $2}' | awk -F "<" '{print $1}'`
-
-cp simsun.ttf target
-cd target
-
-app_source="$app_name"_"$app_version"
-find $app_source -type f -name "*.sh" -exec chmod 744 {} \;
-find $app_source -type f -name "*.sh" -exec dos2unix {} \;
+## 工作目录为target
+build(){
+cp ../simsun.ttf .
 
 cat <<EOF > Dockerfile
 FROM ubuntu:20.04
@@ -45,4 +51,5 @@ ENTRYPOINT ["bin/run.sh", "up"]
 EOF
 
 docker build -t cowave/$app_name:$app_version .
-#docker rmi -f $(docker images | grep "<none>" | awk '{print $3}')  2>/dev/null
+}
+

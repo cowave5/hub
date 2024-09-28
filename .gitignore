@@ -19,6 +19,7 @@ log/
 logs/
 
 .DS_Store
+node/
 node_modules/
 dist/
 npm-debug.log*

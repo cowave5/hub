@@ -2,19 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.cowave.commons</groupId>
-        <artifactId>commons-parent</artifactId>
-        <version>2.8.2</version>
+        <groupId>com.cowave.sys</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0.3</version>
     </parent>
 
-    <groupId>com.cowave.sys</groupId>
     <artifactId>sys-eureka</artifactId>
-    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>sys-eureka</name>
     <url>https://www.cowave.com/</url>
     <description>服务注册</description>
+
+    <properties>
+        <skip.changelog>true</skip.changelog>
+    </properties>
 
     <dependencies>
         <dependency>

@@ -97,7 +97,7 @@ public class AuthService {
                 if(cause instanceof UserNotFoundException) {
                     AccessToken accessToken = ldapService.authenticate(userAccount, passWord);
                     if(accessToken == null){
-                        throw new AssertsException("{user.notexist}").args(userAccount);
+                        throw new AssertsException("{user.notexist}", userAccount);
                     }
                     return accessToken;
                 }

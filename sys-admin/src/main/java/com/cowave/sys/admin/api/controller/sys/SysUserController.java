@@ -17,11 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
 import cn.hutool.core.lang.tree.Tree;
-import com.cowave.commons.framework.helper.Messages;
 import com.cowave.commons.framework.helper.operation.Operation;
 import com.cowave.commons.framework.helper.operation.Operation.Content;
 import com.cowave.commons.framework.support.excel.valid.ExcelImportValidListener;
 import com.cowave.commons.framework.support.excel.write.DropdownWriteHandler;
+import com.cowave.commons.tools.Messages;
 import com.cowave.sys.admin.api.caches.SysUserCaches;
 import com.cowave.sys.admin.api.service.SysUserService;
 import org.springframework.feign.codec.Response;
@@ -219,7 +219,7 @@ public class SysUserController {
 			EasyExcel.read(inputStream).head(SysUser.class).registerReadListener(
 					new ExcelImportValidListener<>(sysUserService, updateSupport)).sheet().doReadSync();
 		}
-		return Response.success(null, Messages.get("import.success.msg"));
+		return Response.success(null, Messages.msg("import.success.msg"));
 	}
 
 	/**

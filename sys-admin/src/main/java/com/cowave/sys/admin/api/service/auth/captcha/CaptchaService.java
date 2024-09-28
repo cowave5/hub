@@ -9,9 +9,9 @@
 package com.cowave.sys.admin.api.service.auth.captcha;
 
 import cn.hutool.core.util.IdUtil;
-import com.cowave.commons.framework.helper.Messages;
 import com.cowave.commons.framework.support.redis.RedisHelper;
 import com.cowave.commons.tools.Asserts;
+import com.cowave.commons.tools.Messages;
 import com.cowave.sys.admin.api.caches.SysConfigCaches;
 import com.cowave.sys.admin.api.entity.UserRegister;
 import com.cowave.sys.admin.api.entity.oauth.OAuthConfig;
@@ -118,8 +118,8 @@ public class CaptchaService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom("cowaveAdmin@163.com");
         mailMessage.setTo(email);
-        mailMessage.setSubject(Messages.get("captcha.title"));
-        mailMessage.setText(Messages.getWithArgs("captcha.msg", String.valueOf(code), CAPTCHA_EXPIRATION));
+        mailMessage.setSubject(Messages.msg("captcha.title"));
+        mailMessage.setText(Messages.msg("captcha.msg", String.valueOf(code), CAPTCHA_EXPIRATION));
         mail.send(mailMessage);
         redisHelper.putExpireValue(CAPTCHA_KEY + code, email, CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
     }
