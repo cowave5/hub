@@ -1,94 +1,132 @@
 import request from '@/utils/request'
 
-// 查询公告列表
-export function listNotice(data) {
+/**
+ * 公告列表
+ */
+export function getNoticeList(params) {
   return request({
-    url: '/admin/api/v1/notice/list',
-    method: 'post',
-    data: data
-  })
-}
-
-// 查询公告详细
-export function getNotice(noticeId) {
-  return request({
-    url: '/admin/api/v1/notice/info/' + noticeId,
-    method: 'get'
-  })
-}
-
-// 已读列表
-export function getReads(params) {
-  return request({
-    url: '/admin/api/v1/notice/read/list',
+    url: '/admin/api/v1/notice',
     method: 'get',
     params: params
   })
 }
 
-// 消息列表
-export function getMsgs(params) {
+/**
+ * 公告详情
+ */
+export function getNoticeInfo(noticeId) {
   return request({
-    url: '/admin/api/v1/notice/msg/list',
-    method: 'get',
-    params: params
-  })
-}
-
-// 阅读消息
-export function msgRead(noticeId) {
-  return request({
-    url: '/admin/api/v1/notice/msg/read/' + noticeId,
+    url: '/admin/api/v1/notice/' + noticeId,
     method: 'get'
   })
 }
 
-// 反馈意见
-export function msgBack(noticeId, readBack) {
-  return request({
-    url: '/admin/api/v1/notice/msg/back?noticeId=' + noticeId + '&readBack=' + readBack,
-    method: 'get'
-  })
-}
-
-// 新增公告
+/**
+ * 新增公告
+ */
 export function addNotice(data) {
   return request({
-    url: '/admin/api/v1/notice/add',
+    url: '/admin/api/v1/notice',
     method: 'post',
     data: data
   })
 }
 
-// 修改公告
+/**
+ * 删除公告
+ */
+export function delNotice(noticeIds) {
+  return request({
+    url: '/admin/api/v1/notice/' + noticeIds,
+    method: 'delete'
+  })
+}
+
+/**
+ * 修改公告
+ */
 export function updateNotice(data) {
   return request({
-    url: '/admin/api/v1/notice/edit',
-    method: 'post',
+    url: '/admin/api/v1/notice',
+    method: 'patch',
     data: data
   })
 }
 
-// 删除公告
-export function delNotice(noticeId) {
-  return request({
-    url: '/admin/api/v1/notice/delete?noticeId=' + noticeId,
-    method: 'get'
-  })
-}
-
-// 发布公告
+/**
+ * 发布公告
+ */
 export function publishNotice(noticeId) {
   return request({
     url: '/admin/api/v1/notice/publish/' + noticeId,
-    method: 'get'
+    method: 'patch'
   })
 }
 
+/**
+ * 已读情况
+ */
+export function getReads(params) {
+  return request({
+    url: '/admin/api/v1/notice/readers',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 上传附件
+ */
 export function uploadAttach(data, attachUrl) {
   return request({
     url: attachUrl,
     method: 'post',
     data: data
+  })
+}
+
+/**
+ * 消息列表
+ */
+export function getNoticeMsg(params) {
+  return request({
+    url: '/admin/api/v1/notice/msg',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 阅读消息
+ */
+export function readNoticeMsg(noticeId) {
+  return request({
+    url: '/admin/api/v1/notice/msg/read/' + noticeId,
+    method: 'patch'
+  })
+}
+
+/**
+ * 反馈意见
+ */
+export function msgBack(noticeId, readBack) {
+  const data = {
+    noticeId,
+    readBack
+  }
+  return request({
+    url: '/admin/api/v1/notice/msg/back',
+    method: 'post',
+    data: data
+  })
+}
+
+/**
+ * 未读统计
+ */
+export function countUnReadMsg() {
+  return request({
+    url: '/admin/api/v1/notice/msg/unread',
+    method: 'get'
   })
 }

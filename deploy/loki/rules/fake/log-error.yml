@@ -1,0 +1,12 @@
+groups:
+  - name: sys日志ERROR
+    rules:
+    - alert: sys-error-log
+      expr: count_over_time(({job="log-sys"}|~"ERROR")[10m]) > 0
+      for: 10m
+      labels:
+        level: ERROR
+      annotations:
+        value: "{{ $value }}"
+        description: 最近10min中内出现ERROR日志
+        graph: 'http://10.64.4.74:3000/d/c5138eca-b5d8-4198-92ed-0a0fbd54/logs-host?orgId=1&var-ds=c53f6872-5f1d-4f3e-8f73-8ff395a762d9&var-query=&var-cluster={{ $labels.cluster }}%E5%B9%B3%E5%8F%B0&var-application={{ $labels.application }}&var-logger=All'

@@ -72,6 +72,7 @@ function loadDict(dict, dictMeta) {
         console.error('the type of elements in dicts must be DictData')
         dicts = []
       }
+
       dict.type[type].splice(0, Number.MAX_SAFE_INTEGER, ...dicts)
       dicts.forEach(d => {
         Vue.set(dict.label[type], d.value, d.label)

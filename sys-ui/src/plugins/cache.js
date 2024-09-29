@@ -1,6 +1,7 @@
 import  jwt  from  'jsonwebtoken'
 
 const UserId = 'user_id'
+const UserCode = 'user_code'
 const UserName = 'user_name'
 const AccessKey = 'access_token'
 const RefreshKey = 'refresh_token'
@@ -68,6 +69,7 @@ const localCache = {
   setToken(token){
     let accessInfo = jwt.decode(token.accessToken);
     this.set(UserId, accessInfo['User.id']);
+    this.set(UserCode, accessInfo['User.code']);
     this.set(UserName, accessInfo['User.name']);
     this.set(AccessKey, token.accessToken);
     this.set(RefreshKey, token.refreshToken);
@@ -75,6 +77,10 @@ const localCache = {
 
   getUserId(){
     return this.get(UserId);
+  },
+
+  getUserCode(){
+    return this.get(UserCode);
   },
 
   getUserName(){

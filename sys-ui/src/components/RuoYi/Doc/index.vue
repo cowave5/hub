@@ -9,7 +9,7 @@ export default {
   name: 'sys-ui',
   data() {
     return {
-      url: 'https://gitlab.cowave.com/commons/demo/demo-sys/sys-ui'
+      url: 'https://github.com/cowave5/sys'
     }
   },
   methods: {

@@ -1,198 +1,204 @@
 <template>
   <div class="app-container">
-    <h4 class="form-header h4">{{$t('dept.info')}}</h4>
-    <el-form ref="form" :model="form" label-width="80px">
+    <h4 class="form-header h4">{{$t('dept.text.info')}}</h4>
+    <el-form ref="form" :model="deptInfo" label-width="80px">
       <el-row>
         <el-col :span="8" :offset="2">
-          <el-form-item :label="$t(`dept.label.name`)" prop="userAccount">
-            <el-input  v-model="form.deptName" disabled />
+          <el-form-item :label="$t('dept.label.name')">
+            <el-input  v-model="deptInfo.deptName" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="8" :offset="2">
-          <el-form-item :label="$t(`dept.label.phone`)" prop="userName">
-            <el-input v-model="form.deptPhone" disabled />
+          <el-form-item :label="$t('dept.label.phone')">
+            <el-input v-model="deptInfo.deptPhone" disabled />
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
 
-    <h4 class="form-header h4">{{$t('dept.label.member')}}</h4>
-    <el-table v-loading="loading" :row-key="getRowKey" ref="table" @select="selectSingle" :data="list">
-      <el-table-column type="selection" :reserve-selection="true" width="50"></el-table-column>
-      <el-table-column :label="$t(`label.index`)" type="index" align="center" width="55">
+    <!--  筛选栏  -->
+    <h4 class="form-header h4">{{$t('user.text.list')}}</h4>
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+      <el-form-item :label="$t('user.label.name')" prop="userName">
+        <el-input v-model="queryParams.userName" :placeholder="$t('user.placeholder.name')" clearable
+                  style="width: 240px" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item :label="$t('user.label.phone')" prop="userPhone">
+        <el-input v-model="queryParams.userPhone" :placeholder="$t('user.placeholder.phone')" clearable
+                  style="width: 240px" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
+          {{ $t('commons.button.search') }}
+        </el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="handleReset">{{ $t('commons.button.reset') }}</el-button>
+      </el-form-item>
+    </el-form>
+
+    <!--  操作栏  -->
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAddMember">
+          {{ $t('user.button.add') }}
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="danger" plain icon="el-icon-circle-close" size="mini" @click="handleRemoveMember"
+                   :disabled="multiple || !checkPermit(['sys:role:members'])">
+          {{ $t('user.button.remove') }}
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="warning" plain icon="el-icon-close" size="mini" @click="handleClose">
+          {{ $t('commons.button.close') }}
+        </el-button>
+      </el-col>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"/>
+    </el-row>
+
+    <!--  列表数据  -->
+    <el-table ref="table" :data="list" @selection-change="selectRow" v-loading="loading">
+      <el-table-column type="selection" width="50"/>
+      <el-table-column :label="$t('commons.label.index')" type="index" align="center" width="55">
         <template slot-scope="scope">
-          <span>{{(queryParams.page - 1) * queryParams.pageSize + scope.$index + 1}}</span>
+          <span>{{ (queryParams.page - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t(`dept.user.name`)" align="center" prop="userName" />
-      <el-table-column :label="$t(`dept.user.rank`)" align="center">
-        <template slot-scope="{row: {rank}}">
+      <el-table-column :label="$t('user.label.name')" align="center" prop="userName"/>
+      <el-table-column :label="$t('user.label.phone')" align="center" prop="userPhone"/>
+      <el-table-column :label="$t('user.label.rank')" align="center">
+        <template slot-scope="{row: {userRank}}">
           <template v-for="item in dict.type.post_level">
-            <span v-if="rank === item.value && $i18n.locale==='zh'">{{ item.value }}/{{ item.label }}</span>
-            <span v-if="rank === item.value && $i18n.locale==='en'">{{ item.value }}/{{ item.labelEn }}</span>
+            <span v-if="userRank === item.code">{{ item.code }}/{{ $t(item.name) }}</span>
           </template>
         </template>
       </el-table-column>
-      <el-table-column :label="$t(`dept.user.position`)" align="center" prop="postName">
-        <template slot-scope="scope">
-          <el-select v-model="scope.row.postId" :placeholder="$t(`user.placeholder.role`)">
-            <el-option v-for="item in postOptions" :key="item.postId" :label="item.postName" :value="item.postId"/>
-          </el-select>
+      <el-table-column :label="$t('user.label.post')" align="center" prop="postName"/>
+      <el-table-column :label="$t('dept.text.default_user_post')" align="center">
+        <template slot-scope="{row: {isDefault}}">
+          <template v-for="item in dict.type.yes_no">
+            <span v-if="isDefault === item.value">
+              <el-tag :type="item.css">{{ $t(item.name) }}</el-tag>
+            </span>
+          </template>
         </template>
       </el-table-column>
-      <el-table-column :label="$t(`dept.user.default`)" align="center">
-        <template slot-scope="scope">
-          <el-switch v-model="scope.row.isDefault" :active-value=1 :inactive-value=0 @change="(val)=>handleDefaultChange(val,scope.row)"/>
+      <el-table-column :label="$t('dept.text.leader')" align="center">
+        <template slot-scope="{row: {isLeader}}">
+          <template v-for="item in dict.type.yes_no">
+            <span v-if="isLeader === item.value">
+              <el-tag :type="item.css">{{ $t(item.name) }}</el-tag>
+            </span>
+          </template>
         </template>
       </el-table-column>
-      <el-table-column :label="$t(`dept.user.leader`)" align="center">
+      <el-table-column :label="$t('commons.label.options')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.isLeader" :active-value=1 :inactive-value=0 @change="(val)=>handleLeaderChange(val,scope.row)"/>
+          <el-button size="mini" type="text" icon="el-icon-circle-close" @click="handleRemoveMember(scope.row)"
+                     :disabled="!checkPermit(['sys:role:members'])">
+            {{ $t('user.button.remove') }}
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.pageSize" @pagination="getList" />
-
-    <el-form label-width="100px">
-      <el-form-item style="text-align: center;margin-left:-120px;margin-top:30px;">
-        <el-button type="primary" @click="submitForm()"
-                   :disabled="!checkPermit(['sys:dept:members'])">{{$t('button.confirm')}}</el-button>
-        <el-button @click="close()">{{$t('button.cancel')}}</el-button>
-      </el-form-item>
-    </el-form>
+    <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.pageSize" @pagination="getList"/>
+    <select-user ref="select" :dept-id="deptId" @ok="handleQuery"/>
   </div>
 </template>
 
 <script>
-import {listUser} from "@/api/system/user";
-import {getDept, getDeptPosts, getDeptUsersById, setDeptUsers} from "@/api/system/dept";
-import {checkPermit} from "@/utils/permission";
+import { getDeptInfo, getJoinedMembers, removeDeptMembers, removeDeptPosts } from '@/api/system/dept'
+import { checkPermit } from '@/utils/permission'
+import selectUser from '@/views/system/dept/selectUser.vue'
 
 export default {
-  name: "DeptPost",
-  dicts: ['post_type', 'post_level'],
+  name: 'DeptPost',
+  components: { selectUser },
+  dicts: ['post_level', 'yes_no'],
   data() {
     return {
-       // 遮罩层
+      // 遮罩层
       loading: false,
-      // 查询参数
+      // 非多个禁用
+      multiple: true,
+      // 显示筛选栏
+      showSearch: true,
+      // 筛选参数
       queryParams: {
+        deptId: undefined,
+        userName: undefined,
+        userPhone: undefined,
         page: 1,
         pageSize: 10
       },
-      // 列表数据
+      // 分页数据
       list: [],
       // 分页总数
       total: 0,
-      // 选中数据
-      chooseRows:[],
-      // 对象id
-      infoId: undefined,
-      // 对象信息
-      form: {},
-      // 岗位选项
-      postOptions: [],
-      // 默认岗位
-      defaultPostId: undefined
-    };
-  },
-  created() {
-    this.infoId = this.$route.params && this.$route.params.deptId;
-    if (this.infoId) {
-      getDept(this.infoId).then((resp) => {
-        this.form = resp.data;
-      });
-      getDeptPosts(this.infoId).then((resp) => {
-        this.postOptions = resp.data;
-        this.postOptions.forEach((post) => {
-          if(post.isDefault === 1){
-            this.defaultPostId = post.postId;
-          }
-        });
-      });
-      getDeptUsersById(this.infoId).then((resp) => {
-        this.chooseRows = resp.data;
-      });
+      // 部门id
+      deptId: undefined,
+      // 部门信息
+      deptInfo: {},
+      // 选中成员
+      userIds: []
     }
   },
-  mounted() {
-    this.getList();
+  created() {
+    this.deptId = this.$route.params && this.$route.params.deptId
+    if (this.deptId) {
+      getDeptInfo(this.deptId).then((resp) => {
+        this.deptInfo = resp.data
+      });
+      this.getList()
+    }
   },
   methods: {
     checkPermit,
-    selectRow() {
-      if (this.infoId) {
-        this.$nextTick(()=>{
-          this.list.forEach((row) => {
-            const index = this.chooseRows.findIndex(v=>v.userId === row.userId);
-            if(index !== -1){
-              this.$refs.table.toggleRowSelection(row, true);
-              row.isLeader = this.chooseRows[index].isLeader;
-              row.isDefault = this.chooseRows[index].isDefault;
-            }
-          });
-        })
-      }
-    },
-    /** 列表数据 */
+    /** 成员列表 */
     getList() {
-      listUser(this.queryParams).then((resp) => {
+      this.queryParams.deptId = this.deptId;
+      getJoinedMembers(this.queryParams).then((resp) => {
         this.list = resp.data.list
-        this.total = resp.data.total;
-        if(this.defaultPostId !== undefined){
-          this.list.forEach((row) => {
-            row.postId = this.defaultPostId;
-          });
-        }
-        this.selectRow()
-      });
+        this.total = resp.data.total
+      })
     },
-    /** 选中岗位变化 */
-    selectSingle(selection,row) {
-      if(selection.findIndex(v=>v.userId === row.userId) !== -1) {
-        if(this.chooseRows.findIndex(v=>v.userId === row.userId) === -1) this.chooseRows.push(row)
-      } else {
-        const index = this.chooseRows.findIndex(v=>v.userId === row.userId)
-        this.chooseRows.splice(index, 1)
-      }
+    /** 选中行 */
+    selectRow(selection) {
+      this.userIds = selection.map(item => item.userId);
+      this.multiple = !selection.length;
     },
-    /** 单击选中行 */
-    clickRow(row) {
-      this.$refs.table.toggleRowSelection(row);
+    /** 搜索 */
+    handleQuery() {
+      this.getList();
     },
-    /** 保存选中的数据编号 */
-    getRowKey(row) {
-      return row.postId;
-    },
-    /** 提交 */
-    submitForm() {
-      this.chooseRows.forEach((row) => {
-        row.deptId = this.infoId;
-      });
-      setDeptUsers(this.chooseRows).then((response) => {
-        this.$modal.msgSuccess(this.$t(`msg.success_edit`));
-        this.close();
-      });
+    /** 重置 */
+    handleReset() {
+      this.resetForm('queryForm')
+      this.handleQuery()
     },
     /** 关闭 */
-    close() {
-      const obj = { path: "/system/dept" };
-      this.$tab.closeOpenPage(obj);
+    handleClose() {
+      const obj = { path: '/system/dept' }
+      this.$tab.closeOpenPage(obj)
     },
-    /** 设置部门负责人 */
-    handleLeaderChange(val, row) {
-      const index = this.chooseRows.findIndex(v=>v.userId === row.userId)
-      if(index !== -1) {
-        this.chooseRows[index].isLeader = val;
-      }
+    /** 添加成员 */
+    handleAddMember() {
+      this.$refs.select.show();
     },
-    /** 设置用户默认岗位 */
-    handleDefaultChange(val, row) {
-      const index = this.chooseRows.findIndex(v=>v.userId === row.userId)
-      if(index !== -1) {
-        this.chooseRows[index].isDefault = val;
-      }
-    },
+    /** 移除成员 */
+    handleRemoveMember(row) {
+      const userIds = row.userId || this.userIds;
+      const deptId = this.deptId;
+      const msg = row.userId
+          ? this.$t('user.confirm.remove', { arg1: row.userName })
+          : this.$t('user.confirm.remove_select');
+      this.$modal.confirm(msg).then(function() {
+        return removeDeptMembers(deptId, userIds);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess(this.$t('commons.msg.success.delete'));
+      }).catch((e) => {console.log(e)});
+    }
   }
-};
+}
 </script>

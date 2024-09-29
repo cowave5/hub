@@ -1,16 +1,10 @@
 <template>
   <div>
     <template v-for="(item, index) in options">
-      <template v-if="values.includes(item.value) && $i18n.locale==='zh'">
-        <el-tag :disable-transitions="true" :key="item.value" :index="index"
+      <template v-if="values.includes(item.value)">
+        <el-tag :disable-transitions="true" :key="item.code" :index="index"
           :type="item.raw.css === undefined ? 'primary' : item.raw.css">
-          {{ item.label }}
-        </el-tag>
-      </template>
-      <template v-if="values.includes(item.value) && $i18n.locale==='en'">
-        <el-tag :disable-transitions="true" :key="item.value" :index="index"
-                :type="item.raw.css === undefined ? 'primary' : item.raw.css">
-          {{ item.labelEn }}
+          {{ $t(item.name) }}
         </el-tag>
       </template>
     </template>

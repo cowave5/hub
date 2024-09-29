@@ -1,0 +1,19 @@
+#set($dollarSign = '$')
+server:
+  port: ${dollarSign}{app_port:19030}
+  servlet:
+    context-path:${httpContext}
+
+info:
+  cluster:
+    id: ${dollarSign}{cluster_id:10}
+    level: ${dollarSign}{cluster_level:1}
+    name: ${dollarSign}{cluster_name:default}
+
+#if($isDb)
+spring:
+  datasource:
+    url: ${dollarSign}{datasource_url:${dbUrl}}
+    username: ${dollarSign}{datasource_username:${dbUser}}
+    password: ${dollarSign}{datasource_password:${dbPasswd}}
+#end

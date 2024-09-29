@@ -1,16 +1,18 @@
 <template>
   <div class="app-container">
+    <!--  筛选栏  -->
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="Gitlab账号" prop="userAccount" label-width="20">
         <el-input v-model="queryParams.userAccount" placeholder="请输入Gitlab账号"
                   clearable style="width: 180px" @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{$t('button.search')}}</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{$t('button.reset')}}</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{$t('commons.button.search')}}</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{$t('commons.button.reset')}}</el-button>
       </el-form-item>
     </el-form>
 
+    <!--  操作栏  -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button type="primary" plain icon="el-icon-edit" size="mini" @click="handleConfig"
@@ -19,19 +21,20 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
+    <!--  用户列表  -->
     <el-table v-loading="loading" :data="list" :header-cell-style="{'text-align':'center'}">
-      <el-table-column :label="$t(`label.index`)" type="index" align="center" width="55">
+      <el-table-column :label="$t('commons.label.index')" type="index" align="center" width="55">
         <template slot-scope="scope">
           <span>{{(queryParams.page - 1) * queryParams.pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
       <el-table-column label="用户名称" align="center" prop="userName" width="180" :show-overflow-tooltip="true" />
       <el-table-column label="用户账号" align="center" prop="userAccount" width="180" :show-overflow-tooltip="true" />
-      <el-table-column label="用户角色" align="center" prop="roleName" width="180" :show-overflow-tooltip="true" />
+      <el-table-column label="角色" align="center" prop="roleName" width="180" :show-overflow-tooltip="true" />
       <el-table-column label="邮箱" align="center" prop="userEmail" width="280" :show-overflow-tooltip="true" />
       <el-table-column label="部门" align="center" prop="userDept" :show-overflow-tooltip="true" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180" />
-      <el-table-column :label="$t(`label.option`)" align="center" width="160" class-name="small-padding">
+      <el-table-column :label="$t('commons.label.options')" align="center" width="160" class-name="small-padding">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
@@ -68,15 +71,14 @@
         <el-form-item label="Redirect Url:" prop="redirectUrl" label-width="120px">
           <el-input v-model="form.redirectUrl" placeholder="应用回调地址，比如：http://admin.cowave.com/oauth/gitlab" />
         </el-form-item>
-        <el-form-item label="用户角色:" prop="userRole">
-          <el-select v-model="form.userRole" placeholder="授权用户默认角色" style="width: 100%;">
-            <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId"/>
+        <el-form-item label="用户角色:" prop="roleCode">
+          <el-select v-model="form.roleCode" placeholder="授权用户默认角色" style="width: 100%;">
+            <el-option v-for="item in roleOptions" :key="item.roleCode" :label="item.roleName" :value="item.roleCode"/>
           </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio v-if="$i18n.locale==='zh'" v-for="dict in dict.type.sys_is_enable" :key="dict.value" :label="dict.value">{{dict.label}}</el-radio>
-            <el-radio v-if="$i18n.locale==='en'" v-for="dict in dict.type.sys_is_enable" :key="dict.value" :label="dict.value">{{dict.labelEn}}</el-radio>
+            <el-radio v-for="dict in dict.type.enable_disable" :key="dict.value" :label="dict.value">{{$t(dict.name)}}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -119,8 +121,8 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="用户角色">
-              <el-select v-model="roleForm.userRole" style="width: 100%;">
-                <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId"/>
+              <el-select v-model="roleForm.roleCode" style="width: 100%;">
+                <el-option v-for="item in roleOptions" :key="item.roleCOde" :label="item.roleName" :value="item.roleCode"/>
               </el-select>
             </el-form-item>
           </el-col>
@@ -137,13 +139,13 @@
 </template>
 
 <script>
-import {changeUserRole, deleteUser, getConfig, listUser, saveConfig} from "@/api/system/oauth";
-import {getRoles} from "@/api/system/user";
+import {changeGitlabRole, deleteGitlabUser, getConfig, listUser, saveConfig} from "@/api/system/oauth";
 import {checkPermit} from "@/utils/permission";
+import { getRoleList } from '@/api/system/role'
 
 export default {
   name: "oauth_gitlab",
-  dicts: ['sys_is_enable'],
+  dicts: ['enable_disable'],
   data() {
     return {
       // 遮罩层
@@ -164,12 +166,12 @@ export default {
         page: 1,
         pageSize: 10,
         userAccount: undefined,
-        appType: "gitlab",
+        serverType: "gitlab",
       },
       // 表单参数
       form: {
         status: 0,
-        appType: "gitlab",
+        serverType: "gitlab",
         appId: undefined,
         appSecret: undefined,
         authUrl: undefined,
@@ -199,7 +201,7 @@ export default {
         redirectUrl: [
           { required: true, message: "回调地址不能为空", trigger: "blur" }
         ],
-        userRole: [
+        roleCode: [
           { required: true, message: "用户角色不能为空", trigger: "blur" }
         ]
       };
@@ -209,7 +211,7 @@ export default {
     checkPermit,
     /** 获取角色选项 */
     getRoleOptions(){
-      getRoles().then(resp => {
+      getRoleList().then(resp => {
         this.roleOptions = resp.data.list
       });
     },
@@ -217,7 +219,7 @@ export default {
     reset() {
       this.form = {
         status: 0,
-        appType: "gitlab",
+        serverType: "gitlab",
         appId: undefined,
         appSecret: undefined,
         authUrl: undefined,
@@ -228,7 +230,7 @@ export default {
     /** 搜索 */
     handleQuery() {
       this.queryParams.page = 1;
-      this.queryParams.appType = "gitlab";
+      this.queryParams.serverType = "gitlab";
       this.getList();
     },
     /** 重置 */
@@ -251,7 +253,7 @@ export default {
     handleConfig() {
       this.reset();
       this.open = true;
-      getConfig(this.form.appType).then(response => {
+      getConfig(this.form.serverType).then(response => {
         this.form = response.data;
         this.open = true;
       });
@@ -283,7 +285,7 @@ export default {
     },
     /** 保存用户角色 */
     saveRole(){
-      changeUserRole(this.roleForm.id, this.roleForm.userRole).then(response => {
+      changeGitlabRole(this.roleForm.id, this.roleForm.roleCode).then(response => {
         this.openRole = false;
         this.$modal.msgSuccess("修改成功");
         this.getList();
@@ -291,10 +293,12 @@ export default {
     },
     /** 删除用户 */
     handleDelete(row){
-      deleteUser(row.id).then(response => {
-        this.$modal.msgSuccess("删除成功");
+      this.$modal.confirm("确认删除用户: " + row.userName).then(function() {
+        return deleteGitlabUser(row.id);
+      }).then(() => {
         this.getList();
-      });
+        this.$modal.msgSuccess(this.$t('commons.msg.success.delete'));
+      }).catch(() => {});
     }
   }
 };

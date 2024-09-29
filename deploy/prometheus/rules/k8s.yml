@@ -1,0 +1,213 @@
+groups:
+  - name: kube-state-metrics
+    rules:
+      - alert: 节点未就绪
+        expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+        for: 5m
+        labels:
+          severity: 警告
+        annotations:
+          description: "节点 {{ $labels.node }} 超过5min未就绪"
+
+      - alert: Container被Kill
+        expr: (kube_pod_container_status_restarts_total - kube_pod_container_status_restarts_total offset 10m >= 1)
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          description: "Container {{ $labels.namespace }}/{{ $labels.pod }}/{{ $labels.container }} 被终止{{ $value }}次"
+
+      - alert: Pod未就绪
+        expr: sum(kube_pod_status_phase{phase=~"Pending|Unknown|Failed"}) by(job,env,namespace,pod) > 0
+        for: 10m
+        labels:
+          severity: 严重
+        annotations:
+          description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} 超过10min未就绪"
+
+      - alert: Container一直在重启
+        expr: increase(kube_pod_container_status_restarts_total[3m]) > 3
+        for: 3m
+        labels:
+          severity: 严重
+        annotations:
+          description: "Pod {{ $labels.namespace }}/{{ $labels.pod }}//{{ $labels.container }} 3min内重启{{ $value }}次"
+
+      - alert: Pod重启
+        expr: sum(changes(kube_pod_container_status_restarts_total[2m]))by(env,namespace,pod) >0 and sum(time() - kube_pod_start_time > 10 * 1000 * 60)by(env,namespace,pod)
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} 启动10min后，重启了{{ $value }}次"
+
+      - alert: Pod实际副本数小于定义
+        expr:  kube_deployment_status_replicas_available < kube_deployment_spec_replicas
+        for: 5m
+        labels:
+          severity: 警告
+        annotations:
+          description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} 实际可用副本({{ $value }})小于定义"
+
+      - alert: DaemonSet Pod正在不应该运行的地方运行
+        expr: kube_daemonset_status_number_misscheduled > 0
+        for: 1m
+        labels:
+          severity: 警告
+        annotations:
+          description: "DaemonSet Pod正在不应该运行的地方运行"
+
+      - alert: DaemonSet存在未准备好的Pod
+        expr: kube_daemonset_status_number_ready / kube_daemonset_status_desired_number_scheduled * 100 < 100 or kube_daemonset_status_desired_number_scheduled - kube_daemonset_status_current_number_scheduled > 0
+        for: 10m
+        labels:
+          severity: 警告
+        annotations:
+          description: "DaemonSet存在未准备好的Pod"
+
+      - alert: 副本ready数不符期望
+        expr: kube_replicaset_status_ready_replicas < kube_replicaset_spec_replicas
+        for: 10m
+        labels:
+          severity: 警告
+        annotations:
+          description: "副本ready({{ $value }})数不符期望"
+
+      - alert: HPA无法扩展
+        expr: kube_horizontalpodautoscaler_status_condition{status="false", condition="AbleToScale"} == 1
+        for: 3m
+        labels:
+          severity: 警告
+        annotations:
+          description: "HPA无法扩展"
+
+      - alert: HPA无法收集指标
+        expr: kube_horizontalpodautoscaler_status_condition{status="false", condition="ScalingActive"} == 1
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          description: "HPA无法收集指标"
+
+      - alert: Deployment失败未回滚
+        expr: kube_deployment_status_observed_generation != kube_deployment_metadata_generation
+        for: 10m
+        labels:
+          severity: 警告
+        annotations:
+          description: "Deployment失败未回滚"
+
+      - alert: 节点内存紧张
+        expr: kube_node_status_condition{condition="MemoryPressure",status="true"} == 1
+        for: 3m
+        labels:
+          severity: 警告
+        annotations:
+          description: "{{ $labels.node }} 内存持续3min紧张"
+
+      - alert: 节点磁盘紧张
+        expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+        for: 3m
+        labels:
+          severity: 警告
+        annotations:
+          description: "{{ $labels.node }} 磁盘持续3min紧张"
+
+      - alert: 节点网络不可用
+        expr: kube_node_status_condition{condition="NetworkUnavailable",status="true"} == 1
+        for: 3m
+        labels:
+          severity: 严重
+        annotations:
+          description: "{{ $labels.node }} 网络持续3min不可用"
+
+      - alert: 节点pod容量
+        expr: sum by (node) ((kube_pod_status_phase{phase="Running"} == 1) + on(uid) group_left(node) (0 * kube_pod_info{pod_template_hash=""})) / sum by (node) (kube_node_status_allocatable{resource="pods"}) * 100 > 90
+        for: 3m
+        labels:
+          severity: 警告
+        annotations:
+          value: '{{ printf "%.2f" $value }}%'
+          description: "{{ $labels.node }} 容量持续3min超过90%"
+
+      - alert: Job执行失败
+        expr: kube_job_status_failed > 0
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          description: "Job {{ $labels.namespace }}/{{ $labels.job_name }} 执行失败！"
+
+      - alert: Job被暂停
+        expr: kube_cronjob_spec_suspend != 0
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          description: "Job {{ $labels.namespace }}/{{ $labels.cronjob }}被暂停！"
+
+      - alert: pvc被挂起
+        expr: kube_persistentvolumeclaim_status_phase{phase="Pending"} == 1
+        for: 3m
+        labels:
+          severity: 警告
+        annotations:
+          description: "Pvc {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }}被挂起"
+
+      - alert: pv错误或被挂起
+        expr: kube_persistentvolume_status_phase{phase=~"Failed|Pending"} > 0
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          description: "Pv处于错误状态"
+
+      - alert: StatefulSet更新未展开
+        expr: max without (revision) (kube_statefulset_status_current_revision unless kube_statefulset_status_update_revision) * (kube_statefulset_replicas != kube_statefulset_status_replicas_updated)
+        for: 10m
+        labels:
+          severity: 警告
+        annotations:
+          description: "StatefulSet更新未展开"
+
+      - alert: StatefulSet失败未回滚
+        expr: kube_statefulset_status_observed_generation != kube_statefulset_metadata_generation
+        for: 10m
+        labels:
+          severity: 严重
+        annotations:
+          description: "StatefulSet失败未回滚"
+
+      - alert: StatefulSet ready数不符期望
+        expr: kube_statefulset_status_replicas_ready != kube_statefulset_status_replicas
+        for: 10m
+        labels:
+          severity: 警告
+        annotations:
+          description: "StatefulSet ready数不符期望"
+
+      - alert: StatefulSet构建失败
+        expr: kube_statefulset_replicas != kube_statefulset_status_replicas_ready > 0
+        for: 1m
+        labels:
+          severity: 警告
+        annotations:
+          description: "StatefulSet构建失败"
+
+      - alert: Job耗时过长
+        expr: time() - kube_cronjob_next_schedule_time > 3600
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          description: "Job {{ $labels.namespace }}/{{ $labels.cronjob }} 耗时超过1hour"
+
+      - alert: Job未及时完成
+        expr: kube_job_spec_completions - kube_job_status_succeeded > 0
+        for: 12h
+        labels:
+          severity: 警告
+        annotations:
+          description: "Job {{ $labels.namespace }}/{{ $labels.job_name }} 未及时完成"
+
+

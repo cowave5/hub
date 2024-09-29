@@ -3,7 +3,7 @@
     <div>
       <div class="setting-drawer-content">
         <div class="setting-drawer-title">
-          <h3 class="drawer-title">{{$t('theme.title')}}</h3>
+          <h3 class="drawer-title">{{$t('commons.theme.title')}}</h3>
         </div>
         <div class="setting-drawer-block-checbox">
           <div class="setting-drawer-block-checbox-item" @click="handleTheme('theme-dark')">
@@ -33,44 +33,44 @@
         </div>
 
         <div class="drawer-item">
-          <span>{{$t('theme.color')}}</span>
+          <span>{{$t('commons.theme.color')}}</span>
           <theme-picker style="float: right;height: 26px;margin: -3px 8px 0 0;" @change="themeChange" />
         </div>
       </div>
 
       <el-divider/>
 
-      <h3 class="drawer-title">{{$t('theme.layout')}}</h3>
+      <h3 class="drawer-title">{{$t('commons.frame.layout')}}</h3>
 
       <div class="drawer-item">
-        <span>{{$t('theme.enable')}} TopNav</span>
+        <span>{{$t('commons.theme.enable')}} TopNav</span>
         <el-switch v-model="topNav" class="drawer-switch" />
       </div>
 
       <div class="drawer-item">
-        <span>{{$t('theme.enable')}} Tags-Views</span>
+        <span>{{$t('commons.theme.enable')}} Tags-Views</span>
         <el-switch v-model="tagsView" class="drawer-switch" />
       </div>
 
       <div class="drawer-item">
-        <span>{{$t('theme.fix')}} Header</span>
+        <span>{{$t('commons.theme.fix')}} Header</span>
         <el-switch v-model="fixedHeader" class="drawer-switch" />
       </div>
 
       <div class="drawer-item">
-        <span>{{$t('theme.show')}} Logo</span>
+        <span>{{$t('commons.theme.show')}} Logo</span>
         <el-switch v-model="sidebarLogo" class="drawer-switch" />
       </div>
 
       <div class="drawer-item">
-        <span>{{$t('theme.dynamic')}}</span>
+        <span>{{$t('commons.theme.dynamic')}}</span>
         <el-switch v-model="dynamicTitle" class="drawer-switch" />
       </div>
 
       <el-divider/>
 
-      <el-button size="small" type="primary" plain icon="el-icon-document-add" @click="saveSetting">{{$t('button.save')}}</el-button>
-      <el-button size="small" plain icon="el-icon-refresh" @click="resetSetting">{{$t('button.reset')}}</el-button>
+      <el-button size="small" type="primary" plain icon="el-icon-document-add" @click="saveSetting">{{$t('commons.button.save')}}</el-button>
+      <el-button size="small" plain icon="el-icon-refresh" @click="resetSetting">{{$t('commons.button.reset')}}</el-button>
     </div>
   </div>
 </template>

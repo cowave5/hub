@@ -19,8 +19,8 @@
           <span>{{(page - 1) * pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="会话类型" align="center" prop="tokenType"/>
-      <el-table-column label="会话id" align="center" prop="tokenId" width="280" :show-overflow-tooltip="true" />
+      <el-table-column label="令牌id" align="center" prop="accessId" width="280" :show-overflow-tooltip="true" />
+      <el-table-column label="令牌类型" align="center" prop="accessType"/>
       <el-table-column label="访问时间" align="center" prop="accessTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.accessTime) }}</span>
@@ -43,7 +43,6 @@
         </template>
       </el-table-column>
     </el-table>
-
     <pagination v-show="total>0" :total="total" :page.sync="page" :limit.sync="pageSize" />
   </div>
 </template>
@@ -101,10 +100,10 @@ export default {
     /** 强退按钮操作 */
     handleForceLogout(row) {
       this.$modal.confirm('确认强退用户["' + row.userName + '"]？').then(function() {
-        return forceLogout(row.tokenType, row.userAccount);
+        return forceLogout(row.accessId);
       }).then(() => {
-        this.getList();
         this.$modal.msgSuccess("强退成功");
+        this.getList();
       }).catch(() => {});
     }
   }

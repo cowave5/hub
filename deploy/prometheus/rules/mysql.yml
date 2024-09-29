@@ -1,0 +1,53 @@
+groups:
+- name: Mysql
+  rules:
+  - alert: 宕机
+    expr: up{app=~"Mysql.*"} == 0
+    for: 0s 
+    labels:
+      severity: 故障
+    annotations:
+      description: "Mysql出现宕机"
+
+  - alert: -slave IO线程异常
+    expr: mysql_slave_status_slave_io_running == 0
+    for: 30s 
+    labels:
+      severity: 严重
+    annotations: 
+      description: "Mysql主从IO线程停止超过30秒"
+
+  - alert: -slave Sql线程异常
+    expr: mysql_slave_status_slave_sql_running == 0
+    for: 30s 
+    labels:
+      severity: 严重
+    annotations: 
+      description: "Mysql主从Sql线程停止超过30秒"
+
+  - alert: -slave同步延时
+    expr: mysql_slave_status_sql_delay > 30
+    for: 30s 
+    labels:
+      severity: 严重
+    annotations: 
+      value: "{{ $value }}"
+      description: "Mysql主从延时超过30s"
+
+  - alert: 连接数
+    expr: mysql_global_status_threads_connected > 200
+    for: 1m
+    labels:
+      severity: 警告
+    annotations:
+      value: "{{ $value }}"      
+      description: "Mysql连接数持续1min大于200"  
+ 
+  - alert: 慢查询数
+    expr: increase(mysql_global_status_slow_queries[3m]) > 0
+    for: 3m
+    labels:
+      severity: 警告
+    annotations:
+      value: '{{ printf "%.0f" $value  }}'      
+      description: "最近3min中内出现慢查询"

@@ -1,27 +1,26 @@
 <template>
   <div class="login">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
+    <el-form ref="form" :model="form" :rules="loginRules" class="login-form">
       <h3 class="title">Cowave管理系统</h3>
       <el-form-item prop="username">
-        <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
+        <el-input v-model="form.username" type="text" autocomplete="new-password" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input v-model="loginForm.password" type="password" auto-complete="off" placeholder="密码" @keyup.enter.native="handleLogin">
+        <el-input v-model="form.password" type="password" autocomplete="new-password" placeholder="密码" @keyup.enter.native="handleLogin">
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="code" v-if="captchaOnOff">
-        <el-input v-model="loginForm.code" auto-complete="off" placeholder="验证码" style="width: 63%" @keyup.enter.native="handleLogin">
+        <el-input v-model="form.code" autocomplete="new-password" placeholder="验证码" style="width: 63%" @keyup.enter.native="handleLogin">
           <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
         </el-input>
         <div class="login-code">
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px; color: #ffffff;">记住密码</el-checkbox>
-
+      <el-checkbox v-model="form.rememberMe" style="margin:0px 0px 25px 0px; color: #ffffff;">记住密码</el-checkbox>
       <el-form-item style="width:100%;">
         <el-button :loading="loading" size="medium" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
           <span v-if="!loading">登 录</span>
@@ -30,8 +29,9 @@
         <div v-if="gitlab_uri !== undefined && gitlab_uri !== null" class="gitlab" style="width:100%; height:34px; display: flex;align-items: center;justify-content: center" @click="redirectGitLab">
           <img src="@/assets/images/gitlab.svg" alt="gitlab" style="width: 100px; height: 28px;">
         </div>
-        <div style="float: right;" v-if="register">
-          <router-link class="link-type" :to="'/register'">立即注册</router-link>
+        <div style="float: right;">
+          <router-link v-if="register" class="link-type" :to="'/register'" style="margin-right: 12px;">注册账号</router-link>
+          <router-link class="link-type" :to="'/ldap'">域账号登录</router-link>
         </div>
       </el-form-item>
     </el-form>
@@ -40,9 +40,8 @@
     </div>
   </div>
 </template>
-
 <script>
-import {getCodeImg} from "@/api/login";
+import {getCodeImg} from "@/api/auth";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
 
@@ -53,7 +52,7 @@ export default {
       version: "",
       year: new Date().getFullYear(),
       codeUrl: "",
-      loginForm: {
+      form: {
         username: undefined,
         password: undefined,
         rememberMe: false,
@@ -93,7 +92,7 @@ export default {
     getCode() {
       getCodeImg().then(res => {
         this.codeUrl = "data:image/gif;base64," + res.data.img;
-        this.loginForm.uuid = res.data.uuid;
+        this.form.uuid = res.data.uuid;
         this.captchaOnOff = res.data.captchaOnOff;
         this.register = res.data.registerOnOff;
         this.gitlab_uri = res.data.oauthGitlabUrl;
@@ -103,9 +102,9 @@ export default {
       const username = Cookies.get("username");
       const password = Cookies.get("password");
       const rememberMe = Cookies.get('rememberMe')
-      this.loginForm = {
-        username: username === undefined ? this.loginForm.username : username,
-        password: password === undefined ? this.loginForm.password : decrypt(password),
+      this.form = {
+        username: username === undefined ? this.form.username : username,
+        password: password === undefined ? this.form.password : decrypt(password),
         rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
       };
     },
@@ -113,31 +112,31 @@ export default {
       window.location.href = this.gitlab_uri;
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.form.validate(valid => {
         if (valid) {
           this.loading = true;
-          if (this.loginForm.rememberMe) {
-            Cookies.set("username", this.loginForm.username, { expires: 7 });
-            Cookies.set("password", encrypt(this.loginForm.password), { expires: 7 });
-            Cookies.set('rememberMe', this.loginForm.rememberMe, { expires: 7 });
+          if (this.form.rememberMe) {
+            Cookies.set("username", this.form.username, { expires: 7 });
+            Cookies.set("password", encrypt(this.form.password), { expires: 7 });
+            Cookies.set('rememberMe', this.form.rememberMe, { expires: 7 });
           } else {
             Cookies.remove("username");
             Cookies.remove("password");
             Cookies.remove('rememberMe');
           }
-          this.$store.dispatch("Login", this.loginForm).then(async () => {
+          this.$store.dispatch("Login", this.form).then(async () => {
             this.$router.push({path: this.redirect || "/"}).catch(() => {});
-            await this.$store.dispatch('OpenSocket');
+            await this.$store.dispatch('OpenNoticeSocket');
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {
-              this.loginForm.code = "";
+              this.form.code = "";
               this.getCode();
             }
           });
         }
       });
-    }
+    },
   }
 };
 </script>

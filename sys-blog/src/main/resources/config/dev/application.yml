@@ -1,19 +1,21 @@
-server:
-  port: 80
-  servlet:
-    context-path: /
-
-info:
-  cluster:
-    id: 10
-    level: 1
-    name: default
-
 spring:
+  access:
+    always-success: true
+    auth:
+      enable: true
+      mode: access
+      tokenStore: cookie
+      authUrls:
+        - /post/**
+        - /category/**
+        - /comment/**
   datasource:
     url: jdbc:postgresql://127.0.0.1:5432/sys-blog
     username: postgres
     password: postgres
+  liquibase:
+    enabled: true
+    change-log: sql/changelog.yml
   redis:
     host: 127.0.0.1
     port: 6379
@@ -28,15 +30,11 @@ spring:
     suffix:  .html
     encoding: utf-8
     cache: false
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 10.64.4.74:8848
 
 blog:
   # IP地址获取
   addressEnabled: true
   # 开启页面静态化
-  pageStaticEnabled: true
+  pageStaticEnabled: false
   # 上传路径
   profile: public

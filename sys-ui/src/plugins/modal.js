@@ -5,10 +5,10 @@ let loadingInstance;
 export default {
   computed: {
     msg_confirm(){
-      return this.$t(`button.confirm`);
+      return this.$t('commons.button.confirm');
     },
     msg_cancel(){
-      return this.$t(`button.cancel`);
+      return this.$t('commons.button.cancel');
     }
   },
   // 消息提示

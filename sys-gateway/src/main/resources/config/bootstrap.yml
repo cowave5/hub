@@ -1,0 +1,35 @@
+server:
+  port: ${http_port:19000}
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: sys-gateway
+  main:
+    web-application-type: reactive
+  boot:
+    admin:
+      context-path: /health
+      monitor:
+        default-timeout: 30000
+        status-interval: 15000
+        status-lifetime: 15000
+      ui:
+        title: Health
+        brand: <img src='assets/img/icon-spring-boot-admin.svg'><span>Health</span>
+  cloud:
+    discovery:
+      client:
+        composite-indicator:
+          enabled: false
+    nacos:
+      server-addr: ${nacos_server:10.64.4.74:8848}
+      discovery:
+        namespace: ${nacos_namespace:}
+        cluster-name: ${nacos_cluster:}
+        group: ${nacos_group:DEFAULT_GROUP}
+      config:
+        namespace: ${nacos_namespace:}
+        cluster-name: ${nacos_cluster:}
+        group: ${nacos_group:DEFAULT_GROUP}

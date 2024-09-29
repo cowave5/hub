@@ -1,0 +1,89 @@
+
+groups:
+  - name: Kafka
+    rules:
+      - alert: "出现脑裂"
+        expr: sum(kafka_controller_kafkacontroller_activecontrollercount) by (app,cluster) > 1
+        for: 0m
+        labels:
+          severity: 严重
+        annotations:
+          description: 'kafka环境出现脑裂'
+
+      - alert: "没有控制器"
+        expr: sum(kafka_controller_kafkacontroller_activecontrollercount) by (app,cluster) < 1
+        for: 0m
+        labels:
+          severity: 严重
+        annotations:
+          description: 'kafka环境没有控制器'
+
+      - alert: "节点掉线"
+        expr: count(kafka_server_replicamanager_leadercount) by (app,cluster) < 3
+        for: 0m
+        labels:
+          severity: 严重
+        annotations:
+          description: 'kafka节点掉线'
+
+          #      - alert: "出现Leader不在首选副本上的分区"
+          #        expr: sum(kafka_controller_kafkacontroller_preferredreplicaimbalancecount) by (app,cluster) > 0
+          #        for: 1m
+          #        labels:
+          #          severity: 警告
+          #        annotations:
+          #          description: 'kafka出现Leader不在首选副本上的分区'
+
+      - alert: "离线分区数"
+        expr: sum(kafka_controller_kafkacontroller_offlinepartitionscount) by (app,cluster) > 0
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          value: "{{ $value }}"
+          description: 'kafka存在离线分区'
+
+      - alert: "未同步的分区数"
+        expr: sum(kafka_server_replicamanager_underreplicatedpartitions) by (app,cluster) > 0
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          value: "{{ $value }}"
+          description: 'kafka存在未同步的分区'
+
+      - alert: "节点GC次数"
+        expr: sum(jvm_gc_collection_seconds_count - jvm_gc_collection_seconds_count offset 1m) by (app,cluster,instance) > 30
+        for: 0s
+        labels:
+          severity: 警告
+        annotations:
+          value: "{{ $value }}"
+          description: '节点{{$labels.instance}}最近1min内GC过于频繁'
+
+      - alert: "消息积压数"
+        expr: sum(kafka_consumergroup_lag) by (app,cluster,topic) > 0
+        for: 1m
+        labels:
+          severity: 警告
+        annotations:
+          value: "{{ $value }}"
+          description: '{{$labels.topic}}出现消息积压'
+
+      - alert: "节点网络处理繁忙"
+        expr: (1 - kafka_network_socketserver_networkprocessoravgidlepercent) * 100 > 80
+        for: 0s
+        labels:
+          severity: 警告
+        annotations:
+          value: '{{ printf "%.2f" $value }}%'
+          description: '节点{{$labels.instance}} 网络处理繁忙'
+
+      - alert: "节点IO处理繁忙"
+        expr: (1 - kafka_server_kafkarequesthandlerpool_requesthandleravgidle_percent) * 100 > 80
+        for: 0s
+        labels:
+          severity: 警告
+        annotations:
+          value: '{{ printf "%.2f" $value }}%'
+          description: '节点{{$labels.instance}} IO处理繁忙'

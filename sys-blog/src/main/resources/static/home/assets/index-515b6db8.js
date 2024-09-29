@@ -9545,7 +9545,7 @@ const {c: Am} = function (e = {}) {
             return (e, n) => (Yr(), Qr("div", {
                 id: "loader-wrapper",
                 class: G(At(t).imgLoadStatus ? "loaded" : null)
-            }, [ai("div", Nm, [$m, ai("div", Dm, [ai("span", Fm, J(At("cowaveのblog")), 1), Rm])]), Hm, Wm], 2))
+            }, [ai("div", Nm, [$m, ai("div", Dm, [ai("span", Fm, J(At("cowave")), 1), Rm])]), Hm, Wm], 2))
         }
     }, [["__scopeId", "data-v-d7fe35e2"]]),
     qm = {xmlns: "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", viewBox: "0 0 512 512"},
@@ -9588,9 +9588,9 @@ const {c: Am} = function (e = {}) {
         name: "Compass", render: function (e, t) {
             return Yr(), Qr("svg", rg, ig)
         }
-    }), sg = {xmlns: "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", viewBox: "0 0 384 512"},
+    }), sg = {xmlns: "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", viewBox: "0 0 1024 1024"},
     lg = [ai("path", {
-        d: "M216 23.86c0-23.8-30.65-32.77-44.15-13.04C48 191.85 224 200 224 288c0 35.63-29.11 64.46-64.85 63.99c-35.17-.45-63.15-29.77-63.15-64.94v-85.51c0-21.7-26.47-32.23-41.43-16.5C27.8 213.16 0 261.33 0 320c0 105.87 86.13 192 192 192s192-86.13 192-192c0-170.29-168-193-168-296.14z",
+        d: "M511 769.4l-157.2 158.8c-5.6 5.6-13.4 8.8-21.4 8.8-8 0-15.6-3.2-21.4-8.8l-123.6-124.8c-11.6-11.6-11.6-30.6 0-42.2l156.8-158.4 42.4 42.4-135.6 137 81.4 82.2 136-137.6 42.6 42.6zM964.6 368l-274-276.8c-5.6-5.6-13.4-8.8-21.4-8.8s-15.6 3.2-21.4 8.8l-99 100c-11.6 11.6-11.6 30.6 0 42.2l80.6 81.4-67.4 68.2 42.4 42.4 88.8-89.6c11.6-11.6 11.6-30.6 0-42.2l-80.6-81.4 56.8-57.4 241.4 244-19.2 95.2-74.8-75.6c-5.6-5.6-13.4-8.8-21.4-8.8s-15.6 3.2-21.4 8.8l-87.8 88.8 42.4 42.4 66.8-67.4 65.2 65.8c13.4 13.4 32.8 18.4 51 13 18.2-5.4 31.8-20.4 35.6-39.2l25.6-126.8c1.8-9.8-1.2-19.8-8.2-27z m-143.8 556.4l3.6-3 53.8-53.8c1-1 2.2-2.2 3-3.6 23.4-32 20-75.8-8-103.8L504 391.4l-14.6-176c-2.2-26-18.2-48.8-41.8-59.6l-132.2-61c-11.4-5.2-24.8-2.8-33.8 6L204.6 178c-11.8 11.8-11.8 30.8 0 42.4l75.2 75.2-27.4 27.4-75.2-75.2c-11.8-11.8-30.8-11.8-42.4 0l-77.2 77.2c-8.8 8.8-11.2 22.4-6 33.8l61 132.2c10.8 23.6 33.8 39.6 59.6 41.8l176 14.6 368.8 368.8c15.6 15.6 36 23.6 56.6 23.6 16.4 0 32.8-5 47.2-15.4zM156 311.4l75.2 75.2c11.8 11.8 30.8 11.8 42.4 0l69.8-69.8c11.8-11.8 11.8-30.8 0-42.4l-75.2-75.2L309.4 158l113.2 52.2c4 1.8 6.8 5.8 7.2 10.2l15.4 187c0.6 7 3.6 13.8 8.6 18.8l376.6 376.6c6.6 6.6 7.8 16.6 3 24.6l-49.6 49.6c-7.8 4.8-18 3.6-24.6-3L382.6 497.2c-5-5-11.6-8-18.8-8.6l-187-15.4c-4.4-0.4-8.2-3-10.2-7.2l-52.2-113.2L156 311.4z",
         fill: "currentColor"
     }, null, -1)], cg = ao({
         name: "Fire", render: function (e, t) {
@@ -9622,7 +9622,7 @@ const {c: Am} = function (e = {}) {
         }
     }), bg = {xmlns: "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", viewBox: "0 0 512 512"},
     wg = [ai("path", {
-        d: "M464 32H336c-26.5 0-48 21.5-48 48v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48zm-288 0H48C21.5 32 0 53.5 0 80v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48z",
+        d: "M 105.5,-0.5 C 198.167,-0.5 290.833,-0.5 383.5,-0.5C 383.5,-0.166667 383.5,0.166667 383.5,0.5C 377.466,40.2314 371.466,80.0647 365.5,120C 289.167,120.5 212.834,120.667 136.5,120.5C 131.26,157.178 125.927,193.844 120.5,230.5C 194.834,230.333 269.167,230.5 343.5,231C 337.419,270.069 331.752,309.236 326.5,348.5C 240.167,348.5 153.833,348.5 67.5,348.5C 31.4808,335.137 8.81413,309.804 -0.5,272.5C -0.5,259.833 -0.5,247.167 -0.5,234.5C 8.63465,181.358 17.468,128.025 26,74.5C 36.8484,32.8161 63.3484,7.81605 105.5,-0.5 Z",
         fill: "currentColor"
     }, null, -1)], xg = ao({
         name: "QuoteRight", render: function (e, t) {
@@ -9632,7 +9632,7 @@ const {c: Am} = function (e = {}) {
     Eg = {class: "content"}, Mg = {class: "text"}, Lg = zm({
         __name: "Message", setup(e) {
             const t = dm(), n = Vi((() => {
-                const e = "Cowave Blog";
+                const e = "Cowave Station";
                 if (e.startsWith("http://") || e.startsWith("https://")) {
                     return e.replace(/^(https?:\/\/)/, "").split(".")
                 }
@@ -13504,23 +13504,28 @@ const wb = {
     }, kb =
         [
             {
-                icon: "Blog",
-                name: "博客",
+                icon: "CompactDisc",
+                name: "论坛",
                 link: "/blog"
             },
             {
-                icon: "Cloud",
-                name: "后台管理",
-                link: "http://10.64.4.74:81"
+                icon: "Fire",
+                name: "在线工具",
+                link: "https://www.jyshare.com"
             },
             {
                 icon: "LaptopCode",
                 name: "今日资讯",
                 link: "https://hot.imsyy.top/"
-            }
+            },
+            {
+                icon: "Cloud",
+                name: "控维通信",
+                link: "http://192.168.141.74:81"
+            },
         ],
     Sb = e => (yn("data-v-c32f090c"), e = e(), bn(), e), Cb = {key: 0, class: "links"}, _b = {class: "line"},
-    Tb = Sb((() => ai("span", {class: "title"}, "网页链接", -1))), Eb = ["onClick"], Mb = {class: "name text-hidden"},
+    Tb = Sb((() => ai("span", {class: "title"}, "应用列表", -1))), Eb = ["onClick"], Mb = {class: "name text-hidden"},
     Lb = Sb((() => ai("div", {class: "swiper-pagination"}, null, -1))), Ob = {
         __name: "Links", setup(e) {
             const t = dm(), n = Vi((() => {
@@ -13574,7 +13579,7 @@ const wb = {
     }, Ab = zm(Ob, [["__scopeId", "data-v-c32f090c"]]), Pb = {class: "bg"}, jb = {class: "sm"}, Bb = zm({
         __name: "Right", setup(e) {
             const t = dm(), n = Vi((() => {
-                const e = "Cowave Blog";
+                const e = "Cowave Station";
                 if (e.startsWith("http://") || e.startsWith("https://")) {
                     return e.replace(/^(https?:\/\/)/, "").split(".")
                 }
@@ -13672,8 +13677,8 @@ const wb = {
             const t = dm(), n = (new Date).getFullYear();
             Et("2020-10-24");
             const o = Et("xxx");
-            return Et("cowaveのblog"), Vi((() => {
-                const e = "Cowave Blog";
+            return Et("cowave"), Vi((() => {
+                const e = "Cowave Station";
                 return e.startsWith("http://") || e.startsWith("https://") ? e : "//" + e
             })), (e, r) => (Yr(), Qr("footer", {
                 id: "footer",
@@ -13876,7 +13881,7 @@ const wb = {
     Mw = zm({
         __name: "index", setup(e) {
             const t = dm(), n = Et(!1), o = Vi((() => {
-                const e = "Cowave Blog";
+                const e = "Cowave Station";
                 if (e.startsWith("http://") || e.startsWith("https://")) {
                     return e.replace(/^(https?:\/\/)/, "").split(".")
                 }

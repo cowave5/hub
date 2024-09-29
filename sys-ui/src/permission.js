@@ -1,13 +1,12 @@
 import router from './router'
 import store from './store'
-import { Message } from 'element-ui'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import cache from "@/plugins/cache";
 
 NProgress.configure({ showSpinner: false })
 
-const whiteList = ['/login', '/oauth/gitlab', '/bind', '/register']
+const whiteList = ['/login', '/register', '/ldap', '/oauth/gitlab', '/bind']
 
 // 路由跳转
 router.beforeEach((to, from, next) => {
@@ -16,7 +15,7 @@ router.beforeEach((to, from, next) => {
   if (cache.local.getAccessToken()) {
     to.meta.title && store.dispatch('settings/setTitle', to.meta.title)
     // 如果登录Url，直接将next置为首页
-    if (to.path === '/login' || to.path === '/oauth/gitlab') {
+    if (to.path === '/login' || to.path === '/ldap' || to.path === '/oauth/gitlab') {
       next({ path: '/' })
       NProgress.done()
     } else {
@@ -29,11 +28,9 @@ router.beforeEach((to, from, next) => {
             next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
           })
         }).catch(err => {
-            store.dispatch('LogOut').then(() => {
-              Message.error(err)
-              next({ path: '/' })
-            })
-          })
+          cache.local.removeAccessToken()
+          next({ path: '/login' })
+        })
       } else {
         next()
       }
@@ -42,7 +39,8 @@ router.beforeEach((to, from, next) => {
     if (whiteList.indexOf(to.path) !== -1) {
       next()
     } else {
-      next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
+      const redirect = encodeURIComponent(to.fullPath);
+      next(`/login?redirect=${redirect}`) // 否则全部重定向到登录页
       NProgress.done()
     }
   }

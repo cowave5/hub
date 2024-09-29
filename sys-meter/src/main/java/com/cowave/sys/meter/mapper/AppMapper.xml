@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2025 Cowave All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.meter.mapper.AppMapper">
+    <resultMap id="applicationMap" type="com.cowave.sys.meter.entity.AppInfo">
+        <result column="id" property="id"/>
+        <result column="app_code" property="appCode"/>
+        <result column="app_name" property="appName"/>
+        <result column="app_version" property="appVersion"/>
+        <result column="app_desc" property="appDesc"/>
+        <result column="http_port" property="httpPort"/>
+        <result column="http_context" property="httpContext"/>
+        <result column="is_security" property="isSecurity"/>
+        <result column="project_code" property="projectCode"/>
+        <result column="db_id" property="dbId"/>
+        <result column="db_name" property="dbName"/>
+        <result column="db_code" property="dbCode"/>
+        <result column="db_type" property="dbType"/>
+        <result column="db_url" property="dbUrl"/>
+        <result column="db_user" property="dbUser"/>
+        <result column="db_passwd" property="dbPasswd"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="list" resultMap="applicationMap">
+        select a.id,a.app_name,a.app_code,a.app_version,
+               a.project_code,a.http_port,a.http_context,a.update_time,d.db_name,d.db_code
+        from app_info a left join db_info d on d.id = a.db_id
+        <where>
+            <if test="projectCode != null and projectCode != ''">
+                and a.project_code like concat('%', #{projectCode}, '%')
+            </if>
+            <if test="appName != null and appName != ''">
+                and a.app_name like concat('%', #{appName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="info" resultMap="applicationMap">
+        select a.id,a.app_name,a.app_code,a.app_version,
+               a.project_code,a.http_port,a.http_context,a.db_id,a.is_security,a.app_desc,
+               d.db_type, d.db_url, d.db_user, d.db_passwd
+        from app_info a left join db_info d on d.id = a.db_id
+        where a.id = #{id}
+    </select>
+
+    <select id="modelList" resultType="java.lang.Long">
+        select model_id from app_model where app_id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into app_info(app_name,app_code,http_port,http_context,is_security,app_version,
+                             db_id,project_code,app_desc,update_time)
+        values(#{appName},#{appCode},#{httpPort},#{httpContext},#{isSecurity},#{appVersion},
+               #{dbId},#{projectCode},#{appDesc},#{accessTime})
+    </insert>
+
+    <insert id="insertModels">
+        insert into app_model(app_id, model_id) values
+        <foreach item="modelId" index="index" collection="list" separator=",">
+            (#{appId}, #{modelId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteModels">
+        delete from app_model where app_id = #{id}
+    </delete>
+
+    <update id="update">
+        update app_info
+        set app_name     = #{appName},
+            app_code     = #{appCode},
+            http_port    = #{httpPort},
+            http_context = #{httpContext},
+            is_security  = #{isSecurity},
+            app_version  = #{appVersion},
+            db_id        = #{dbId},
+            project_code = #{projectCode},
+            app_desc     = #{appDesc},
+            update_time  = #{accessTime}
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from app_info where id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

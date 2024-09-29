@@ -1,0 +1,39 @@
+groups:
+- name: Redis
+  rules:
+    - alert: 宕机
+      expr: redis_up == 0
+      for: 0m
+      labels:
+        severity: 故障
+      annotations:
+        description: "Redis出现宕机"
+
+    - alert: 内存使用率
+      expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 80
+      for: 1m
+      labels:
+        severity: 严重
+      annotations:
+        value: '{{ printf "%.2f" $value }}%'
+        description: "Redis内存使用率持续1min超过80%"
+        graph: 'http://10.64.4.74:9090/graph?g0.expr=redis_memory_used_bytes%20%2F%20redis_memory_max_bytes%20*%20100&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+
+    - alert: 连接数
+      expr: redis_connected_clients > 1000
+      for: 1m
+      labels:
+        severity: 警告
+      annotations:
+        value: "{{ $value }}"
+        description: "Redis连接数持续1min超过1000"
+        graph: 'http://10.64.4.74:9090/graph?g0.expr=redis_connected_clients&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+
+    - alert: 拒绝连接数
+      expr: increase(redis_rejected_connections_total[1m]) > 0
+      for: 1m
+      labels:
+        severity: 警告
+      annotations:
+        value: "{{ $value }}"
+        description: "Redis最近一分钟内拒绝连接"	

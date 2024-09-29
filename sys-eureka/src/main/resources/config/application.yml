@@ -1,3 +1,8 @@
+server:
+  port: 8849
+  servlet:
+    context-path: /
+
 spring:
   application:
     name: sys-eureka
@@ -12,11 +17,6 @@ spring:
           webhook-url:
           secret:
           enabled: false
-
-server:
-  port: 8849
-  servlet:
-    context-path: /
 
 eureka:
   instance:

@@ -1,24 +1,24 @@
 <template>
   <div class="register">
-    <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
+    <el-form ref="form" :model="form" :rules="registerRules" class="register-form">
       <h3 class="title">Cowave管理系统</h3>
       <el-form-item prop="userAccount">
-        <el-input v-model="registerForm.userAccount" type="text" auto-complete="off" placeholder="账号">
+        <el-input v-model="form.userAccount" type="text" autocomplete="new-password" placeholder="账号">
           <svg-icon slot="prefix" icon-class="guide" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="userName">
-        <el-input v-model="registerForm.userName" type="text" auto-complete="off" placeholder="昵称">
+        <el-input v-model="form.userName" type="text" autocomplete="new-password" placeholder="昵称">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="userEmail">
-        <el-input v-model="registerForm.userEmail" type="text" auto-complete="off" placeholder="邮箱">
+        <el-input v-model="form.userEmail" type="text" autocomplete="new-password" placeholder="邮箱">
           <svg-icon slot="prefix" icon-class="email" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="captcha">
-        <el-input v-model="registerForm.captcha" auto-complete="off" placeholder="验证码"
+        <el-input v-model="form.captcha" autocomplete="new-password" placeholder="验证码"
                   style="width: 63%" @keyup.enter.native="handleRegister">
           <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
         </el-input>
@@ -33,7 +33,7 @@
           <span v-else>注 册 中...</span>
         </el-button>
         <div style="float: right;">
-          <router-link class="link-type" :to="'/login'">使用已有账号登录</router-link>
+          <router-link class="link-type" :to="'/login'">系统账号登录</router-link>
         </div>
       </el-form-item>
     </el-form>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import {getEmailCode, register} from "@/api/login";
+import {getEmailCode, register} from "@/api/auth";
 import confirmCode from "@/views/confirmCode.vue";
 
 export default {
@@ -55,7 +55,7 @@ export default {
       version: "",
       year: new Date().getFullYear(),
       codeUrl: "",
-      registerForm: {
+      form: {
         userAccount: "",
         userName: "",
         userEmail: "",
@@ -71,7 +71,7 @@ export default {
         ],
         userEmail: [
           { required: true, trigger: "blur", message: "请输入邮箱" },
-          {type: "email", message: this.$t(`user.rules.email`), trigger: ["blur", "change"]}
+          {type: "email", message: this.$t('user.rules.email'), trigger: ["blur", "change"]}
         ],
         code: [{ required: true, trigger: "blur", message: "请输入验证码" }]
       },
@@ -86,7 +86,7 @@ export default {
   methods: {
     getConfirmCodeClick() {
       this.timeKeeping = true;
-      getEmailCode(this.registerForm.userEmail).then(res => {
+      getEmailCode(this.form.userEmail).then(res => {
         this.$modal.msgSuccess("验证码已发送至邮箱");
       });
     },
@@ -94,17 +94,17 @@ export default {
       this.timeKeeping = false;
     },
     handleRegister() {
-      this.$refs.registerForm.validate(valid => {
+      this.$refs.form.validate(valid => {
         if (valid) {
           this.loading = true;
-          register(this.registerForm).then(res => {
+          register(this.form).then(res => {
             this.loading = false;
             this.$modal.msgSuccess("注册成功, 初始密码为: " + res.data);
             setInterval(() => {
               this.$router.push("/login");
             }, 2000 );
           }).catch(() => {
-            this.registerForm.captcha = "";
+            this.form.captcha = "";
             this.loading = false;
           })
         }

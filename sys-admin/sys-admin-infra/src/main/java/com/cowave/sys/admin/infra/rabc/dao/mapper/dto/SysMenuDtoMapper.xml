@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2025 Cowave All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.admin.infra.rabc.dao.mapper.dto.SysMenuDtoMapper">
+	<sql id="menuField">
+		m.menu_id     menuId,
+		m.parent_id   parentId,
+    	m.menu_name   menuName,
+    	m.menu_order  menuOrder,
+    	m.menu_permit menuPermit,
+    	m.menu_path   menuPath,
+		m.menu_param  menuParam,
+		m.menu_type   menuType,
+		m.menu_icon   menuIcon,
+		m.menu_status menuStatus,
+		m.component,
+		m.is_frame      isFrame,
+		m.is_cache      isCache,
+		m.is_visible    isVisible,
+		m.is_protected  isProtected,
+		m.create_by     createBy,
+        m.create_time   createTime,
+        m.update_by     updateBy,
+        m.update_time   updateTime,
+    	m.remark
+	</sql>
+
+	<select id="getMenusByRole" resultType="com.cowave.sys.admin.domain.rabc.SysMenu">
+		select
+		<include refid="menuField"/>
+		from sys_menu m where is_protected = 0 and m.menu_status = 1
+		union
+		select
+		<include refid="menuField"/>
+		from sys_role r, sys_role_menu rm, sys_menu m
+		where r.role_id = rm.role_id and rm.menu_id = m.menu_id and m.menu_status = 1 and r.role_code in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		order by parentId, menuOrder
+	</select>
+
+	<select id="getApiMenusByRole" resultType="com.cowave.sys.admin.domain.rabc.SysMenu">
+		select <include refid="menuField"/>
+		from sys_menu m
+		where is_protected = 0 and m.menu_status = 1 and (m.menu_permit is not null or m.menu_type = 'M')
+		union
+		select <include refid="menuField"/>
+		from sys_role r, sys_role_menu rm, sys_menu m
+		where r.role_id = rm.role_id
+		  and rm.menu_id = m.menu_id
+		  and m.menu_status = 1
+		  and (m.menu_permit is not null or m.menu_type = 'M')
+		  and r.role_code in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		order by parentId, menuOrder
+	</select>
+
+    <delete id="loopDeleteMenuRoles">
+        with recursive tree (menu_id, parent_id) as
+        (select m1.menu_id, m1.parent_id from sys_menu m1 where parent_id = #{menuId} or menu_id = #{menuId}
+         union
+         select m2.menu_id, m2.parent_id from sys_menu m2 join tree on m2.parent_id = tree.menu_id)
+        delete from sys_role_menu rm using tree where rm.menu_id = tree.menu_id
+    </delete>
+
+    <delete id="loopDeleteMenus">
+        with recursive tree (menu_id, parent_id) as
+        (select m1.menu_id, m1.parent_id from sys_menu m1 where parent_id = #{menuId} or menu_id = #{menuId}
+         union
+         select m2.menu_id, m2.parent_id from sys_menu m2 join tree on m2.parent_id = tree.menu_id)
+        delete from sys_menu m using tree where m.menu_id = tree.menu_id
+    </delete>
+
+	<select id="getPermitsByUserId" resultType="java.lang.String">
+		select distinct m.menu_permit
+		from sys_user_role u,
+			 sys_role r,
+			 sys_role_menu rm,
+			 sys_menu m
+		where u.role_id = r.role_id
+		  and r.role_id = rm.role_id
+		  and rm.menu_id = m.menu_id
+		  and m.menu_status = 1
+		  and m.menu_permit is not null
+		  and (u.user_id = #{userId} or m.is_protected = 0)
+	</select>
+</mapper>

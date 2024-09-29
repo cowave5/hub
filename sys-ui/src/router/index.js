@@ -42,11 +42,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/oauth/gitlab',
-    component: () => import('@/views/oauth'),
-    hidden: true
-  },
-  {
     path: '/login',
     component: () => import('@/views/login'),
     hidden: true
@@ -54,6 +49,21 @@ export const constantRoutes = [
   {
     path: '/register',
     component: () => import('@/views/register'),
+    hidden: true
+  },
+  {
+    path: '/ldap',
+    component: () => import('@/views/ldap'),
+    hidden: true
+  },
+  {
+    path: '/oauth/gitlab',
+    component: () => import('@/views/oauth'),
+    hidden: true
+  },
+  {
+    path: '/oauth/authorize',
+    component: () => import('@/views/authorize.vue'),
     hidden: true
   },
   {
@@ -75,7 +85,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/index'),
         name: 'Index',
-        meta: { title:  'route.dashboard', icon: 'dashboard', affix: true }
+        meta: { title:  'commons.menu.dashboard', icon: 'index', affix: true }
       }
     ]
   },
@@ -87,22 +97,63 @@ export const constantRoutes = [
     children: [
       {
         path: 'profile',
-        component: () => import('@/views/system/user/profile/index'),
+        component: () => import('@/views/profile/index'),
         name: 'Profile',
-        meta: { title: '个人中心', icon: 'user' }
+        meta: { title: 'commons.theme.profile', icon: 'user' }
       }
     ]
   },
   {
-    path: '/system/dept-post',
+    path: '/user',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'notice',
+        component: () => import('@/views/profile/notice/index'),
+        name: 'notice',
+        meta: { title: 'commons.theme.notice', icon: 'notice' }
+      }
+    ]
+  },
+  {
+    path: '/user',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'token',
+        component: () => import('@/views/profile/token/index'),
+        name: 'token',
+        meta: { title: 'commons.theme.token', icon: 'token' }
+      }
+    ]
+  },
+  {
+    path: '/system/user-auth',
     component: Layout,
     hidden: true,
     children: [
       {
-        path: 'dept/:deptId(\\d+)',
-        component: () => import('@/views/system/dept/deptPost'),
-        name: 'DeptPost',
-        meta: { title: 'route.system.dept.positions', activeMenu: '/system/dept' }
+        path: 'role/:userId(\\d+)',
+        component: () => import('@/views/system/user/userRole.vue'),
+        name: 'AuthRole',
+        meta: { title: 'user.button.grant', activeMenu: '/system/user' }
+      }
+    ]
+  },
+  {
+    path: '/system/role-auth',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'user/:roleId(\\d+)',
+        component: () => import('@/views/system/role/roleUser.vue'),
+        name: 'AuthUser',
+        meta: { title: 'role.button.members', activeMenu: '/system/role' }
       }
     ]
   },
@@ -115,93 +166,80 @@ export const constantRoutes = [
         path: 'dept/:deptId(\\d+)',
         component: () => import('@/views/system/dept/deptUser'),
         name: 'DeptUser',
-        meta: { title: 'route.system.dept.members', activeMenu: '/system/dept' }
+        meta: { title: 'dept.button.members', activeMenu: '/system/dept' }
       }
     ]
   },
   {
-    path: '/system/role-auth',
+    path: '/system/dept-post',
     component: Layout,
     hidden: true,
     children: [
       {
-        path: 'user/:roleId(\\d+)',
-        component: () => import('@/views/system/role/authUser'),
-        name: 'AuthUser',
-        meta: { title: 'route.system.role.grant', activeMenu: '/system/role' }
+        path: 'dept/:deptId(\\d+)',
+        component: () => import('@/views/system/dept/deptPost'),
+        name: 'DeptPost',
+        meta: { title: 'dept.button.positions', activeMenu: '/system/dept' }
       }
     ]
   },
   {
-    path: '/monitor/job-log',
+    path: '/system/job-log',
     component: Layout,
     hidden: true,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/monitor/job/log'),
+        component: () => import('@/views/system/job/log'),
         name: 'JobLog',
-        meta: { title: '任务日志', activeMenu: '/monitor/job' }
+        meta: { title: '任务日志', activeMenu: '/system/job' }
       }
     ]
   },
   {
-    path: '/system/flow-modeler',
+    path: '/flow/manage-modeler',
     component: Layout,
     hidden: true,
     children: [
       {
         path: 'designer/:id',
-        component: () => import('@/views/system/flow/designer'),
+        component: () => import('@/views/flow/designer'),
         name: 'flowDesigner',
-        meta: { title: '流程设计', activeMenu: '/system/flow/modeler' }
+        meta: { title: '流程设计', activeMenu: '/flow/manage/modeler' }
       }
     ]
   },
   {
-    path: '/tool/table-column',
+    path: '/meter/template-column',
     component: Layout,
     hidden: true,
     children: [
       {
         path: 'table/:tableId(\\d+)',
-        component: () => import('@/views/tool/code/column.vue'),
+        component: () => import('@/views/meter/template/column.vue'),
         name: 'tableColumn',
-        meta: { title: '库表字段', activeMenu: '/tool/code/table' }
+        meta: { title: '库表字段', activeMenu: '/meter/template/table' }
       }
     ]
   },
   {
-    path: '/tool/model-field',
+    path: '/meter/template-field',
     component: Layout,
     hidden: true,
     children: [
       {
         path: 'model/:modelId(\\d+)',
-        component: () => import('@/views/tool/code/field.vue'),
+        component: () => import('@/views/meter/template/field.vue'),
         name: 'ModelField',
-        meta: { title: '模型字段', activeMenu: '/tool/code/model' }
+        meta: { title: '模型字段', activeMenu: '/meter/template/model' }
       }
     ]
-  }
+  },
 ]
 
-// 动态路由，基于用户权限动态去加载
+// 权限路由
 export const dynamicRoutes = [
-  {
-    path: '/system/user-auth',
-    component: Layout,
-    hidden: true,
-    permissions: ['sys:user:edit'],
-    children: [
-      {
-        path: 'role/:userId(\\d+)',
-        component: () => import('@/views/system/user/authRole'),
-        name: 'AuthRole',
-        meta: { title: 'route.system.user.grant', activeMenu: '/system/user' }
-      }
-    ]
-  }
+
 ]
 
 // 防止连续点击多次路由报错

@@ -1,18 +1,19 @@
 <template>
   <div class="app-container">
+    <!--  筛选栏  -->
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="日志模块" prop="title">
-        <el-select v-model="queryParams.groupCode" @change="handleGroupChange">
-          <el-option v-for="item in groupOptions" :key="item.key" :value="item.key" :label="item.label"/>
+      <el-form-item label="日志模块" prop="opModule">
+        <el-select v-model="queryParams.opModule" @change="handleModuleChange">
+          <el-option v-for="item in moduleOptions" :key="item.key" :value="item.key" :label="$t(item.label)"/>
         </el-select>
       </el-form-item>
-      <el-form-item label="日志类型" prop="businessType">
-        <el-select v-model="queryParams.typeCode">
-          <el-option v-for="item in typeOptions" :key="item.key" :value="item.key" :label="item.label"/>
+      <el-form-item label="日志类型" prop="opType">
+        <el-select v-model="queryParams.opType">
+          <el-option v-for="item in typeOptions" :key="item.key" :value="item.key" :label="$t(item.label)"/>
         </el-select>
       </el-form-item>
-      <el-form-item label="操作人" prop="operName">
-        <el-input v-model="queryParams.userName" placeholder="请输入操作人员" clearable style="width: 240px;" @keyup.enter.native="handleQuery"/>
+      <el-form-item label="操作人" prop="opUser">
+        <el-input v-model="queryParams.opUser" placeholder="请输入操作人员" clearable style="width: 240px;" @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="操作时间">
         <el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange"
@@ -24,6 +25,7 @@
       </el-form-item>
     </el-form>
 
+    <!--  操作栏  -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="handleClean"
@@ -40,6 +42,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
+    <!--  列表数据  -->
     <el-table ref="tables" v-loading="loading" :data="list" @selection-change="handleSelectionChange" :header-cell-style="{'text-align':'center'}">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" type="index" align="center" width="55">
@@ -47,19 +50,36 @@
           <span>{{(queryParams.page - 1) * queryParams.pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="日志模块" align="center" prop="groupName" />
-      <el-table-column label="日志类型" align="center" prop="typeName"/>
-      <el-table-column label="日志动作" align="center" prop="actionName"/>
-      <el-table-column label="访问ip" align="center" prop="ip"/>
-      <el-table-column label="访问路径" align="left" prop="url" width="180" :show-overflow-tooltip="true" />
-      <el-table-column label="访问时间" align="center" prop="logTime" width="160"/>
-      <el-table-column label="操作人" align="center" prop="userName"/>
-      <el-table-column label="操作结果" align="center" prop="logStatus">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_is_success" :value="scope.row.logStatus"/>
+      <el-table-column label="日志模块" align="center" prop="opModule">
+        <template slot-scope="{row: {opModule}}">
+          <template v-for="module in moduleOptions">
+            <span v-if="opModule === module.key">{{ $t(module.label) }}</span>
+          </template>
         </template>
       </el-table-column>
-      <el-table-column label="操作描述" align="center" prop="logDesc" width="240" :show-overflow-tooltip="true" />
+      <el-table-column label="日志类型" align="center" prop="opType">
+        <template slot-scope="{row: {opType, opModule}}">
+          <template v-for="type in moduleOptions.find(item => item.key === opModule).children">
+            <span v-if="opType === type.key">{{ $t(type.label) }}</span>
+          </template>
+        </template>
+      </el-table-column>
+      <el-table-column label="日志动作" align="center" prop="opAction">
+        <template slot-scope="{row: {opAction}}">
+          <template v-for="action in dict.type.op_action">
+            <span v-if="opAction === action.code">{{ $t(action.name) }}</span>
+          </template>
+        </template>
+      </el-table-column>
+      <el-table-column label="日志描述" align="center" prop="opDesc" width="240" :show-overflow-tooltip="true" />
+      <el-table-column label="访问ip" align="center" prop="ip"/>
+      <el-table-column label="访问时间" align="center" prop="opTime" width="160"/>
+      <el-table-column label="操作人" align="center" prop="access.accessUserName"/>
+      <el-table-column label="操作结果" align="center" prop="opStatus">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.success_failed" :value="scope.row.opStatus"/>
+        </template>
+      </el-table-column>
       <el-table-column label="详情" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-view" @click="handleView(scope.row)"
@@ -68,21 +88,16 @@
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.pageSize" @pagination="getList"/>
-    <log-detail v-if="viewKey === 'log-detail'" ref="log-detail" @ok="handleQuery" />
-    <log-user v-if="viewKey === 'log-user'" ref="log-user" @ok="handleQuery" />
-    <log-dept v-if="viewKey === 'log-dept'" ref="log-dept" @ok="handleQuery" />
-    <log-role v-if="viewKey === 'log-role'" ref="log-role" @ok="handleQuery" />
-    <log-post v-if="viewKey === 'log-post'" ref="log-post" @ok="handleQuery" />
+    <component ref="infoRef" :is="infoView" @ok="handleQuery" />
   </div>
 </template>
 
 <script>
-import {list, delOperlog, cleanOperlog, options} from "@/api/monitor/operlog";
+import {getOpLogList, delOpLog, cleanOpLog, getOpLogOptions} from "@/api/monitor/operlog";
 import {checkPermit} from "@/utils/permission";
 export default {
-  name: "Operlog",
-  dicts: ['sys_is_success'],
-  components: { logDetail: ()=> import('./detail/logDetail.vue'), logUser: ()=> import('./detail/logUser.vue'), logDept: ()=> import('./detail/logDept.vue'), logRole: ()=> import('./detail/logRole.vue'), logPost: ()=> import('./detail/logPost.vue') },
+  name: "Oplog",
+  dicts: ['success_failed', 'op_action'],
   data() {
     return {
       // 遮罩层
@@ -103,15 +118,16 @@ export default {
       queryParams: {
         page: 1,
         pageSize: 10,
-        groupCode: undefined,
-        typeCode: undefined,
-        userName: undefined,
+        opModule: undefined,
+        opType: undefined,
+        opUser: undefined,
         beginTime: undefined,
         endTime: undefined
       },
-      groupOptions: [],
+      moduleOptions: [],
       typeOptions: [],
       viewKey: '',
+      infoView: null
     };
   },
   created() {
@@ -121,28 +137,28 @@ export default {
   methods: {
     checkPermit,
     getOptions() {
-      options().then( response => {
-        this.groupOptions = response.data;
+      getOpLogOptions().then(response => {
+        this.moduleOptions = response.data;
       });
     },
     /** 选择分组 */
-    handleGroupChange() {
-      const selectedOption = this.groupOptions.find(item => item.key === this.queryParams.groupCode);
+    handleModuleChange() {
+      const selectedOption = this.moduleOptions.find(item => item.key === this.queryParams.opModule);
       if (selectedOption && selectedOption.children) {
         this.typeOptions = selectedOption.children;
       } else {
         this.typeOptions = [];
       }
-      this.queryParams.typeCode = undefined;
+      this.queryParams.opType = undefined;
     },
     /** 查询登录日志 */
     getList() {
       this.loading = true;
-      list(this.addDateRange(this.queryParams, this.dateRange)).then( response => {
-          this.list = response.data.list;
-          this.total = response.data.total;
-          this.loading = false;
-        }
+      getOpLogList(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+            this.list = response.data.list;
+            this.total = response.data.total;
+            this.loading = false;
+          }
       );
     },
     /** 搜索按钮操作 */
@@ -153,15 +169,6 @@ export default {
     /** 重置按钮操作 */
     resetQuery() {
       this.dateRange = [];
-      this.queryParams = {
-        page: 1,
-          pageSize: 10,
-          groupCode: undefined,
-          typeCode: undefined,
-          userName: undefined,
-          beginTime: undefined,
-          endTime: undefined
-      },
       this.resetForm("queryForm");
       this.handleQuery();
     },
@@ -174,7 +181,7 @@ export default {
     handleDelete() {
       const ids = this.ids;
       this.$modal.confirm('确认删除所选日志？').then(function() {
-        return delOperlog(ids);
+        return delOpLog(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -183,7 +190,7 @@ export default {
     /** 清空 */
     handleClean() {
       this.$modal.confirm('确认清空所有日志数据？').then(function() {
-        return cleanOperlog();
+        return cleanOpLog();
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("清空成功");
@@ -193,14 +200,24 @@ export default {
     handleExport() {
       this.download('/admin/api/v1/log/export', {
         ...this.queryParams
-      }, `系统日志_${new Date().getTime()}.xlsx`)
+      }, `操作日志_${new Date().getTime()}.xlsx`)
     },
     /** 详情 */
     handleView(row) {
-      this.viewKey = row.viewKey
-      setTimeout(()=>{
-        this.$refs[row.viewKey].show(row.id);
-      });
+      let types = this.moduleOptions.find(item => item.key === row.opModule).children;
+      if (types !== undefined) {
+        let viewName = types.find(item => item.key === row.opType).value;
+        if (viewName === undefined) {
+          viewName = "detail";
+        }
+        this.infoView = this.getDialog(viewName)
+        this.$nextTick(() => {
+          this.$refs.infoRef.show(row)
+        })
+      }
+    },
+    getDialog(viewName) {
+      return require(`@/views/monitor/operlog/detail/${viewName}.vue`).default;
     },
   }
 };

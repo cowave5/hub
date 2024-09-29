@@ -17,34 +17,34 @@
 	"packageFilters": "com.cowave.*",
 	"requestHeaders": [
 		{
-			"name": "Authorization",
-			"type": "string",
-			"value": "-",
-			"desc": "请求Token",
-			"required": false,
-			"since": "1.0.0"
-		},
-		{
-			"name": "requestId",
-			"type": "string",
-			"value": "xxx20230321",
-			"desc": "请求Id",
-			"required": false,
-			"since": "1.0.0"
-		},
-		{
-			"name": "Accept-Language",
-			"type": "string",
-			"value": "en",
-			"desc": "国际化 en/zh",
-			"required": false,
-			"since": "1.0.0"
-		}
+            "name": "X-Request-ID",
+            "type": "string",
+            "value": "20220425090000001",
+            "desc": "请求Id",
+            "required": false,
+            "since": "1.0.0"
+        },
+        {
+            "name": "Accept-Language",
+            "type": "string",
+            "value": "en",
+            "desc": "国际化 en/zh",
+            "required": false,
+            "since": "1.0.0"
+        },
+        {
+            "name": "Authorization",
+            "type": "string",
+            "value": "-",
+            "desc": "请求Token",
+            "required": false,
+            "since": "1.0.0"
+        }
 	],
 	"errorCodeDictionaries": [
 		{
 			"title": "响应码",
-			"enumClassName": "org.springframework.feign.codec.ResponseCode",
+			"enumClassName": "com.cowave.commons.client.http.constants.HttpCode",
 			"codeField": "code",
 			"descField": "msg"
 		}

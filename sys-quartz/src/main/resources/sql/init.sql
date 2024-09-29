@@ -13,11 +13,11 @@ create table quartz_task(
     begin_time   timestamp,
     end_time     timestamp,
     remark       character varying(255),
-    create_user  int8,
-    create_dept  int8,
+    create_user  int4,
+    create_dept  int4,
     create_time  timestamp,
-    update_user  int8,
-    update_dept  int8,
+    update_user  int4,
+    update_dept  int4,
     update_time  timestamp
 );
 

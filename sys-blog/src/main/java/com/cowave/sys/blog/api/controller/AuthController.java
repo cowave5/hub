@@ -1,42 +1,39 @@
 /*
- * Copyright (c) 2017～2099 Cowave All Rights Reserved.
+ * Copyright (c) 2017～2025 Cowave All Rights Reserved.
  *
- * For licensing information, please contact: https://www.cowave.com.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
- * This code is proprietary and confidential.
- * Unauthorized copying of this file, via any medium is strictly prohibited.
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 package com.cowave.sys.blog.api.controller;
 
 import com.cowave.commons.framework.access.Access;
-import com.cowave.commons.tools.Asserts;
-import com.cowave.commons.tools.AssertsException;
-import com.cowave.sys.blog.configuration.LdapConfiguration;
-import com.cowave.sys.blog.utils.LdapUserNameMapper;
-import com.cowave.sys.model.admin.Login;
+import com.cowave.commons.framework.access.security.AccessUserDetails;
+import com.cowave.commons.framework.access.security.BearerTokenService;
+import com.cowave.sys.admin.client.AdminOAuthClient;
+import com.cowave.sys.admin.domain.auth.dto.UserProfile;
+import com.cowave.sys.admin.domain.auth.request.OAuth2TokenRequest;
+import com.cowave.sys.blog.api.cache.BlogCache;
+import com.cowave.sys.blog.api.service.BlogService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.feign.codec.Response;
-import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
-import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
-import javax.naming.directory.SearchControls;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.net.URL;
 import java.util.Random;
 
 /**
@@ -45,52 +42,41 @@ import java.util.Random;
  * @author shanhuiming
  */
 @RequiredArgsConstructor
-@RestController
+@Controller
 @RequestMapping("/auth")
 public class AuthController {
-
     private final Random rand = new Random();
+    private final AdminOAuthClient adminOAuthClient;
+    private final BearerTokenService bearerTokenService;
+    private final BlogService blogService;
+    private final BlogCache blogCache;
 
-    private final LdapConfiguration ldapConfiguration;
-
-    private final ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy;
-
-    /**
-     * 登录
-     */
-    @RequestMapping("/login")
-    public Response<Void> login(@Validated Login login) throws IOException {
-        LdapTemplate ldapTemplate = getLdapTemplate();
-        String filter = "(&(objectClass=person)(sAMAccountName=" + login.getUserAccount() + "))";
-        boolean isAuthenticated = ldapTemplate.authenticate("", filter, login.getPassWord());
-        Asserts.isTrue(isAuthenticated, "用户名或密码错误");
-        Access.setCookie("blog-userName", login.getUserAccount());
-
-        List<String> list = ldapTemplate.search(
-                ldapConfiguration.getUserDn(), filter, SearchControls.SUBTREE_SCOPE, new LdapUserNameMapper());
-        if(CollectionUtils.isNotEmpty(list)){
-            avatarGenerate(list.get(0), login.getUserAccount());
+    @RequestMapping("/callback")
+    public String authCallback(String code,
+                               HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
+        OAuth2TokenRequest tokenRequest = new OAuth2TokenRequest();
+        tokenRequest.setCode(code);
+        tokenRequest.setRedirectUri("http://10.64.4.74/auth/callback");
+        tokenRequest.setClientId("6ac6519451ed4ef09431aacccbcb1f5f");
+        tokenRequest.setClientSecret("4a2e671fbd074f238e80c7f5566f8f7a");
+        AccessUserDetails userDetails =
+                adminOAuthClient.getAuthorizeToken("http://10.64.4.74:19000", tokenRequest);
+        UserProfile userProfile =
+                adminOAuthClient.getUserProfile("http://10.64.4.74:19000", userDetails.getAccessToken());
+        // cookie设置
+        Access.setCookie("blog-userName", userProfile.getUserAccount());
+        bearerTokenService.assignAccessToken(userDetails);
+        // 头像
+        if(StringUtils.isBlank(userProfile.getAvatar())){
+            avatarGenerate(userProfile.getUserName(), userProfile.getUserAccount());
+        }else{
+            URL url = new URL(userProfile.getAvatar());
+            IOUtils.copy(url, new File("public/avatar/" + userProfile.getUserAccount() + ".jpg"));
         }
-        return Response.success();
-    }
 
-    private LdapTemplate getLdapTemplate(){
-        LdapContextSource source = new LdapContextSource();
-        dirContextAuthenticationStrategy.ifUnique(source::setAuthenticationStrategy);
-        PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-        try{
-            propertyMapper.from(ldapConfiguration.getLdapUser()).to(source::setUserDn);
-            propertyMapper.from(ldapConfiguration.getLdapPasswd()).to(source::setPassword);
-            propertyMapper.from(ldapConfiguration.anonymousReadOnly()).to(source::setAnonymousReadOnly);
-            propertyMapper.from(ldapConfiguration.getBaseDn()).to(source::setBase);
-            propertyMapper.from(ldapConfiguration.determineUrls()).to(source::setUrls);
-            propertyMapper.from(ldapConfiguration.getEnvironment()).to(
-                    baseEnvironment -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
-            source.afterPropertiesSet();
-        }catch(Exception e){
-            throw new AssertsException("ldap.invalid", e);
-        }
-        return new LdapTemplate(source);
+        // 删除Html缓存
+        blogCache.removeHtmlOfPrefix("blog-");
+        return blogService.index(request, response, modelMap);
     }
 
     private void avatarGenerate(String userName, String userAccount) throws IOException {

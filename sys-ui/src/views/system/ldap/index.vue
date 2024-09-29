@@ -1,55 +1,46 @@
 <template>
   <div class="app-container">
+    <!--  筛选栏  -->
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="Ldap名称" prop="configName" label-width="100">
-        <el-input v-model="queryParams.ldapName" clearable style="width: 240px" @keyup.enter.native="handleQuery"/>
+      <el-form-item label="Ldap账号" prop="userAccount" label-width="100">
+        <el-input v-model="queryParams.ldapAccount" clearable style="width: 240px" @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{$t('button.search')}}</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{$t('button.reset')}}</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{$t('commons.button.search')}}</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{$t('commons.button.reset')}}</el-button>
       </el-form-item>
     </el-form>
 
+    <!--  操作栏  -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                   :disabled="!checkPermit(['sys:ldap:new'])">新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="success" plain icon="el-icon-edit" size="mini" @click="handleUpdate"
-                   :disabled="single || !checkPermit(['sys:ldap:edit'])">修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="handleDelete"
-                   :disabled="multiple || !checkPermit(['sys:ldap:delete'])">删除</el-button>
+        <el-button type="primary" plain icon="el-icon-edit" size="mini" @click="handleConfig"
+                   :disabled="!checkPermit(['sys:ldap:edit'])">配置</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="list"
-              @selection-change="handleSelectionChange" :header-cell-style="{'text-align':'center'}">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column :label="$t(`label.index`)" type="index" align="center" width="55">
+    <!--  用户列表  -->
+    <el-table v-loading="loading" :data="list" :header-cell-style="{'text-align':'center'}">
+      <el-table-column :label="$t('commons.label.index')" type="index" align="center" width="55">
         <template slot-scope="scope">
           <span>{{(queryParams.page - 1) * queryParams.pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Ldap名称" align="center" prop="ldapName" width="160" :show-overflow-tooltip="true" />
-      <el-table-column label="Ldap地址" align="center" prop="ldapUrl" width="200" :show-overflow-tooltip="true" />
-      <el-table-column label="用户名" align="center" prop="ldapUser" width="240" :show-overflow-tooltip="true" />
-      <el-table-column label="基本DN" align="center" prop="baseDn" :show-overflow-tooltip="true" />
-      <el-table-column label="默认角色" align="center" prop="roleName" width="120"/>
-      <el-table-column label="是否启用" align="center" width="80">
-        <template slot-scope="scope">
-          <el-switch :disabled="!checkPermit(['sys:ldap:edit'])" v-model="scope.row.ldapStatus" :active-value=1 :inactive-value=0 @change="handleStatusChange(scope.row)"/>
-        </template>
-      </el-table-column>
+      <el-table-column label="用户账号" align="center" prop="userAccount" :show-overflow-tooltip="true"/>
+      <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true"/>
+      <el-table-column label="角色" align="center" prop="roleName"/>
+      <el-table-column label="手机" align="center" prop="userPhone" :show-overflow-tooltip="true"/>
+      <el-table-column label="邮箱" align="center" prop="userEmail" width="200" :show-overflow-tooltip="true"/>
+      <el-table-column label="部门" align="center" prop="userDept"/>
+      <el-table-column label="岗位" align="center" prop="userPost"/>
+      <el-table-column label="汇报对象" align="center" prop="userLeader"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t(`label.option`)" align="center" class-name="small-padding" width="160">
+      <el-table-column :label="$t('commons.label.options')" align="center" class-name="small-padding" width="160">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
@@ -59,14 +50,14 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.pageSize" @pagination="getList"/>
 
-    <!-- 添加或修改参数配置对话框 -->
+    <!-- 配置 -->
     <el-dialog :title="title" :visible.sync="open" width="750px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <h4>Ldap服务</h4>
         <el-row>
           <el-col :span="24">
             <el-form-item label="Ldap名称:" prop="ldapName">
-              <el-input v-model="form.ldapName" placeholder="Ldap服务名称" />
+              <el-input v-model="form.ldapName" :disabled="true" placeholder="Ldap服务名称" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -162,9 +153,9 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="用户角色:" prop="userRole">
-              <el-select v-model="form.userRole" placeholder="Ldap用户默认角色" style="width: 100%;">
-                <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId"/>
+            <el-form-item label="用户角色:" prop="roleCode">
+              <el-select v-model="form.roleCode" placeholder="Ldap用户默认角色" style="width: 100%;">
+                <el-option v-for="item in roleOptions" :key="item.roleCode" :label="item.roleName" :value="item.roleCode"/>
               </el-select>
             </el-form-item>
           </el-col>
@@ -178,27 +169,86 @@
         <el-button @click="cancel">取消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 修改用户角色 -->
+    <el-dialog title="修改用户角色" :visible.sync="openRole" width="750px" append-to-body>
+      <el-form ref="form" :model="roleForm" label-width="100px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="用户名称">
+              <el-input v-model="roleForm.userName" disabled="disabled" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="用户账号">
+              <el-input v-model="roleForm.userAccount" disabled="disabled" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="部门">
+              <el-input v-model="roleForm.userDept" disabled="disabled" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="岗位">
+              <el-input v-model="roleForm.userPost" disabled="disabled" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="手机">
+              <el-input v-model="roleForm.userPhone" disabled="disabled" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="邮箱">
+              <el-input v-model="roleForm.userEmail" disabled="disabled" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="用户角色">
+              <el-select v-model="roleForm.roleCode" style="width: 100%;">
+                <el-option v-for="item in roleOptions" :key="item.roleCOde" :label="item.roleName" :value="item.roleCode"/>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="saveRole"
+                   :disabled="!checkPermit(['oauth:gitlab:user:edit'])">保存</el-button>
+        <el-button @click="cancelRole">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {addLdap, changeStatus, delLdap, infoLdap, listLdap, updateLdap, validLdap} from "@/api/system/ldap";
-import {getRoles} from "@/api/system/user";
+import {
+  changeLdapRole,
+  delLdapUser,
+  getLdapConfig,
+  getLdapUsers,
+  saveLdapConfig,
+  validLdapConfig
+} from "@/api/system/ldap";
 import {checkPermit} from "@/utils/permission";
+import { getRoleList } from '@/api/system/role'
 
 export default {
   name: "Config",
-  dicts: ['sys_yes_no'],
+  dicts: [],
   data() {
     return {
       // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -209,23 +259,24 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      openRole: false,
       // 查询参数
       queryParams: {
         page: 1,
         pageSize: 10,
-        ldapName: undefined
+        ldapAccount: undefined
       },
       // 表单参数
       form: {
         id: undefined,
-        ldapName: undefined,
+        ldapName: "cowave",
         ldapUrl: undefined,
         ldapUser: undefined,
         ldapPasswd: undefined,
         baseDn: undefined,
         userDn: undefined,
         userClass: undefined,
-        userRole: undefined,
+        roleCode: undefined,
         accountProperty: undefined,
         nameProperty: undefined,
         leaderProperty: undefined,
@@ -237,6 +288,7 @@ export default {
       },
       // 角色选项
       roleOptions: [],
+      roleForm: {},
     };
   },
   created() {
@@ -267,7 +319,7 @@ export default {
         userClass: [
           { required: true, message: "用户对象类不能为空", trigger: "blur" }
         ],
-        userRole: [
+        roleCode: [
           { required: true, message: "用户角色不能为空", trigger: "blur" }
         ]
       };
@@ -279,14 +331,14 @@ export default {
     reset() {
       this.form = {
         id: undefined,
-        ldapName: undefined,
+        ldapName: "cowave",
         ldapUrl: undefined,
         ldapUser: undefined,
         ldapPasswd: undefined,
         baseDn: undefined,
         userDn: undefined,
         userClass: undefined,
-        userRole: undefined,
+        roleCode: undefined,
         accountProperty: undefined,
         nameProperty: undefined,
         leaderProperty: undefined,
@@ -297,12 +349,6 @@ export default {
         infoProperty: undefined,
       };
       this.resetForm("form");
-    },
-    /** 多选框 */
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
     },
     /** 搜索 */
     handleQuery() {
@@ -319,41 +365,32 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
+    /** 配置 */
+    handleConfig() {
+      this.reset();
+      this.open = true;
+      getLdapConfig().then(response => {
+        this.form = response.data;
+        this.open = true;
+      });
+    },
     /** 列表 */
     getList() {
       this.loading = true;
-      listLdap(this.queryParams).then(response => {
+      getLdapUsers(this.queryParams).then(response => {
           this.list = response.data.list;
           this.total = response.data.total;
           this.loading = false;
         }
       );
     },
-    /** 新增 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "新增Ldap";
-    },
-    /** 修改 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      infoLdap(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改Ldap";
-      });
-    },
     /** 删除 */
     handleDelete(row) {
-      const idarray = row.id || this.ids;
-      const msg = row.id ? "确认删除Ldap配置[" + row.ldapName + "]" : "确认删除所选Ldap配置";
-      this.$modal.confirm(msg).then(function() {
-        return delLdap(idarray);
+      this.$modal.confirm("确认删除用户: " + row.userName).then(function() {
+        return delLdapUser(row.id);
       }).then(() => {
         this.getList();
-        this.$modal.msgSuccess(this.$t(`msg.success_delete`));
+        this.$modal.msgSuccess(this.$t('commons.msg.success.delete'));
       }).catch(() => {});
     },
     /** 取消 */
@@ -362,53 +399,50 @@ export default {
       this.reset();
     },
     /** 提交 */
-    submitForm: function() {
+    submitForm: function () {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.id !== undefined) {
-            updateLdap(this.form).then(response => {
-              this.$modal.msgSuccess(this.$t(`msg.success_edit`));
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addLdap(this.form).then(response => {
-              this.$modal.msgSuccess(this.$t(`msg.success_create`));
-              this.open = false;
-              this.getList();
-            });
-          }
+          saveLdapConfig(this.form).then(() => {
+            this.$modal.msgSuccess(this.$t('commons.msg.success.edit'));
+            this.open = false;
+            this.getList();
+          });
         }
       });
     },
     /** 获取角色选项 */
     getRoleOptions(){
-      getRoles().then(resp => {
+      getRoleList().then(resp => {
         this.roleOptions = resp.data.list
       });
     },
-    /** 修改状态 */
-    handleStatusChange(row){
-      let text = row.ldapStatus === 1 ? "启用" : "停用";
-      const msg = "确认" + text + "Ldap配置[" + row.ldapName + "]";
-      this.$modal.confirm(msg).then(function() {
-        return changeStatus(row.id, row.ldapStatus);
-      }).then(() => {
-        this.$modal.msgSuccess(text + this.$t(`content.success`));
-      }).catch(function() {
-        row.ldapStatus = row.ldapStatus === 0 ? 1 : 0;
-      });
-    },
-    /** 修改Ldap配置 */
+    /** 验证Ldap配置 */
     handleValid(){
       this.$refs["form"].validate(valid => {
         if (valid) {
-          validLdap(this.form).then(response => {
+          validLdapConfig(this.form).then(response => {
             this.$modal.msgSuccess("测试成功");
           });
         }
       });
-    }
+    },
+    /** 修改用户角色 */
+    handleUpdate(row){
+      this.roleForm = row;
+      this.openRole = true;
+    },
+    /** 取消修改用户 */
+    cancelRole(){
+      this.openRole = false;
+    },
+    /** 保存用户角色 */
+    saveRole(){
+      changeLdapRole(this.roleForm.id, this.roleForm.roleCode).then(() => {
+        this.openRole = false;
+        this.$modal.msgSuccess("修改成功");
+        this.getList();
+      });
+    },
   }
 };
 </script>

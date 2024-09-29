@@ -16,9 +16,8 @@ import { download } from '@/utils/request'
 
 import './assets/icons' // icon
 import './permission' // permission control
-import { getDicts } from "@/api/system/dict/data";
-import { getConfigKey } from "@/api/system/config";
-import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";
+import { getConfigValue } from "@/api/system/config";
+import { parseTime, resetForm, addDateRange, handleTree } from "@/utils/ruoyi";
 // 分页组件
 import Pagination from "@/components/Pagination";
 // 自定义表格工具组件
@@ -37,6 +36,11 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
+
+import '@/utils/drag.js'
+
+import EventEmitter from '@/utils/event-emitter'
+
 // 国际化
 import VueI18n from 'vue-i18n';
 import ElementLocale from 'element-ui/lib/locale'
@@ -60,14 +64,13 @@ export const i18n = new VueI18n({
 
 ElementLocale.i18n((key, value) => i18n.t(key, value));
 
+Vue.prototype.$eventEmitter = EventEmitter
+
 // 全局方法挂载
-Vue.prototype.getDicts = getDicts
-Vue.prototype.getConfigKey = getConfigKey
+Vue.prototype.getConfigValue = getConfigValue
 Vue.prototype.parseTime = parseTime
 Vue.prototype.resetForm = resetForm
 Vue.prototype.addDateRange = addDateRange
-Vue.prototype.selectDictLabel = selectDictLabel
-Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 
@@ -83,7 +86,6 @@ Vue.component('ImagePreview', ImagePreview)
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
-Vue.use(VueI18n)
 Vue.use(ElSelectTree)
 DictData.install()
 

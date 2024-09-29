@@ -1,132 +1,210 @@
 import request from '@/utils/request'
 
-// 查询部门列表
-export function listDept(query) {
+/**
+ * 部门列表
+ */
+export function getDeptList(params) {
   return request({
-    url: '/admin/api/v1/dept/list',
-    method: 'post',
-    data: query
+    url: '/admin/api/v1/dept',
+    method: 'get',
+    params: params
   })
 }
 
-// 查询部门详细
-export function getDept(deptId) {
+/**
+ * 部门详情
+ */
+export function getDeptInfo(deptId) {
   return request({
-    url: '/admin/api/v1/dept/info/' + deptId,
+    url: '/admin/api/v1/dept/' + deptId,
     method: 'get'
   })
 }
 
-// 部门只读修改
-export function changeReadonly(deptId, readOnly, deptName) {
-  const data = {
-    deptId,
-    readOnly,
-    deptName
-  }
-  return request({
-    url: '/admin/api/v1/dept/change/readonly',
-    method: 'post',
-    data: data
-  })
-}
-
-// 查询部门树选项
-export function getDeptTree(deptId) {
-  return request({
-    url: '/admin/api/v1/dept/tree?deptId=' + deptId,
-    method: 'get'
-  })
-}
-
-// 查询部门下拉树结构
-export function treeselect() {
-  return request({
-    url: '/admin/api/v1/dept/tree',
-    method: 'get'
-  })
-}
-
-// 查询用户树选项
-export function getUserTree() {
-  return request({
-    url: '/admin/api/v1/user/tree',
-    method: 'get'
-  })
-}
-
-// 新增部门
+/**
+ * 新增部门
+ */
 export function addDept(data) {
   return request({
-    url: '/admin/api/v1/dept/add',
+    url: '/admin/api/v1/dept',
     method: 'post',
     data: data
   })
 }
 
-// 修改部门
+/**
+ * 删除部门
+ */
+export function delDept(deptIds) {
+  return request({
+    url: '/admin/api/v1/dept/' + deptIds,
+    method: 'delete'
+  })
+}
+
+/**
+ * 修改部门
+ */
 export function updateDept(data) {
   return request({
-    url: '/admin/api/v1/dept/edit',
+    url: '/admin/api/v1/dept',
+    method: 'patch',
+    data: data
+  })
+}
+
+/**
+ * 添加部门岗位
+ */
+export function addDeptPosts(data) {
+  return request({
+    url: '/admin/api/v1/dept/posts',
     method: 'post',
     data: data
   })
 }
 
-// 删除部门
-export function delDept(deptId) {
+/**
+ * 移除部门岗位
+ */
+export function removeDeptPosts(deptId, postIds) {
   return request({
-    url: '/admin/api/v1/dept/delete?deptId=' + deptId,
-    method: 'get'
+    url: '/admin/api/v1/dept/posts/' + deptId + '/' + postIds,
+    method: 'delete'
   })
 }
 
-// 刷新缓存
-export function refreshCache() {
+/**
+ * 获取部门岗位（已设置）
+ */
+export function getConfiguredPosts(params) {
   return request({
-    url: '/admin/api/v1/dept/refresh',
-    method: 'get'
+    url: '/admin/api/v1/dept/posts/configured',
+    method: 'get',
+    params: params
   })
 }
 
-// 获取部门岗位
-export function getDeptPosts(deptId) {
+/**
+ * 获取部门岗位（未设置）
+ */
+export function getUnConfiguredPosts(params) {
   return request({
-    url: '/admin/api/v1/dept/posts/id/' + deptId,
-    method: 'get'
+    url: '/admin/api/v1/dept/posts/unConfigured',
+    method: 'get',
+    params: params
   })
 }
 
-// 设置部门岗位
-export function setDeptPosts(data) {
+/**
+ * 添加部门成员
+ */
+export function addDeptMembers(data) {
   return request({
-    url: '/admin/api/v1/dept/posts/set',
+    url: '/admin/api/v1/dept/members',
     method: 'post',
     data: data
   })
 }
 
-// 部门人员，id获取
-export function getDeptUsersById(deptId) {
+/**
+ * 移除部门成员
+ */
+export function removeDeptMembers(deptId, userIds) {
   return request({
-    url: '/admin/api/v1/dept/users/id/' + deptId,
+    url: '/admin/api/v1/dept/members/' + deptId + '/' + userIds,
+    method: 'delete'
+  })
+}
+
+/**
+ * 获取部门成员（已加入）
+ */
+export function getJoinedMembers(params) {
+  return request({
+    url: '/admin/api/v1/dept/members/joined',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 获取部门成员（未加入）
+ */
+export function getUnJoinedMembers(params) {
+  return request({
+    url: '/admin/api/v1/dept/members/unJoined',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 部门岗位树
+ */
+export function getDeptPostDiagram() {
+  return request({
+    url: '/admin/api/v1/dept/diagram/post',
     method: 'get'
   })
 }
 
-// 获取部门人员
-export function getDeptUsersByCode(deptCode) {
+/**
+ * 部门用户树
+ */
+export function getDeptUserDiagram() {
   return request({
-    url: '/admin/api/v1/dept/users/code/' + deptCode,
+    url: '/admin/api/v1/dept/diagram/user',
     method: 'get'
   })
 }
 
-// 设置部门人员
-export function setDeptUsers(data) {
+/**
+ * 部门组织架构
+ */
+export function getDeptDiagram() {
   return request({
-    url: '/admin/api/v1/dept/users/set',
-    method: 'post',
-    data: data
+    url: '/admin/api/v1/dept/diagram',
+    method: 'get'
+  })
+}
+
+/**
+ * 部门组织架构
+ */
+export function getDeptDiagramById(deptId) {
+  return request({
+    url: '/admin/api/v1/dept/diagram?deptId=' + deptId,
+    method: 'get'
+  })
+}
+
+/**
+ * 刷新部门组织
+ */
+export function refreshDeptDiagram() {
+  return request({
+    url: '/admin/api/v1/dept/diagram/refresh',
+    method: 'get'
+  })
+}
+
+/**
+ * 流程候选人列表
+ */
+export function getDeptCandidatesByCode(deptCode) {
+  return request({
+    url: '/admin/api/v1/dept/candidates/' + deptCode,
+    method: 'get'
+  })
+}
+
+/**
+ * 查询部门名称
+ */
+export function getDeptNames(deptIds) {
+  return request({
+    url: '/admin/api/v1/dept/name/' + deptIds,
+    method: 'get'
   })
 }

@@ -16,7 +16,6 @@
 
 	<properties>
 		<markdown.version>0.17.0</markdown.version>
-		<skip.changelog>true</skip.changelog>
 	</properties>
 
 	<build>
@@ -35,15 +34,27 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.cowave.sys</groupId>
-			<artifactId>sys-model</artifactId>
-			<version>1.0.3</version>
-		</dependency>
+            <groupId>com.cowave.commons</groupId>
+            <artifactId>commons-framework</artifactId>
+        </dependency>
+		<dependency>
+            <groupId>com.cowave.sys</groupId>
+            <artifactId>sys-admin-client</artifactId>
+            <version>1.0.3</version>
+        </dependency>
 		<!-- nacos -->
 		<dependency>
 			<groupId>com.alibaba.cloud</groupId>
 			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
 		</dependency>
+		<dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-loadbalancer</artifactId>
@@ -108,11 +119,6 @@
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
-		</dependency>
-		<!-- ldap -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-ldap</artifactId>
 		</dependency>
 		<!-- markdown -->
 		<dependency>

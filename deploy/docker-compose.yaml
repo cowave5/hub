@@ -1,0 +1,606 @@
+version: '3'
+
+services:
+  sys-ui:
+    image: sys-ui:1.0.3
+    container_name: sys-ui
+    ports:
+      - 81:81
+      - 82:82
+      - 83:83
+      - 84:84
+      - 85:85
+      - 86:86
+    volumes:
+      - ./sys-ui:/var/log/nginx
+      - /etc/localtime:/etc/localtime
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:81"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      sys-gateway:
+        condition: service_healthy
+    networks:
+      default:
+        ipv4_address: 192.168.64.10
+
+  sys-nacos:
+    image: sys-nacos:2.3.0
+    container_name: sys-nacos
+    environment:
+      - MODE=standalone
+      - DB_POOL_CONFIG_CONNECTIONTIMEOUT=6000000
+    volumes:
+      - ./sys-nacos:/home/nacos/logs
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8848/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks:
+      default:
+        ipv4_address: 192.168.64.11
+
+  sys-gateway:
+    image: sys-gateway:1.0.3
+    container_name: sys-gateway
+    ports:
+      - 19000:19000
+    environment:
+      jvm_option: -Xms256m -Xmx256m -XX:MetaspaceSize=128m -XX:+HeapDumpOnOutOfMemoryError
+      http_port: 19000
+      nacos_server: sys-nacos:8848
+      nacos_namespace:
+      nacos_cluster:
+      nacos_group: DEFAULT_GROUP
+      redis_host: sys-redis
+      redis_port: 6379
+      TZ: Asia/Shanghai
+    volumes:
+      - ./sys-gateway:/opt/cowave/sys-gateway/log
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:19000/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      sys-nacos:
+        condition: service_healthy
+    networks:
+      default:
+        ipv4_address: 192.168.64.12
+
+  sys-blog:
+    image: sys-blog:1.0.3
+    container_name: sys-blog
+    ports:
+      - 80:80
+    environment:
+      jvm_option: -Xms256m -Xmx256m -XX:MetaspaceSize=128m -XX:+HeapDumpOnOutOfMemoryError
+      app_profile: prod
+      http_port: 80
+      nacos_server: sys-nacos:8848
+      nacos_namespace:
+      nacos_cluster:
+      nacos_group: DEFAULT_GROUP
+      redis_host: sys-redis
+      redis_port: 6379
+      datasource_username: postgres
+      datasource_password: postgres
+      datasource_url: jdbc:postgresql://sys-postgres:5432/sys-blog
+      TZ: Asia/Shanghai
+    volumes:
+      - ./sys-blog/log:/opt/cowave/sys-blog/log
+      - ./sys-blog/public:/opt/cowave/sys-blog/public
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      sys-nacos:
+        condition: service_healthy
+      sys-postgres:
+        condition: service_healthy
+    networks:
+      default:
+        ipv4_address: 192.168.64.13
+
+  sys-admin:
+    image: sys-admin:1.0.3
+    container_name: sys-admin
+    ports:
+      - 19010:19010
+      - 19011:19011
+      - 19012:19012
+    environment:
+      jvm_option: -Xms256m -Xmx256m -XX:MetaspaceSize=128m -XX:+HeapDumpOnOutOfMemoryError -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:19012
+      app_profile: prod
+      http_port: 19010
+      socket_port: 19011
+      nacos_server: sys-nacos:8848
+      nacos_namespace:
+      nacos_cluster:
+      nacos_group: DEFAULT_GROUP
+      elastic_url: sys-elastic:9200
+      kafka_servers: sys-kafka1:9092,sys-kafka2:9093,sys-kafka3:9094
+      redis_host: sys-redis
+      redis_port: 6379
+      datasource_username: postgres
+      datasource_password: postgres
+      datasource_url: jdbc:postgresql://sys-postgres:5432/sys-admin
+      minio_endpoint: http://10.64.4.74:39000
+      minio_accessKey: admin
+      minio_secretKey: admin123
+      TZ: Asia/Shanghai
+    volumes:
+      - ./sys-admin:/opt/cowave/sys-admin/log
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:19010/admin/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      sys-postgres:
+        condition: service_healthy
+      sys-redis:
+        condition: service_healthy
+      sys-elastic:
+        condition: service_healthy
+      sys-nacos:
+        condition: service_healthy
+    networks:
+      default:
+        ipv4_address: 192.168.64.14
+
+  sys-flow:
+    image: sys-flow:1.0.3
+    container_name: sys-flow
+    ports:
+      - 19020:19020
+      - 19021:19021
+    environment:
+      jvm_option: -Xms256m -Xmx256m -XX:MetaspaceSize=128m -XX:+HeapDumpOnOutOfMemoryError -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:19021
+      app_profile: prod
+      http_port: 19020
+      nacos_server: sys-nacos:8848
+      nacos_namespace:
+      nacos_cluster:
+      nacos_group: DEFAULT_GROUP
+      datasource_username: postgres
+      datasource_password: postgres
+      datasource_url: jdbc:postgresql://sys-postgres:5432/sys-admin
+      TZ: Asia/Shanghai
+    volumes:
+      - ./sys-flow:/opt/cowave/sys-flow/log
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:19020/flow/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      sys-postgres:
+        condition: service_healthy
+      sys-nacos:
+        condition: service_healthy
+      sys-admin:
+        condition: service_healthy
+    networks:
+      default:
+        ipv4_address: 192.168.64.15
+
+  sys-meter:
+    image: sys-meter:1.0.3
+    container_name: sys-meter
+    ports:
+      - 19030:19030
+      - 19031:19031
+    environment:
+      jvm_option: -Xms256m -Xmx256m -XX:MetaspaceSize=128m -XX:+HeapDumpOnOutOfMemoryError -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:19031
+      app_profile: prod
+      http_port: 19030
+      nacos_server: sys-nacos:8848
+      nacos_namespace:
+      nacos_cluster:
+      nacos_group: DEFAULT_GROUP
+      datasource_username: postgres
+      datasource_password: postgres
+      datasource_url: jdbc:postgresql://sys-postgres:5432/sys-meter
+      TZ: Asia/Shanghai
+    volumes:
+      - ./sys-meter:/opt/cowave/sys-meter/log
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:19030/meter/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      sys-postgres:
+        condition: service_healthy
+      sys-nacos:
+        condition: service_healthy
+    networks:
+      default:
+        ipv4_address: 192.168.64.16
+
+  sys-quartz:
+    image: sys-quartz:1.0.3
+    container_name: sys-quartz
+    ports:
+      - 19040:19040
+      - 19041:19041
+    environment:
+      jvm_option: -Xms256m -Xmx256m -XX:MetaspaceSize=128m -XX:+HeapDumpOnOutOfMemoryError -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:19041
+      app_profile: prod
+      http_port: 19040
+      nacos_server: sys-nacos:8848
+      nacos_namespace:
+      nacos_cluster:
+      nacos_group: DEFAULT_GROUP
+      datasource_username: postgres
+      datasource_password: postgres
+      datasource_url: jdbc:postgresql://sys-postgres:5432/sys-quartz
+      TZ: Asia/Shanghai
+    volumes:
+      - ./sys-quartz:/opt/cowave/sys-quartz/log
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:19040/quartz/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      sys-postgres:
+        condition: service_healthy
+      sys-nacos:
+        condition: service_healthy
+    networks:
+      default:
+        ipv4_address: 192.168.64.17
+
+  sys-postgres:
+    image: postgres:13.1
+    container_name: sys-postgres
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+      TZ: Asia/Shanghai
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      default:
+        ipv4_address: 192.168.64.21
+
+  sys-mysql:
+    image: mysql:8.0.36
+    container_name: sys-mysql
+    privileged: true
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      TZ: Asia/Shanghai
+    volumes:
+      - ./mysql/conf:/etc/mysql/conf.d
+      - ./mysql/log:/var/log
+      - ./mysql/data:/var/lib/mysql
+      - /etc/localtime:/etc/localtime
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-uroot", "-proot", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      default:
+        ipv4_address: 192.168.64.22
+
+  sys-elastic:
+    image: elastic/elasticsearch:7.14.0
+    container_name: sys-elastic
+    ports:
+      - 9200:9200
+    environment:
+      - ES_JAVA_OPTS=-Xms2048m -Xmx2048m
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - ./elastic/plugins:/usr/share/elasticsearch/plugins
+      - ./elastic/data:/usr/share/elasticsearch/data
+      - ./elastic/log:/usr/share/elasticsearch/log
+      - /etc/localtime:/etc/localtime
+    healthcheck:
+      test: [ "CMD", "curl", "-fs", "http://localhost:9200/_cluster/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      default:
+        ipv4_address: 192.168.64.29
+
+  sys-redis:
+    image: redis:7.0
+    container_name: sys-redis
+    privileged: true
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis/conf/redis.conf:/etc/redis/redis.conf
+      - ./redis/data:/data:rw
+      - /etc/localtime:/etc/localtime
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "localhost", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      default:
+        ipv4_address: 192.168.64.23
+
+  sys-minio:
+    image: minio/minio
+    container_name: sys-minio
+    privileged: true
+    ports:
+      - 39000:9000
+      - 39001:9001
+    environment:
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: admin123
+    volumes:
+      - ./minio/data:/data
+      - ./minio/config:/root/.minio/
+      - /etc/localtime:/etc/localtime
+    command: server --console-address ':9001' /data
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "< /dev/tcp/localhost/9000" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      default:
+        ipv4_address: 192.168.64.24
+
+  sys-kafka1:
+    image: wurstmeister/kafka:2.13-2.8.1
+    container_name: sys-kafka1
+    ports:
+      - "9092:9092"
+      - "9097:9097"
+      - "7072:7072"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://10.64.4.74:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: sys-zookeeper:2181
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: true
+      KAFKA_LOG_RETENTION_HOURS: 48
+      JMX_PORT: 9097
+      KAFKA_OPTS: -javaagent:/opt/jmx_prometheus_javaagent-0.12.0.jar=7072:/opt/kafka-2_0_0.yml
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - ./kafka/jmx_prometheus_javaagent-0.12.0.jar:/opt/jmx_prometheus_javaagent-0.12.0.jar
+      - ./kafka/kafka-2_0_0.yml:/opt/kafka-2_0_0.yml
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "< /dev/tcp/localhost/9092" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      - sys-zookeeper
+    networks:
+      default:
+        ipv4_address: 192.168.64.25
+
+  sys-kafka2:
+    image: wurstmeister/kafka:2.13-2.8.1
+    container_name: sys-kafka2
+    ports:
+      - "9093:9093"
+      - "9098:9098"
+      - "7073:7073"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://10.64.4.74:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093
+      KAFKA_ZOOKEEPER_CONNECT: sys-zookeeper:2181
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: true
+      KAFKA_LOG_RETENTION_HOURS: 48
+      JMX_PORT: 9098
+      KAFKA_OPTS: -javaagent:/opt/jmx_prometheus_javaagent-0.12.0.jar=7073:/opt/kafka-2_0_0.yml
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - ./kafka/jmx_prometheus_javaagent-0.12.0.jar:/opt/jmx_prometheus_javaagent-0.12.0.jar
+      - ./kafka/kafka-2_0_0.yml:/opt/kafka-2_0_0.yml
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "< /dev/tcp/localhost/9093" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      - sys-zookeeper
+    networks:
+      default:
+        ipv4_address: 192.168.64.26
+
+  sys-kafka3:
+    image: wurstmeister/kafka:2.13-2.8.1
+    container_name: sys-kafka3
+    ports:
+      - "9094:9094"
+      - "9099:9099"
+      - "7074:7074"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://10.64.4.74:9094
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094
+      KAFKA_ZOOKEEPER_CONNECT: sys-zookeeper:2181
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: true
+      KAFKA_LOG_RETENTION_HOURS: 48
+      JMX_PORT: 9099
+      KAFKA_OPTS: -javaagent:/opt/jmx_prometheus_javaagent-0.12.0.jar=7074:/opt/kafka-2_0_0.yml
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - ./kafka/jmx_prometheus_javaagent-0.12.0.jar:/opt/jmx_prometheus_javaagent-0.12.0.jar
+      - ./kafka/kafka-2_0_0.yml:/opt/kafka-2_0_0.yml
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "< /dev/tcp/localhost/9094" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      - sys-zookeeper
+    networks:
+      default:
+        ipv4_address: 192.168.64.27
+
+  sys-zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    container_name: sys-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - /etc/localtime:/etc/localtime
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "< /dev/tcp/localhost/2181" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      default:
+        ipv4_address: 192.168.64.28
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/linux.json:/usr/share/grafana/public/dashboards/linux.json
+    networks:
+      default:
+        ipv4_address: 192.168.64.51
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/rules:/etc/prometheus/rules
+      - /etc/hosts:/etc/hosts
+    ports:
+      - "9090:9090"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      default:
+        ipv4_address: 192.168.64.52
+
+  alertmanager:
+    image: bitnami/alertmanager:0.26.0
+    container_name: alertmanager
+    ports:
+      - "9083:9093"
+    volumes:
+      - ./alertmanager:/etc/alertmanager
+      - /etc/localtime:/etc/localtime
+    command:
+      - '--cluster.advertise-address=0.0.0.0:9093'
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+    networks:
+      default:
+        ipv4_address: 192.168.64.53
+
+  loki:
+    image: grafana/loki
+    container_name: loki
+    privileged: true
+    user: root
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      - ./loki/rules:/opt/app/loki/rules
+    command: -config.file=/etc/loki/loki-config.yaml
+    networks:
+      default:
+        ipv4_address: 192.168.64.54
+
+  promtail:
+    image: grafana/promtail
+    container_name: promtail
+    volumes:
+      - ./promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml.yml
+      - .:/home/cowave/sys
+    command: -config.file=/etc/promtail/promtail-config.yaml.yml
+    networks:
+      default:
+        ipv4_address: 192.168.64.55
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - "/proc:/host/proc:ro"
+      - "/sys:/host/sys:ro"
+      - "/:/rootfs:ro"
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+    networks:
+      default:
+        ipv4_address: 192.168.64.61
+
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis-exporter
+    ports:
+      - "9121:9121"
+    environment:
+      - REDIS_ADDR=redis://sys-redis:6379
+    networks:
+      default:
+        ipv4_address: 192.168.64.62
+
+  mysql-exporter:
+    image: prom/mysqld-exporter
+    container_name: mysql-exporter
+    ports:
+      - "9104:9104"
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+    command: --config.my-cnf=/etc/mysql/my.cnf
+    networks:
+      default:
+        ipv4_address: 192.168.64.63
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.64.0/24
+          gateway: 192.168.64.1

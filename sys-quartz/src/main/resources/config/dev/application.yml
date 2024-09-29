@@ -1,24 +1,16 @@
-server:
-  port: 19040
-  servlet:
-    context-path: /quartz
-
-info:
-  cluster:
-    id: 10
-    level: 1
-    name: default
-
 spring:
+  access:
+    always-success: true
+    filter:
+      - /api/v1/*
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://10.64.4.74:5432/sys-quartz
+    url: jdbc:postgresql://127.0.0.1:5432/sys-quartz
     username: postgres
     password: postgres
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 10.64.4.74:8848
+  liquibase:
+    enabled: true
+    change-log: sql/changelog.yml
   quartz:
     job-store-type: jdbc
     properties:

@@ -1,46 +1,55 @@
 <template>
-  <!-- 授权用户 -->
-  <el-dialog :title="$t(`role.user.button.choose`)" :visible.sync="visible" width="900px" top="5vh" append-to-body>
+  <el-dialog :title="$t('user.button.select')" :visible.sync="visible" width="900px" top="5vh" append-to-body>
+    <!-- 筛选栏 -->
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true">
-      <el-form-item :label="$t(`role.user.label.name`)" prop="userName">
-        <el-input v-model="queryParams.userName" :placeholder="$t(`user.placeholder.name`)" clearable @keyup.enter.native="handleQuery"/>
+      <el-form-item :label="$t('user.label.name')" prop="userName">
+        <el-input v-model="queryParams.userName" :placeholder="$t('user.placeholder.name')"
+                  clearable @keyup.enter.native="handleQuery"/>
       </el-form-item>
-      <el-form-item :label="$t(`role.user.label.phone`)" prop="userPhone">
-        <el-input v-model="queryParams.userPhone" :placeholder="$t(`user.placeholder.phone`)" clearable @keyup.enter.native="handleQuery"/>
+      <el-form-item :label="$t('user.label.phone')" prop="userPhone">
+        <el-input v-model="queryParams.userPhone" :placeholder="$t('user.placeholder.phone')"
+                  clearable @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">{{$t('button.search')}}</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{$t('button.reset')}}</el-button>
+        <el-button type="primary" size="mini" icon="el-icon-search" @click="handleQuery">
+          {{$t('commons.button.search')}}
+        </el-button>
+        <el-button size="mini" icon="el-icon-refresh" @click="resetQuery">
+          {{$t('commons.button.reset')}}
+        </el-button>
       </el-form-item>
     </el-form>
+
+    <!--  列表数据  -->
     <el-row>
-      <el-table @row-click="clickRow" ref="table" :data="userList" @selection-change="handleSelectionChange" height="480px">
+      <el-table @row-click="clickRow" ref="table" :data="userList" @selection-change="selectRow" height="480px">
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column :label="$t(`role.user.label.name`)" prop="userName" :show-overflow-tooltip="true" />
-        <el-table-column :label="$t(`role.user.label.phone`)" :show-overflow-tooltip="true" />
-        <el-table-column :label="$t(`role.user.label.rank`)" prop="rank" :show-overflow-tooltip="true" >
-          <template slot-scope="{row: {rank}}">
+        <el-table-column :label="$t('user.label.name')" prop="userName" :show-overflow-tooltip="true" />
+        <el-table-column :label="$t('user.label.phone')" prop="userPhone" :show-overflow-tooltip="true" />
+        <el-table-column :label="$t('user.label.rank')" prop="userRank" :show-overflow-tooltip="true" >
+          <template slot-scope="{row: {userRank}}">
             <template v-for="item in dict.type.post_level">
-              <span v-if="rank === item.value && $i18n.locale==='zh'">{{ item.value }}/{{ item.label }}</span>
-              <span v-if="rank === item.value && $i18n.locale==='en'">{{ item.value }}/{{ item.labelEn }}</span>
+              <span v-if="userRank === item.code">{{ item.code }}/{{ $t(item.name) }}</span>
             </template>
           </template>
         </el-table-column>
-        <el-table-column :label="$t(`role.user.label.dept`)" prop="deptName" :show-overflow-tooltip="true" />
-        <el-table-column :label="$t(`role.user.label.post`)" prop="postName" :show-overflow-tooltip="true" />
+        <el-table-column :label="$t('dept.text.name')" prop="deptName" :show-overflow-tooltip="true" />
+        <el-table-column :label="$t('post.text.name')" prop="postName" :show-overflow-tooltip="true" />
       </el-table>
       <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.pageSize" @pagination="getList"/>
     </el-row>
+
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="handleSelectUser"
-                 :disabled="!checkPermit(['sys:role:grant'])">{{$t('button.confirm')}}</el-button>
-      <el-button @click="visible = false">{{$t('button.cancel')}}</el-button>
+      <el-button type="primary" @click="handleSelectUser" :disabled="!checkPermit(['sys:role:members'])">
+        {{$t('commons.button.confirm')}}
+      </el-button>
+      <el-button @click="visible = false">{{$t('commons.button.cancel')}}</el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
-import { unallocatedUserList, authUserSelectAll } from "@/api/system/role";
+import { getUnAuthedUser, grantRoleUser } from "@/api/system/role";
 import {checkPermit} from "@/utils/permission";
 export default {
   dicts: ['post_level'],
@@ -82,12 +91,12 @@ export default {
       this.$refs.table.toggleRowSelection(row);
     },
     /** 多选框 */
-    handleSelectionChange(selection) {
+    selectRow(selection) {
       this.userIds = selection.map(item => item.userId);
     },
     /** 列表数据 */
     getList() {
-      unallocatedUserList(this.queryParams).then(res => {
+      getUnAuthedUser(this.queryParams).then(res => {
         this.userList = res.data.list;
         this.total = res.data.total;
       });
@@ -99,7 +108,7 @@ export default {
     },
     /** 重置 */
     resetQuery() {
-      this.resetForm("queryForm");
+      this.$refs.queryForm.resetFields();
       this.handleQuery();
     },
     /** 授权用户 */
@@ -107,12 +116,12 @@ export default {
       const roleId = this.queryParams.roleId;
       const userIds = this.userIds;
       if (userIds === undefined || userIds.length === 0) {
-        this.$modal.msgError(this.$t(`role.msg.unselect`));
+        this.$modal.msgError(this.$t('user.text.unselect'));
         return;
       }
-      authUserSelectAll({ roleId: roleId, userIds: userIds }).then(res => {
+      grantRoleUser({ roleId: roleId, userIds: userIds }).then(res => {
         if (res.code === "200") {
-          this.$modal.msgSuccess(this.$t(`role.msg.grant_success`));
+          this.$modal.msgSuccess(this.$t('role.msg.grant'));
           this.visible = false;
           this.$emit("ok");
         }

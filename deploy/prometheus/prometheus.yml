@@ -1,0 +1,87 @@
+global:
+  scrape_interval:     15s # 多久收集一次数据
+  evaluation_interval: 15s # 多久评估一次规则
+  scrape_timeout:      15s # 每次收集超时时间
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - alertmanager:9093
+
+rule_files:
+- "/etc/prometheus/rules/*.yml"
+
+scrape_configs:
+- job_name: 'sys'
+  scrape_interval: 30s
+  honor_labels: false
+  static_configs:
+  - targets: ['node-exporter:9100']
+    labels:
+      app: Linux
+      cluster: sys
+  - targets:
+    - sys-kafka1:7072
+    - sys-kafka2:7073
+    - sys-kafka3:7074
+    labels:
+      app: kafka
+      cluster: sys
+  - targets: ['redis-exporter:9121']
+    labels:
+      app: redis
+      cluster: sys
+  - targets: ['mysql-exporter:9104']
+    labels:
+      app: mysql
+      cluster: sys
+
+- job_name: 'sys-nacos'
+  honor_labels: true
+  scrape_interval: 15s
+  metrics_path: '/actuator/prometheus'
+  static_configs:
+  - targets: ['sys-nacos:8848']
+    labels:
+      app: 应用
+      cluster: sys管理
+      application: sys-nacos
+
+- job_name: 'sys-nacos-app'
+  honor_labels: true
+  scrape_interval: 15s
+  metrics_path: '/actuator/prometheus'
+  consul_sd_configs:
+  - server: 'sys-gateway:19000'
+  relabel_configs:
+  - source_labels: [__meta_eureka_instance_id]
+    target_label: cluster
+    replacement: 'sys管理'
+  - source_labels: [__meta_eureka_instance_id]
+    target_label: app
+    replacement: '应用'
+  - source_labels: [__meta_consul_service_metadata_path]
+    separator: ;
+    regex: (.+)
+    target_label: __metrics_path__
+    replacement: ${1}/actuator/prometheus
+    action: replace
+  - source_labels: [__meta_consul_service_metadata_path]
+    separator: ;
+    regex: ^/$
+    target_label: __metrics_path__
+    replacement: /actuator/prometheus
+    action: replace
+  - source_labels: [__meta_consul_service]
+    separator: ;
+    regex: (.+)
+    target_label: application
+    replacement: $1
+    action: replace
+    #    - source_labels: [__address__,application]
+    #      separator: _
+    #      regex: (.+)
+    #      target_label: instance
+    #      replacement: $1
+    #      action: replace

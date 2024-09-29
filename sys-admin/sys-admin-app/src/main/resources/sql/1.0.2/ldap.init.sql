@@ -1,0 +1,3 @@
+-- 配置
+insert into ldap_config (ldap_name, ldap_status, ldap_url, ldap_user, ldap_passwd, base_dn, user_class, account_property,name_property,email_property,phone_property,post_property,dept_property,leader_property,info_property, role_code, "create_by", "create_time", "update_by", "update_time")
+values ('cowave', 1, 'ldap://10.64.3.1:389', 'zhangyuliang@cowave.com', 'Cowave@123', 'OU=Cowavers,DC=cowave,DC=com', 'person', 'sAMAccountName','displayName','userPrincipalName','telephoneNumber','title','department','manager','distinguishedName', 'user-readonly', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2024-03-18 13:57:36.631', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2024-03-18 13:59:53.624');

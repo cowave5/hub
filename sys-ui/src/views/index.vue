@@ -2,12 +2,12 @@
   <div class="app-container home">
     <el-row :gutter="20">
       <el-col :sm="24" :lg="12" style="padding-left: 20px">
-        <h2>Cowave后台管理系统</h2>
+        <h2>Cowave管理系统</h2>
         <p>
-          我们希望写出一款适合自己业务，足够简单通用，并且方便扩展定制的管理系统。也看了一些优秀的开源项目，最后选择了若依来作为参考来进行设计开发。
+          初衷希望写一款适合自己业务，简单通用，并且方便扩展定制的管理系统，也看了一些优秀的开源项目，最后选择了若依作为参考来进行设计开发。
         </p>
         <p>
-          站在别人的肩膀上，我们进行了一些自己的优化和设计，主要是对服务和存储进行了重写，前端直接复用了若依的框架。这里非常感谢若依的开源，比如它设计的动态路由菜单权限，给了我们不少的帮助和启发。
+          非常感谢若依的开源，站在别人的肩膀上继续做了一些优化和设计，主要是对服务和存储进行了重写，前端基本复用了若依的框架。
         </p>
         <p>
           <b>若依版本:</b> <span>3.8.2@<a href="http://vue.ruoyi.vip" target="_blank" style="color: #409eff;">http://vue.ruoyi.vip</a></span>
@@ -16,29 +16,26 @@
           <b>当前版本:</b> <span>{{ version }}</span>
         </p>
       </el-col>
+
       <el-col :sm="24" :lg="12" style="padding-left: 50px">
+        <h2>技术选型</h2>
         <el-row>
-          <el-col :span="12">
-            <h2>技术选型</h2>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="5">
-            <h4>服务模块</h4>
-            <ul>
-              <li><label style="font-weight: normal; display:inline-block; width: 80px">sys-ui       </label>80</li>
-              <li><label style="font-weight: normal; display:inline-block; width: 80px">nacos        </label>8848</li>
-              <li><label style="font-weight: normal; display:inline-block; width: 80px">sys-gateway  </label>19000</li>
-              <li><label style="font-weight: normal; display:inline-block; width: 80px">sys-admin    </label>19010</li>
-              <li><label style="font-weight: normal; display:inline-block; width: 80px">sys-flow     </label>19020</li>
-              <li><label style="font-weight: normal; display:inline-block; width: 80px">sys-code     </label>19030</li>
-              <li><label style="font-weight: normal; display:inline-block; width: 80px">sys-quartz   </label>19040</li>
-              <li><label style="font-weight: normal; display:inline-block; width: 80px">sys-meter </label>19050</li>
+          <el-col :span="4">
+            <b>服务模块</b>
+            <ul style="padding-top: 8px">
+              <li>sys-blog</li>
+              <li>sys-ui</li>
+              <li>sys-nacos</li>
+              <li>sys-gateway</li>
+              <li>sys-admin</li>
+              <li>sys-flow</li>
+              <li>sys-meter</li>
+              <li>sys-quartz</li>
             </ul>
           </el-col>
           <el-col :span="4">
-            <h4>构建部署</h4>
-            <ul>
+            <b>构建部署</b>
+            <ul style="padding-top: 8px">
               <li>maven</li>
               <li>liquibase</li>
               <li>smart-doc</li>
@@ -47,17 +44,18 @@
             </ul>
           </el-col>
           <el-col :span="4">
-            <h4>存储服务</h4>
-            <ul>
+            <b>存储服务</b>
+            <ul style="padding-top: 8px">
               <li>Postgres</li>
+              <li>Elasticsearch</li>
               <li>Redis</li>
-              <li>Minio</li>
               <li>Kafka</li>
+              <li>Minio</li>
             </ul>
           </el-col>
           <el-col :span="4">
-            <h4>前端技术</h4>
-            <ul>
+            <b>前端选型</b>
+            <ul style="padding-top: 8px">
               <li>Vue 2.x</li>
               <li>Axios</li>
               <li>Element-ui</li>
@@ -68,17 +66,14 @@
             </ul>
           </el-col>
           <el-col :span="5">
-            <h4>后端技术</h4>
-            <ul>
+            <b>后端选型</b>
+            <ul style="padding-top: 8px">
               <li>Java 17</li>
               <li>Spring-boot 2.7.0</li>
-              <li>Spring-cloud-gateway</li>
-              <li>MyBatis-Plus</li>
               <li>Nacos 2.3.0</li>
               <li>Flowable 6.8.0</li>
+              <li>Mybatis-plus</li>
               <li>Quartz</li>
-              <li>Easyexcel</li>
-              <li>netty-socketio</li>
               <li>...</li>
             </ul>
           </el-col>
@@ -89,103 +84,81 @@
 
     <el-row :gutter="20">
       <el-col :sm="24" :lg="12" style="padding-left: 20px">
-        <h3>>>系统消息</h3>
-        <el-table :data="msgList" :show-header="false" @row-click="handleRowClick" style="margin-top: 15px;">
-          <el-table-column prop="publishTime" align="center" width="160">
-            <template slot-scope="scope">
-              <span v-if="scope.row.readStatus === 0" class="red-point">{{ scope.row.publishTime }}</span>
-              <span v-else>{{ scope.row.publishTime }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column align="center" width="100">
-            <template slot-scope="scope">
-              <template v-for="item in dict.type.notice_level">
-                <span v-if="scope.row.noticeLevel === item.value && $i18n.locale==='zh'">{{ item.label }}</span>
-                <span v-if="scope.row.noticeLevel === item.value && $i18n.locale==='en'">{{ item.labelEn }}</span>
-              </template>
-            </template>
-          </el-table-column>
-          <el-table-column prop="createUserName" align="center" width="120"/>
-          <el-table-column align="center" width="100">
-            <template slot-scope="scope">
-              <template v-for="item in dict.type.notice_type">
-                <span v-if="scope.row.noticeType === item.value && $i18n.locale==='zh'">{{ item.label }}</span>
-                <span v-if="scope.row.noticeType === item.value && $i18n.locale==='en'">{{ item.labelEn }}</span>
-              </template>
-            </template>
-          </el-table-column>
-          <el-table-column prop="noticeTitle" align="left" :show-overflow-tooltip="true"/>
-        </el-table>
-        <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.pageSize" @pagination="getList"/>
+        <h3>更新日志</h3>
+        <h4>1.0.3</h4>
+        <hr style="margin: 3px 0;">
+        <ul style="list-style-type: disc; padding-left: 15px;">
+          <li>流程设计：可视化编辑/部署等</li>
+          <li>流程实例：流程进度/操作记录/过程变量查询修改/挂起/激活/待办/办理人修改/节点跳转等</li>
+          <li>流程示例：请假申请(审批操作/节点事件触发/表单操作)、会议预约(会签)、采购申请(子流程操作)</li>
+          <li>监控部署：Grafana/Loki/Promtail/Prometheus/Exporter...</li>
+        </ul>
+        <h4>1.0.2</h4>
+        <hr style="margin: 3px 0;">
+        <ul style="list-style-type: disc; padding-left: 15px;">
+          <li>支持Ldap认证</li>
+        </ul>
+        <h4>1.0.1</h4>
+        <hr style="margin: 3px 0;">
+        <ul style="list-style-type: disc; padding-left: 15px;">
+          <li>支持Gitlab授权认证，提供OAuth2授权服务（授权码模式）</li>
+        </ul>
+        <h4>1.0.0</h4>
+        <hr style="margin: 3px 0;">
+        <ul style="list-style-type: disc; padding-left: 15px;">
+          <li>登录/注册/验证码/国际化</li>
+          <li>用户/角色/部门/岗位/菜单/字典/系统参数/系统消息/操作日志/操作权限</li>
+          <li>代码模板、工程模板、SQL转换（Mysql/Postgres）、定时任务（Quartz）</li>
+        </ul>
       </el-col>
 
       <el-col :sm="24" :lg="12" style="padding-left: 50px">
-        <el-row>
-          <el-col :span="24">
-            <h4>更新日志：</h4>
-            <b>1.0.3:</b>
-            <hr style="margin: 3px 0;">
-            <ul style="list-style-type: disc; padding-left: 15px;">
-              <li>登录/注册/验证码/Ldap账号/Gitlab授权(OAuth2)/国际化</li>
-              <li>用户/角色/部门/岗位/菜单/字典/系统参数</li>
-              <li>系统消息/操作日志/操作权限控制</li>
-              <li>流程设计（可视化编辑/部署等）</li>
-              <li>流程实例（流程进度/操作记录/过程变量查询修改/挂起/激活/待办/办理人修改/节点跳转等）</li>
-              <li>流程示例-请假申请（审批操作、节点事件触发、表单操作等）</li>
-              <li>流程示例-会议预约（会签）</li>
-              <li>流程示例-采购申请（子流程操作）</li>
-              <li>代码工具-SQL转换（对接数据源读取Sql定义以及转换，支持Mysql/Postgres/神通）</li>
-              <li>代码工具-代码生成（生成模板工程，包括：前后端代码-对应sql定义、各项工程配置）</li>
-              <li>定时任务（Quartz实现，基于数据库行锁的分布式定时任务）</li>
-            </ul>
-          </el-col>
-        </el-row>
+        <h3>进程列表</h3>
+        <ul>
+          <li><pre>alertmanager        running             0.0.0.0:9083->9093/tcp</pre></li>
+          <li><pre>grafana             running             0.0.0.0:3000->3000/tcp</pre></li>
+          <li><pre>loki                running             0.0.0.0:3100->3100/tcp</pre></li>
+          <li><pre>mysql-exporter      running             0.0.0.0:9104->9104/tcp</pre></li>
+          <li><pre>node-exporter       running             0.0.0.0:9100->9100/tcp</pre></li>
+          <li><pre>prometheus          running             0.0.0.0:9090->9090/tcp</pre></li>
+          <li><pre>promtail            running                                   </pre></li>
+          <li><pre>redis-exporter      running             0.0.0.0:9121->9121/tcp</pre></li>
+          <li><pre>sys-admin           running (healthy)   0.0.0.0:19010-19012->19010-19012/tcp</pre></li>
+          <li><pre>sys-blog            running (healthy)   0.0.0.0:80->80/tcp</pre></li>
+          <li><pre>sys-meter           running (healthy)   0.0.0.0:19030-19031->19030-19031/tcp</pre></li>
+          <li><pre>sys-elastic         running (healthy)   0.0.0.0:9200->9200/tcp</pre></li>
+          <li><pre>sys-flow            running (healthy)   0.0.0.0:19020-19021->19020-19021/tcp</pre></li>
+          <li><pre>sys-gateway         running (healthy)   0.0.0.0:19000->19000/tcp, :::19000->19000/tcp</pre></li>
+          <li><pre>sys-kafka1          running (healthy)   0.0.0.0:7072->7072/tcp, 0.0.0.0:9092->9092/tcp, 0.0.0.0:9097->9097/tcp</pre></li>
+          <li><pre>sys-kafka2          running (healthy)   0.0.0.0:7073->7073/tcp, 0.0.0.0:9093->9093/tcp, 0.0.0.0:9098->9098/tcp</pre></li>
+          <li><pre>sys-kafka3          running (healthy)   0.0.0.0:7074->7074/tcp, 0.0.0.0:9094->9094/tcp, 0.0.0.0:9099->9099/tcp</pre></li>
+          <li><pre>sys-minio           running (healthy)   0.0.0.0:39000-39001->9000-9001/tcp</pre></li>
+          <li><pre>sys-mysql           running (healthy)   0.0.0.0:3307->3306/tcp</pre></li>
+          <li><pre>sys-nacos           running (healthy)   0.0.0.0:8848->8848/tcp, 0.0.0.0:9848->9848/tcp</pre></li>
+          <li><pre>sys-postgres        running (healthy)   0.0.0.0:5433->5432/tcp</pre></li>
+          <li><pre>sys-quartz          running (healthy)   0.0.0.0:19040-19041->19040-19041/tcp</pre></li>
+          <li><pre>sys-redis           running (healthy)   0.0.0.0:6379->6379/tcp</pre></li>
+          <li><pre>sys-ui              running (healthy)   0.0.0.0:81-86->81-86/tcp</pre></li>
+          <li><pre>sys-zookeeper       running (healthy)   0.0.0.0:2181->2181/tcp</pre></li>
+        </ul>
       </el-col>
     </el-row>
-    <notice-info ref="noticeInfo"/>
   </div>
 </template>
-
 <script>
-import { getMsgs, msgRead} from "@/api/system/notice";
-
 export default {
   name: "Index",
-  dicts: ['notice_level', 'notice_type'],
-  components: { noticeInfo: ()=> import('./msg.vue')},
+  dicts: [],
   data() {
     return {
       version: "",
-      queryParams: {
-        page: 1,
-        pageSize: 10
-      },
-      msgList: [],
-      total: 0,
       isPermissionVisible: false
     };
   },
   created() {
     this.version = process.env.VUE_APP_VERSION;
-    this.getList();
   },
   methods: {
-    getList() {
-      getMsgs(this.queryParams).then(response => {
-        this.msgList = response.data.list;
-        this.total = response.data.total;
-      });
-    },
-    handleRowClick(row, column, event){
-      if(row.readStatus === 0){
-        msgRead(row.noticeId).then(response => {
-          row.readStatus = 10;
-          this.$refs.noticeInfo.show(row);
-        });
-      }else{
-        this.$refs.noticeInfo.show(row);
-      }
-    },
     togglePermission() {
       this.isPermissionVisible = !this.isPermissionVisible;
     },
@@ -242,6 +215,7 @@ export default {
 
   ul {
     list-style-type: none;
+    padding-bottom: 2px;
   }
 
   h3 {

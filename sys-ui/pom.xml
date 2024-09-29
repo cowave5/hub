@@ -16,10 +16,6 @@
     <url>https://www.cowave.com/</url>
     <description>前端页面</description>
 
-    <properties>
-        <skip.changelog>true</skip.changelog>
-    </properties>
-
     <build>
         <plugins>
             <plugin>

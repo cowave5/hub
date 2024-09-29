@@ -27,7 +27,7 @@ spec:
             - name: SERVER_NAME
               value: "sys-eureka"
             - name: EUREKA_INSTANCE_ID
-              value: "10.64.4.74:11001"
+              value: "192.168.141.74:11001"
             - name: MAIL_ENABLE
               value: "false"
             - name: MAIL_ADDR

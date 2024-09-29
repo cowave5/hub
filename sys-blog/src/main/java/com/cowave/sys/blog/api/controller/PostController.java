@@ -1,20 +1,21 @@
 /*
- * Copyright (c) 2017～2099 Cowave All Rights Reserved.
+ * Copyright (c) 2017～2025 Cowave All Rights Reserved.
  *
- * For licensing information, please contact: https://www.cowave.com.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
- * This code is proprietary and confidential.
- * Unauthorized copying of this file, via any medium is strictly prohibited.
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 package com.cowave.sys.blog.api.controller;
 
-import com.cowave.commons.framework.helper.file.FileService;
+import com.cowave.commons.client.http.response.Response;
+import com.cowave.commons.framework.helper.FileHelper;
 import com.cowave.sys.blog.api.entity.PostInfo;
 import com.cowave.sys.blog.api.service.PostService;
 import com.cowave.sys.blog.configuration.BlogConfiguration;
 import com.cowave.sys.blog.configuration.ViewConfiguration;
 import lombok.RequiredArgsConstructor;
-import org.springframework.feign.codec.Response;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +39,7 @@ public class PostController {
 
     private final PostService postService;
 
-    private final FileService fileService;
+    private final FileHelper fileHelper;
 
     private final BlogConfiguration blogConfiguration;
 
@@ -47,7 +48,7 @@ public class PostController {
      */
     @RequestMapping("/upload")
     public Response<String> uploadFile(MultipartFile file) throws Exception {
-        String localPath = fileService.localUpload(file, blogConfiguration.getPostImagePath());
+        String localPath = fileHelper.upload(file, blogConfiguration.getPostImagePath());
         localPath = localPath.replaceFirst(blogConfiguration.getProfile(), ViewConfiguration.RESOURCE_PREFIX);
         return Response.success(localPath);
     }
@@ -57,7 +58,7 @@ public class PostController {
      */
     @RequestMapping("/md/upload")
     public Map<String, Object> uploadMdFile(@RequestParam(value = "editormd-image-file") MultipartFile file) throws Exception {
-        String localPath = fileService.localUpload(file, blogConfiguration.getMdImagePath());
+        String localPath = fileHelper.upload(file, blogConfiguration.getMdImagePath());
         localPath = localPath.replaceFirst(blogConfiguration.getProfile(), ViewConfiguration.RESOURCE_PREFIX);
         Map<String, Object> map = new HashMap<>();
         map.put("success", 1);

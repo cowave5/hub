@@ -1,19 +1,22 @@
 /*
- * Copyright (c) 2017～2099 Cowave All Rights Reserved.
+ * Copyright (c) 2017～2025 Cowave All Rights Reserved.
  *
- * For licensing information, please contact: https://www.cowave.com.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
- * This code is proprietary and confidential.
- * Unauthorized copying of this file, via any medium is strictly prohibited.
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 package com.cowave.sys.blog.api.cache;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cowave.commons.client.http.constants.HttpHeader;
+import com.cowave.commons.client.http.response.Response;
 import com.cowave.commons.framework.access.Access;
+import com.cowave.sys.blog.api.entity.CategoryInfo;
 import com.cowave.sys.blog.api.entity.ChannelInfo;
 import com.cowave.sys.blog.api.entity.NavigationInfo;
-import com.cowave.sys.blog.api.entity.CategoryInfo;
 import com.cowave.sys.blog.api.entity.PostInfo;
 import com.cowave.sys.blog.api.mapper.CategoryMapper;
 import com.cowave.sys.blog.api.mapper.ChannelMapper;
@@ -24,16 +27,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.feign.codec.Response;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.*;
 
 /**
- *
  * @author shanhuiming
- *
  */
 @RequiredArgsConstructor
 @Service
@@ -52,11 +52,22 @@ public class BlogCache {
     /**
      * 导航栏
      */
-    @Cacheable(value = "navigations", key = "'xx'", cacheManager = "ehcacheCacheManager")
     public List<NavigationInfo> getNavigations(){
         List<NavigationInfo> navigationList = navigationMapper.queryNavigations(null);
         // 过滤掉停用的(后台与前台用的同一个sql，所以不在sql里where，会使后台导航管理列表不显示)
-        return navigationList.stream().filter(e -> Objects.equals(1, e.getStatus())).toList();
+        String auth = Access.getCookie(HttpHeader.Authorization);
+        // 只是示意，这里随便写下
+        if(StringUtils.isBlank(auth)){
+            return navigationList.stream()
+                    .filter(e -> Objects.equals(1, e.getStatus()))
+                    .filter(e -> e.getId() < 12 || e.getId() > 15)
+                    .toList();
+        }else{
+            return navigationList.stream()
+                    .filter(e -> Objects.equals(1, e.getStatus()))
+                    .filter(e -> e.getId() < 16)
+                    .toList();
+        }
     }
 
     /**

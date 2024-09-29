@@ -1,3 +1,5 @@
+import noticeSocket from '@/store/modules/noticeSocket'
+
 const getters = {
   sidebar: state => state.app.sidebar,
   size: state => state.app.size,
@@ -18,5 +20,7 @@ const getters = {
   topbarRouters:state => state.permission.topbarRouters,
   defaultRoutes:state => state.permission.defaultRoutes,
   sidebarRouters:state => state.permission.sidebarRouters,
+
+  noticeCount: state => state.noticeSocket.noticeCount,
 }
 export default getters

@@ -1,60 +1,76 @@
 import request from '@/utils/request'
 
-// 查询参数列表
-export function listConfig(query) {
+/**
+ * 配置列表
+ */
+export function getConfigList(params) {
   return request({
-    url: '/admin/api/v1/config/list',
-    method: 'post',
-    data: query
+    url: '/admin/api/v1/config',
+    method: 'get',
+    params: params
   })
 }
 
-// 查询参数详细
-export function getConfig(configId) {
+/**
+ * 配置详情
+ */
+export function getConfigInfo(configId) {
   return request({
-    url: '/admin/api/v1/config/info/' + configId,
+    url: '/admin/api/v1/config/' + configId,
     method: 'get'
   })
 }
 
-// 新增参数配置
+/**
+ * 新增配置
+ */
 export function addConfig(data) {
   return request({
-    url: '/admin/api/v1/config/add',
+    url: '/admin/api/v1/config',
     method: 'post',
     data: data
   })
 }
 
-// 修改参数配置
+/**
+ * 删除配置
+ */
+export function delConfig(configIds) {
+  return request({
+    url: '/admin/api/v1/config/' + configIds,
+    method: 'delete'
+  })
+}
+
+/**
+ * 修改配置
+ */
 export function updateConfig(data) {
   return request({
-    url: '/admin/api/v1/config/edit',
-    method: 'post',
+    url: '/admin/api/v1/config',
+    method: 'patch',
     data: data
   })
 }
 
-// 删除参数配置
-export function delConfig(configId) {
+/**
+ * 刷新配置
+ */
+export function refreshConfig() {
   return request({
-    url: '/admin/api/v1/config/delete?configId=' + configId,
+    url: '/admin/api/v1/config/refresh',
     method: 'get'
   })
 }
 
-// 根据参数键名查询参数值
-export function getConfigKey(configKey) {
+/**
+ * 获取配置值
+ */
+export function getConfigValue(configKey) {
   return request({
     url: '/admin/api/v1/config/value/' + configKey,
     method: 'get'
   })
 }
 
-// 刷新参数缓存
-export function refreshCache() {
-  return request({
-    url: '/admin/api/v1/config/refresh',
-    method: 'get'
-  })
-}
+

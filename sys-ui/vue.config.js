@@ -42,28 +42,28 @@ module.exports = {
       },
       // env.development
       ['/dev-api/admin']: {
-        target: `http://127.0.0.1:19010/admin`,
+        target: `http://localhost:19010/admin`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API + '/admin']: ''
         }
       },
       ['/dev-api/flow']: {
-        target: `http://10.64.4.74:19020/flow`,
+        target: `http://localhost:19020/flow`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API + '/flow']: ''
         }
       },
-      ['/dev-api/code']: {
-        target: `http://127.0.0.1:19030/code`,
+      ['/dev-api/meter']: {
+        target: `http://localhost:19030/meter`,
         changeOrigin: true,
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API + '/code']: ''
+          ['^' + process.env.VUE_APP_BASE_API + '/meter']: ''
         }
       },
       ['/dev-api/quartz']: {
-        target: `http://127.0.0.1:19040/quartz`,
+        target: `http://localhost:19040/quartz`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API + '/quartz']: ''

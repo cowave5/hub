@@ -18,12 +18,12 @@
       </router-link>
     </scroll-pane>
     <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
-      <li @click="refreshSelectedTag(selectedTag)"><i class="el-icon-refresh-right"></i> {{$t(`tag.refresh`)}}</li>
-      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)"><i class="el-icon-close"></i> {{$t(`tag.close`)}}</li>
-      <li @click="closeOthersTags"><i class="el-icon-circle-close"></i> {{$t(`tag.other`)}}</li>
-      <li @click="closeAllTags(selectedTag)"><i class="el-icon-circle-close"></i> {{$t(`tag.all`)}}</li>
-      <li v-if="!isFirstView()" @click="closeLeftTags"><i class="el-icon-back"></i> {{$t(`tag.left`)}}</li>
-      <li v-if="!isLastView()" @click="closeRightTags"><i class="el-icon-right"></i> {{$t(`tag.right`)}}</li>
+      <li @click="refreshSelectedTag(selectedTag)"><i class="el-icon-refresh-right"></i> {{$t('commons.frame.refresh')}}</li>
+      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)"><i class="el-icon-close"></i> {{$t('commons.frame.close')}}</li>
+      <li @click="closeOthersTags"><i class="el-icon-circle-close"></i> {{$t('commons.frame.close_other')}}</li>
+      <li @click="closeAllTags(selectedTag)"><i class="el-icon-circle-close"></i> {{$t('commons.frame.close_all')}}</li>
+      <li v-if="!isFirstView()" @click="closeLeftTags"><i class="el-icon-back"></i> {{$t('commons.frame.close_left')}}</li>
+      <li v-if="!isLastView()" @click="closeRightTags"><i class="el-icon-right"></i> {{$t('commons.frame.close_right')}}</li>
     </ul>
   </div>
 </template>

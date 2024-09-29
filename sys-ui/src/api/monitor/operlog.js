@@ -1,65 +1,42 @@
 import request from '@/utils/request'
 
-// 日志列表
-export function list(data) {
+/**
+ * 模块类型选项
+ */
+export function getOpLogOptions() {
   return request({
-    url: '/admin/api/v1/log/list',
-    method: 'post',
-    data: data
-  })
-}
-
-export function options() {
-  return request({
-    url: '/admin/api/v1/dict/group/options?groupCode=sys_log',
+    url: '/admin/api/v1/dict/group/types/op_log',
     method: 'get'
   })
 }
 
-// 日志详情
-export function info(id) {
+/**
+ * 列表
+ */
+export function getOpLogList(params) {
   return request({
-    url: '/admin/api/v1/log/info/' + id,
-    method: 'get'
+    url: '/admin/api/v1/oplog',
+    method: 'get',
+    params: params
   })
 }
 
-// 删除操作日志
-export function delOperlog(id) {
+/**
+ * 删除
+ */
+export function delOpLog(ids) {
   return request({
-    url: '/admin/api/v1/log/delete?id=' + id,
-    method: 'get'
+    url: '/admin/api/v1/oplog/' + ids,
+    method: 'delete'
   })
 }
 
-// 清空操作日志
-export function cleanOperlog() {
+/**
+ * 清空
+ */
+export function cleanOpLog() {
   return request({
-    url: '/admin/api/v1/log/clean',
-    method: 'get'
-  })
-}
-
-export function userQuery(data) {
-  return request({
-    url: '/admin/api/v1/log/user/query',
-    method: 'post',
-    data: data
-  })
-}
-
-export function deptQuery(data) {
-  return request({
-    url: '/admin/api/v1/log/dept/query',
-    method: 'post',
-    data: data
-  })
-}
-
-export function postQuery(data) {
-  return request({
-    url: '/admin/api/v1/log/post/query',
-    method: 'post',
-    data: data
+    url: '/admin/api/v1/oplog/clean',
+    method: 'delete'
   })
 }

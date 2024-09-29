@@ -15,8 +15,11 @@
 release.properties
 .checkstyle
 target/
+
 log/
 logs/
+data/
+public/
 
 .DS_Store
 node/

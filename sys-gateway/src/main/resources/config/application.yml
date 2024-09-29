@@ -1,31 +1,36 @@
 spring:
-  application:
-    name: sys-gateway
-  main:
-    web-application-type: reactive
-  liquibase:
-    enabled: false
+  redis:
+    host: ${redis_host:127.0.0.1}
+    port: ${redis_port:6379}
+  access:
+    auth:
+      ignore-urls:
+        - /admin/api/v1/oauth/client/authorize/token
+        - /admin/api/v1/oauth/client/redirect/**
+        - /admin/api/v1/auth/public/**
+        - /admin/api/v1/flow/designer/**
+        - /admin/designer/**
+        - /admin/favicon.ico
+        - /admin/actuator/**
+        - /admin/doc/**
+        - /meter/favicon.ico
+        - /meter/actuator/**
+        - /meter/doc/**
+        - /quartz/favicon.ico
+        - /quartz/actuator/**
+        - /quartz/doc/**
   cloud:
-    discovery:
-      client:
-        composite-indicator:
-          enabled: false
-    nacos:
-      discovery:
-        server-addr: ${nacos_server:10.64.4.74:8848}
-        metadata:
-          context-path: ${server.servlet.context-path}
     gateway:
       enabled: true
       routes:
-        - id: admin
-          uri: lb://sys-admin
-          predicates:
-            - Path=/admin/**
         - id: socket
           uri: lb:ws://sys-admin
           predicates:
             - Path=/socket.io/**
+        - id: admin
+          uri: lb://sys-admin
+          predicates:
+            - Path=/admin/**
         - id: quartz
           uri: lb://sys-quartz
           predicates:
@@ -34,32 +39,10 @@ spring:
           uri: lb://sys-flow
           predicates:
             - Path=/flow/**
-        - id: code
-          uri: lb://sys-code
+        - id: meter
+          uri: lb://sys-meter
           predicates:
-            - Path=/code/**
-
-server:
-  port: ${server_port:19000}
-  servlet:
-    context-path: /
-
-info:
-  cluster:
-    id: 10
-    level: 1
-    name: default
-  application:
-    name: sys-gateway
-    version: 0.0.0
-    build: 1970-01-01 00:00:00
-  commit:
-    version: master xxxx
-    Author: xxx
-    Time: 1970-01-01 00:00:00
-    Msg: create
-  maintainer:
-    "[shanhuiming@cowave.com]": 单惠铭
+            - Path=/meter/**
 
 management:
   info:
@@ -79,5 +62,3 @@ management:
       enabled: false
     diskSpace:
       enabled: false
-    gateway:
-      enabled: true

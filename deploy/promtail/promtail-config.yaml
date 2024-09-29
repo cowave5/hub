@@ -1,0 +1,30 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+- job_name: log-sys
+  static_configs:
+  - targets:
+    - localhost
+    labels:
+      job: log-sys
+      host: host-sys
+      cluster: sys
+      __path__: /home/cowave/sys/sys-*/*.log
+  pipeline_stages:
+    - match:
+        selector: '{job="log-sys"}'
+        stages:
+        - regex:
+           source: filename
+           expression: "/home/cowave/sys/(?P<application>\\S+?)/(?P<logger>[^/]+\\.log)$"
+        - labels:
+            application:
+            logger:

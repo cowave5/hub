@@ -7,7 +7,7 @@ import responseCode from '@/utils/responseCode'
 import {Notification, Message, Loading, MessageBox} from 'element-ui'
 import { tansParams, blobValidate } from "@/utils/ruoyi";
 import { saveAs } from 'file-saver'
-import {refresh} from "@/api/login";
+import {refresh} from "@/api/auth";
 
 let downloadLoadingInstance;
 
@@ -68,7 +68,6 @@ service.interceptors.request.use(config => {
     Promise.reject(error)
 })
 
-let isRejected = false; // 是否以拒绝访问
 let isRefreshing = false; // 是否正在刷新Token
 let requestsQueue = [];     // 等待Token刷新的请求
 
@@ -86,7 +85,7 @@ service.interceptors.response.use(response => {
           isRefreshing = false;
           store.commit('SET_TOKEN', resp.data);
           requestsQueue.forEach(cb => cb(resp.data.accessToken));
-          store.dispatch('RefreshSocket');
+          store.dispatch('RefreshNoticeSocket');
           requestsQueue = [];
           return service(response.config); // 重新发送当前请求
         }).catch(err => {
@@ -101,15 +100,18 @@ service.interceptors.response.use(response => {
           });
         });
       }
-    }else if (code === "401") {
-      if(!isRejected){
-        isRejected = true;
-        cache.local.removeAccessToken();
-        MessageBox.alert('授权已过期，请重新登录', { type: 'warning' }).then(() => {
-          router.push("/login");
-        });
+    } else if (code === '401') {
+      cache.local.removeAccessToken()
+      if (router.currentRoute.path !== '/login' && router.currentRoute.path !== '/ldap') {
+        MessageBox.alert(msg, { type: 'warning' }).then(() => {
+          router.push('/login')
+        })
+      } else {
+        Notification.error({
+          title: msg
+        })
       }
-      return Promise.reject('授权已过期')
+      return Promise.reject('认证失败')
     } else if (code === "500") {
       Message({
         message: msg,
@@ -126,27 +128,24 @@ service.interceptors.response.use(response => {
     }
   },
   error => {
-    console.log('err' + error)
-    let { message } = error;
-    if (message === "Network Error") {
-      message = "后端接口连接异常";
-    }
-    else if (message.includes("timeout")) {
-      message = "系统接口请求超时";
-    }
-    else if (message.includes("Request failed with status code")) {
-      message = "系统接口" + message.substr(message.length - 3) + "异常";
+    console.log(error)
+    let message = '服务请求失败'
+    if (error.response) {
+      const msg = error.response.data.msg
+      if (msg) {
+        message = msg
+      }
     }
     Message({
       message: message,
       type: 'error',
       duration: 5 * 1000
-    });
+    })
     return Promise.reject(error)
   }
 )
 
-// 通用下载方法
+// 下载
 export function download(url, params, filename) {
   downloadLoadingInstance = Loading.service({ text: "正在下载数据，请稍候", spinner: "el-icon-loading", background: "rgba(0, 0, 0, 0.7)", })
   return service.post(url, params, {

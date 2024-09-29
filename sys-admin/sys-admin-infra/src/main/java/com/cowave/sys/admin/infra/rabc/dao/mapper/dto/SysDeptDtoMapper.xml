@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2025 Cowave All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.admin.infra.rabc.dao.mapper.dto.SysDeptDtoMapper">
+    <sql id="deptColumns">
+        d.dept_id,
+        d.dept_code,
+        d.dept_name,
+        d.dept_short,
+        d.dept_addr,
+        d.dept_phone,
+        d.create_by,
+        d.create_time,
+        d.update_by,
+        d.update_time,
+        d.remark
+    </sql>
+
+    <resultMap id="deptMap" type="com.cowave.sys.admin.domain.rabc.SysDept">
+        <result column="dept_id"       property="deptId"/>
+        <result column="dept_code"     property="deptCode"/>
+        <result column="dept_name"     property="deptName"/>
+        <result column="dept_short"    property="deptShort"/>
+        <result column="dept_addr"     property="deptAddr"/>
+        <result column="dept_phone"    property="deptPhone"/>
+        <result column="remark"        property="remark"/>
+        <result column="create_by"     property="createBy"/>
+        <result column="create_time"   property="createTime"/>
+        <result column="update_by"     property="updateBy"/>
+        <result column="update_time"   property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="deptListDtoMap" type="com.cowave.sys.admin.domain.rabc.dto.DeptListDto" extends="deptMap">
+        <result column="parent_id"    property="parentId"/>
+        <collection property="leaderList" javaType="list" ofType="com.cowave.sys.admin.domain.rabc.dto.UserNameDto">
+            <result column="user_id"      property="userId"/>
+            <result column="user_name"    property="userName"/>
+        </collection>
+    </resultMap>
+
+    <select id="list" resultMap="deptListDtoMap">
+        select t.parent_id, u.user_id, u.user_name,
+        <include refid="deptColumns"/>
+        from sys_dept d
+        left join sys_dept_tree t on d.dept_id = t.dept_id
+        left join sys_user_dept ud on d.dept_id = ud.dept_id and ud.is_leader = 1
+        left join sys_user u on u.user_id = ud.user_id
+        where 1 = 1
+        <if test="deptName != null and deptName != ''">
+            and dept_name like concat('%', #{deptName}, '%')
+        </if>
+        <if test="deptPhone != null and deptPhone != ''">
+            and dept_phone like concat('%', #{deptPhone}, '%')
+        </if>
+        order by t.parent_id, t.dept_id
+    </select>
+
+    <resultMap id="deptInfoDtoMap" type="com.cowave.sys.admin.domain.rabc.dto.DeptInfoDto" extends="deptMap">
+        <collection property="parentIds" javaType="list" ofType="Long">
+            <result column="parent_id"/>
+        </collection>
+        <collection property="leaderIds" javaType="list" ofType="Long">
+            <result column="user_id"/>
+        </collection>
+    </resultMap>
+
+    <select id="info" resultMap="deptInfoDtoMap">
+        select t.parent_id, u.user_id,
+        <include refid="deptColumns"/>
+        from sys_dept d
+        left join sys_dept_tree t on d.dept_id = t.dept_id
+        left join sys_user_dept u on d.dept_id = u.dept_id and u.is_leader = 1
+        where d.dept_id = #{deptId}
+    </select>
+
+    <select id="getTreeNodes" resultType="com.cowave.sys.admin.domain.base.vo.TreeNode">
+        select t.dept_id   id,
+               t.parent_id pid,
+               d.dept_name as label
+        from sys_dept_tree t
+        left join sys_dept d ON t.dept_id = d.dept_id
+        order by t.parent_id, t.dept_id
+    </select>
+
+    <select id="childIds" resultType="java.lang.Integer">
+        with recursive tree (dept_id, parent_id) as
+            (select t1.dept_id, t1.parent_id from sys_dept_tree t1 where dept_id = #{deptId} union
+            select t2.dept_id, t2.parent_id from sys_dept_tree t2 join tree on t2.parent_id = tree.dept_id)
+        select distinct tree.dept_id from tree JOIN sys_dept u on tree.dept_id = u.dept_id
+    </select>
+
+    <select id="getConfiguredPosts" resultType="com.cowave.sys.admin.domain.rabc.dto.DeptPostDto">
+        select d.post_id postId,
+               p.post_name postName,
+               p.post_type postType,
+               d.is_default isDefault
+        from sys_dept_post d
+        join sys_post p on d.post_id = p.post_id
+        where dept_id = #{query.deptId}
+        <if test="query.postName != null and query.postName != ''">
+            and p.post_name like concat('%', #{query.postName}, '%')
+        </if>
+        <if test="query.postType != null and query.postType != ''">
+            and p.post_type = #{query.postType}
+        </if>
+        order by p.post_type
+    </select>
+
+    <select id="getUnConfiguredPosts" resultType="com.cowave.sys.admin.domain.rabc.dto.DeptPostDto">
+        with pids as (select post_id from sys_post except select post_id from sys_dept_post where dept_id = #{query.deptId})
+        select p.post_id   postId,
+               p.post_name postName,
+               p.post_type postType
+        from pids
+        join sys_post p on pids.post_id = p.post_id
+        where 1 = 1
+        <if test="query.postName != null and query.postName != ''">
+            and p.post_name like concat('%', #{query.postName}, '%')
+        </if>
+        <if test="query.postType != null and query.postType != ''">
+            and p.post_type = #{query.postType}
+        </if>
+        order by p.post_type
+    </select>
+
+    <insert id="insertDeptPosts">
+        insert into sys_dept_post(dept_id, post_id, is_default)values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.deptId}, #{item.postId}, #{item.isDefault})
+        </foreach>
+        on conflict(dept_id, post_id)
+        do update set is_default = excluded.is_default
+    </insert>
+
+    <insert id="insertDeptUsers">
+        insert into sys_user_dept(user_id, dept_id, post_id, is_default, is_leader) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.userId}, #{item.deptId}, #{item.postId}, #{item.isDefault}, #{item.isLeader})
+        </foreach>
+        on conflict(user_id, dept_id, post_id)
+        do update set
+        is_default = excluded.is_default,
+        is_leader = excluded.is_leader
+    </insert>
+
+    <select id="getJoinedMembers" resultType="com.cowave.sys.admin.domain.rabc.dto.DeptUserDto">
+        select DISTINCT on(u.user_id)
+        u.user_id userId,
+        u.user_name userName,
+        u.user_phone userPhone,
+        u.user_rank userRank,
+        ud.is_default isDefault,
+        ud.is_leader isLeader,
+        p.post_name postName
+        from sys_user_dept ud
+        left join sys_user u on ud.user_id = u.user_id
+        left join sys_post p on ud.post_id = p.post_id
+        where ud.dept_id = #{query.deptId} and u.user_id > 1
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+    </select>
+
+    <select id="getUnJoinedMembers" resultType="com.cowave.sys.admin.domain.rabc.dto.DeptUserDto">
+        with uids as (select user_id from sys_user except select user_id from sys_user_dept where dept_id = #{query.deptId})
+        select DISTINCT on(u.user_id)
+        u.user_id userId,
+        u.user_name userName,
+        u.user_phone userPhone,
+        u.user_rank userRank,
+        0 as isDefault,
+        0 as isLeader
+        from uids
+        join sys_user u on uids.user_id = u.user_id
+        where u.user_id > 1
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+    </select>
+
+    <select id="getDefaultDeptOfUser" resultType="com.cowave.sys.admin.domain.rabc.SysDept">
+        select
+        <include refid="deptColumns"/>
+        from sys_user_dept ud, sys_dept d
+        where d.dept_id = ud.dept_id and ud.user_id = #{userId}
+        order by ud.is_default desc limit 1
+    </select>
+
+    <select id="deptWithMultiDefaultPost" resultType="java.lang.Integer">
+        select dept_id from sys_dept_post where is_default = 1 group by dept_id having count(1) > 1
+    </select>
+
+    <select id="getCandidatesByCode" resultType="com.cowave.sys.admin.domain.rabc.dto.UserNameDto">
+        select u.user_id userId, u.user_name userName
+        from sys_user u, sys_dept d, sys_user_dept ud
+        where d.dept_code = #{deptCode} and d.dept_id = ud.dept_id and ud.user_id = u.user_id
+    </select>
+
+    <resultMap id="optionsMap" type="com.cowave.sys.admin.domain.base.vo.TreeChildren">
+        <result column="dept_id"     property="pid"/>
+        <collection property="children" javaType="list" ofType="cn.hutool.core.lang.tree.Tree">
+            <result column="child_id"     property="id"/>
+            <result column="post_name"    property="label"/>
+            <result column="content"      property="content"/>
+        </collection>
+    </resultMap>
+
+    <select id="deptPostOptions" resultMap="optionsMap">
+        select d.dept_id,
+               d.dept_id || '-' || p.post_id child_id,
+               p.post_name,
+               d.dept_name || '/' || p.post_name as content
+        from sys_dept d
+        left join sys_dept_post dp on d.dept_id = dp.dept_id
+        left join sys_post p on dp.post_id = p.post_id
+    </select>
+
+    <resultMap id="deptUsersMap" type="com.cowave.sys.admin.domain.base.vo.TreeChildren">
+        <result column="dept_id"     property="pid"/>
+        <collection property="children" javaType="list" ofType="cn.hutool.core.lang.tree.Tree">
+            <result column="user_id"     property="id"/>
+            <result column="user_name"   property="label"/>
+        </collection>
+    </resultMap>
+
+    <select id="deptUserOptions" resultMap="deptUsersMap">
+        select d.dept_id, u.user_id, u.user_name
+        from sys_dept d
+        left join sys_user_dept ud on d.dept_id = ud.dept_id
+        left join sys_user u on ud.user_id = u.user_id
+    </select>
+</mapper>

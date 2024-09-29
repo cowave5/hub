@@ -1,156 +1,194 @@
 <template>
   <div class="app-container">
-    <h4 class="form-header h4">{{$t('dept.info')}}</h4>
-    <el-form ref="form" :model="form" label-width="80px">
+    <h4 class="form-header h4">{{$t('dept.text.info')}}</h4>
+    <el-form ref="form" :model="deptInfo" label-width="80px">
       <el-row>
         <el-col :span="8" :offset="2">
-          <el-form-item :label="$t(`dept.label.name`)" prop="userAccount">
-            <el-input  v-model="form.deptName" disabled />
+          <el-form-item :label="$t('dept.label.name')">
+            <el-input  v-model="deptInfo.deptName" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="8" :offset="2">
-          <el-form-item :label="$t(`dept.label.phone`)" prop="userName">
-            <el-input v-model="form.deptPhone" disabled />
+          <el-form-item :label="$t('dept.label.phone')">
+            <el-input v-model="deptInfo.deptPhone" disabled />
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
 
-    <h4 class="form-header h4">{{$t('dept.position.info')}}</h4>
-    <el-table v-loading="loading" :row-key="getRowKey" ref="table" @select="selectSingle" :data="list">
-      <el-table-column type="selection" :reserve-selection="true" width="50"></el-table-column>
-      <el-table-column :label="$t(`label.index`)" type="index" align="center" width="55">
+    <!--  筛选栏  -->
+    <h4 class="form-header h4">{{$t('post.text.list')}}</h4>
+    <el-form ref="queryForm" :model="queryParams" size="small" :inline="true" v-show="showSearch">
+      <el-form-item :label="$t('post.label.name')" prop="postName">
+        <el-input v-model="queryParams.postName" :placeholder="$t('post.placeholder.name')" clearable
+                  style="width: 240px" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item :label="$t('post.label.type')" prop="postType">
+        <el-select v-model="queryParams.postType" :placeholder="$t('post.placeholder.type')" clearable>
+          <el-option v-for="dict in dict.type.post_type" :key="dict.code" :value="dict.code" :label="$t(dict.name)"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
+          {{ $t('commons.button.search') }}
+        </el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="handleReset">{{ $t('commons.button.reset') }}</el-button>
+      </el-form-item>
+    </el-form>
+
+    <!--  操作栏  -->
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAddPost">
+          {{$t('post.button.add')}}
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="danger" plain icon="el-icon-circle-close" size="mini" @click="handleRemovePost"
+                   :disabled="multiple || !checkPermit(['sys:dept:positions'])">
+          {{$t('post.button.remove')}}
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="warning" plain icon="el-icon-close" size="mini" @click="handleClose">
+          {{$t('commons.button.close')}}
+        </el-button>
+      </el-col>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"/>
+    </el-row>
+
+    <!--  列表数据  -->
+    <el-table ref="table" :data="list" @selection-change="selectRow" v-loading="loading">
+      <el-table-column type="selection" width="50"/>
+      <el-table-column :label="$t('commons.label.index')" type="index" align="center" width="55">
         <template slot-scope="scope">
           <span>{{(queryParams.page - 1) * queryParams.pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t(`dept.position.name`)" align="center" prop="postName" />
-      <el-table-column :label="$t(`dept.position.type`)" align="center" prop="postType">
+      <el-table-column :label="$t('post.label.name')" align="center" prop="postName" />
+      <el-table-column :label="$t('post.label.type')" align="center" prop="postType">
         <template slot-scope="{row: {postType}}">
           <template v-for="item in dict.type.post_type">
-            <span v-if="postType === item.value && $i18n.locale==='zh'">{{ item.label }}</span>
-            <span v-if="postType === item.value && $i18n.locale==='en'">{{ item.labelEn }}</span>
+            <span v-if="postType === item.code">{{ $t(item.name) }}</span>
           </template>
         </template>
       </el-table-column>
-      <el-table-column :label="$t(`dept.position.default`)" align="center">
+      <el-table-column :label="$t('dept.text.default_post')" align="center">
+        <template slot-scope="{row: {isDefault}}">
+          <template v-for="item in dict.type.yes_no">
+            <span v-if="isDefault === item.value">
+              <el-tag :type="item.css">{{ $t(item.name) }}</el-tag>
+            </span>
+          </template>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('commons.label.options')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.isDefault" :active-value=1 :inactive-value=0 @change="(val)=>handleDefaultChange(val,scope.row)"/>
+          <el-button size="mini" type="text" icon="el-icon-circle-close" @click="handleRemovePost(scope.row)"
+                     :disabled="!checkPermit(['sys:dept:positions'])">
+            {{$t('post.button.remove')}}
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.pageSize" @pagination="getList" />
-
-    <el-form label-width="100px">
-      <el-form-item style="text-align: center;margin-left:-120px;margin-top:30px;">
-        <el-button type="primary" @click="submitForm()"
-                   :disabled="!checkPermit(['sys:dept:positions'])">{{$t('button.confirm')}}</el-button>
-        <el-button @click="close()">{{$t('button.cancel')}}</el-button>
-      </el-form-item>
-    </el-form>
+    <pagination v-show="total>0" :total="total" :limit.sync="queryParams.pageSize"
+                :page.sync="queryParams.page" @pagination="getList"/>
+    <select-post ref="select" :dept-id="deptId" @ok="handleQuery"/>
   </div>
 </template>
 
 <script>
-import {listPost } from "@/api/system/post";
-import {getDept, getDeptPosts, setDeptPosts} from "@/api/system/dept";
+import { getDeptInfo, getConfiguredPosts, removeDeptPosts } from '@/api/system/dept'
 import {checkPermit} from "@/utils/permission";
+import selectPost from '@/views/system/dept/selectPost.vue'
 
 export default {
   name: "DeptPost",
-  dicts: ['post_type'],
+  components: { selectPost },
+  dicts: ['post_type', 'yes_no'],
   data() {
     return {
        // 遮罩层
       loading: false,
-      // 查询参数
+      // 非多个禁用
+      multiple: true,
+      // 显示筛选栏
+      showSearch: true,
+      // 筛选参数
       queryParams: {
         page: 1,
-        pageSize: 10
+        pageSize: 10,
+        deptId: undefined,
+        postName: undefined,
+        postType: undefined
       },
-      // 列表数据
+      // 分页数据
       list: [],
       // 分页总数
       total: 0,
-      // 选中数据
-      chooseRows:[],
-      // 对象id
-      infoId: undefined,
-      // 对象信息
-      form: {}
+      // 部门id
+      deptId: undefined,
+      // 部门信息
+      deptInfo: {},
+      // 选中岗位
+      postIds: []
     };
   },
   created() {
-    this.infoId = this.$route.params && this.$route.params.deptId;
-    if (this.infoId) {
-      getDept(this.infoId).then((resp) => {
-        this.form = resp.data;
+    this.deptId = this.$route.params && this.$route.params.deptId;
+    if (this.deptId) {
+      getDeptInfo(this.deptId).then((resp) => {
+        this.deptInfo = resp.data;
       });
-      getDeptPosts(this.infoId).then((resp) => {
-        this.chooseRows = resp.data
-      });
+      this.getList();
     }
-  },
-  mounted() {
-    this.getList();
   },
   methods: {
     checkPermit,
-    selectRow() {
-      if (this.infoId) {
-        this.$nextTick(()=>{
-          this.list.forEach((row) => {
-            const index = this.chooseRows.findIndex(v=>v.postId === row.postId);
-            if(index !== -1){
-              this.$refs.table.toggleRowSelection(row, true);
-              row.isDefault = this.chooseRows[index].isDefault;
-            }
-          });
-        })
-      }
-    },
-    /** 列表数据 */
+    /** 岗位列表 */
     getList() {
-      listPost(this.queryParams).then((resp) => {
+      this.queryParams.deptId = this.deptId;
+      getConfiguredPosts(this.queryParams).then((resp) => {
         this.list = resp.data.list
         this.total = resp.data.total;
-        this.selectRow()
       });
     },
-    /** 选中岗位变化 */
-    selectSingle(selection,row) {
-      if(selection.findIndex(v=>v.postId === row.postId) !== -1) {
-        if(this.chooseRows.findIndex(v=>v.postId === row.postId) === -1) this.chooseRows.push(row)
-      } else {
-        const index = this.chooseRows.findIndex(v=>v.postId === row.postId)
-        this.chooseRows.splice(index, 1)
-      }
+    /** 选中行 */
+    selectRow(selection) {
+      this.postIds = selection.map(item => item.postId);
+      this.multiple = !selection.length;
     },
-    /** 默认岗位修改 */
-    handleDefaultChange(val, row) {
-      const index = this.chooseRows.findIndex(v=>v.postId === row.postId)
-      if(index !== -1) {
-        this.chooseRows[index].isDefault = val
-      }
+    /** 搜索 */
+    handleQuery() {
+      this.getList();
     },
-    /** 选中的数据编号 */
-    getRowKey(row) {
-      return row.postId;
-    },
-    /** 提交 */
-    submitForm() {
-      this.chooseRows.forEach((row) => {
-        row.deptId = this.infoId;
-      });
-      setDeptPosts(this.chooseRows).then((response) => {
-        this.$modal.msgSuccess(this.$t(`msg.success_edit`));
-        this.close();
-      });
+    /** 重置 */
+    handleReset() {
+      this.$refs.queryForm.resetFields();
+      this.handleQuery()
     },
     /** 关闭 */
-    close() {
-      const obj = { path: "/system/dept" };
-      this.$tab.closeOpenPage(obj);
+    handleClose() {
+      const obj = { path: '/system/dept' }
+      this.$tab.closeOpenPage(obj)
+    },
+    /** 添加岗位 */
+    handleAddPost() {
+      this.$refs.select.show();
+    },
+    /** 取消岗位 */
+    handleRemovePost(row) {
+      const postIds = row.postId || this.postIds;
+      const deptId = this.deptId;
+      const msg = row.postId
+          ? this.$t('post.confirm.remove', { arg1: row.postName })
+          : this.$t('post.confirm.remove_select');
+      this.$modal.confirm(msg).then(function() {
+        return removeDeptPosts(deptId, postIds);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess(this.$t('commons.msg.success.delete'));
+      }).catch((e) => {console.log(e)});
     },
   },
 };

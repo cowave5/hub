@@ -1,196 +1,172 @@
 export default {
-  route: {
-    title: "Cowave",
-    dashboard: "Dashboard",
-    cowave: "Cowave",
-    common: {
-      title: "common",
-      readonly: "Change Readonly"
+  commons: {
+    label: {
+      index: "Index",
+      status: "Status",
+      remark: "Remark",
+      options: "Options",
+      createUser: "Create User",
+      createTime: "Create Time",
+      updateTime: "Update Time",
+      beginDate: "Begin Date",
+      endDate: "End Date",
     },
-    system: {
-      title: "System Manage",
-      user: {
-        title: "User",
-        query: "Query",
-        new: "New",
-        edit: "Edit",
-        delete: "Delete",
-        export: "Export",
-        import: "Import",
-        diagram: "Diagram",
-        cache: "Refresh Cache",
-        grant: "Grant Role",
-        passwd: "Reset Password",
-        status: "Change Status"
-      },
-      dept: {
-        title: "Department",
-        query: "Query",
-        new: "New",
-        edit: "Edit",
-        delete: "Delete",
-        export: "Export",
-        diagram: "Diagram",
-        cache: "Refresh Cache",
-        positions: "Positions",
-        members: "Members",
-      },
-      post: {
-        title: "Post",
-        query: "Query",
-        new: "New",
-        edit: "Edit",
-        delete: "Delete",
-        export: "Export",
-        diagram: "Diagram",
-        cache: "Refresh Cache",
-      },
-      role: {
-        title: "Role",
-        query: "Query",
-        new: "New",
-        edit: "Edit",
-        delete: "Delete",
-        export: "Export",
-        menus: "Menus",
-        dataScope: "Data Scope",
-        grant: "Grant User"
-      },
-      menu: {
-        title: "Menu",
-        query: "Query",
-        new: "New",
-        edit: "Edit",
-        delete: "Delete",
-        export: "Export",
-      },
-      dict: {
-        title: "Dictionary",
-        query: "Query",
-        new: "New",
-        edit: "Edit",
-        delete: "Delete",
-        export: "Export",
-        cache: "Refresh Cache",
-        data: {
-          title: "Dictionary Data",
-          query: "Query",
-          new: "New",
-          edit: "Edit",
-          delete: "Delete",
+    button: {
+      refresh: "Refresh",
+      search: "Search",
+      search_hide: "Hide Search",
+      search_show: "Show Search",
+      reset: "Reset",
+      hide: "Hide",
+      show: "Show",
+      enable: "Enable",
+      disable: "Disable",
+      save: "Save",
+      cancel: "Cancel",
+      confirm: "Confirm",
+      close: "Close",
+      status: 'Change Status',
+      query: "Query",
+      detail: "Detail",
+      create: "New",
+      edit: "Edit",
+      delete: "Delete",
+      publish: "Publish",
+      recall: "Recall",
+      exec: "Execute",
+      config: "Config",
+      test: "Test",
+      quit: "Quit",
+      upload: "Upload",
+      import: "Import",
+      export: "Export",
+      cache: "Refresh Cache",
+      diagram: "Diagram",
+      expand: "Expand",
+      collapse: "Collapse",
+      more: "More",
+      logout: "Sign out",
+      check: "Check All/Cancel All",
+      parent: "Parent-Child",
+      select_column: "Select Column",
+    },
+    menu: {
+      root: "Cowave",
+      cowave: "Cowave",
+      dashboard: "Dashboard",
+      meter: {
+        root: "Metersphere",
+        ui: "Ui Test",
+        form: "Form Builder",
+        template: {
+          root: "Code Template",
+          application: "Application",
+          model: "Model",
+          database: "Database",
+          table: "Table"
         }
       },
-      config: {
-        title: "Configuration",
-        query: "Query",
-        new: "New",
-        edit: "Edit",
-        delete: "Delete",
-        export: "Export",
-        cache: "Refresh Cache",
-      }
+      flow: {
+        root: "Workflow",
+        manage: 'Configuration',
+        model: 'Design',
+        deploy: 'Deploy',
+        instance: 'Instance',
+        owner: {
+          task: 'Workbench',
+          leave: 'Leave',
+          meeting: 'Meeting',
+          purchase: 'Purchase'
+        }
+      },
+      monitor: {
+        root: "System Monitor",
+        actuator: "Actuator",
+        grafana: "Grafana",
+        prometheus: "prometheus",
+        alert: "Alarm",
+        nacos: "Nacos",
+        log: "Operation Log",
+        online: "Online user",
+        cache: "Redis Cache",
+      },
+      sys: {
+        root: "System Manage",
+        user: 'User',
+        role: "Role",
+        menu: "Menu",
+        dept: "Dept",
+        post: "Post",
+        dict: "Dict",
+        config: "Config",
+        ldap: "Ldap",
+        doc: {
+          api: "Api Doc",
+          admin: "Admin Service",
+          quartz: "Schedule Service",
+          meter: "Meter Service"
+        },
+        schedule: {
+          root: "Schedule Task",
+          refresh: "Refresh",
+          logQuery: "Log Query",
+          logExport: "Log Export",
+          logDelete: "Log Delete"
+        },
+        oauth2: {
+          root: "OAuth2",
+          client: "Applications",
+          gitlab: "Gitlab",
+          userQuery: "User Query",
+          userEdit: "User Edit",
+          userDelete: "User Delete"
+        },
+      },
     },
-    monitor: {
-      title: "System Monitor"
+    confirm: {
+        logout: 'Sure to sign out?'
     },
-    tool: {
-      title: "System Tool"
+    msg: {
+      success: {
+        create: 'Create success',
+        edit: 'Edit success',
+        delete: 'Delete success',
+        reset: 'Reset success',
+        grant: 'Grant success',
+        refresh: 'Refresh success',
+      },
     },
-    notice: {
-      title: "Notice"
+    theme: {
+      title: 'Theme',
+      color: 'Color',
+      enable: 'Enable',
+      fix: 'Fix',
+      show: 'Show',
+      dynamic: 'Dynamic Title',
+      preference: "Preference",
+      profile: "Profile",
+      notice: "Notice",
+      token: "Access Tokens",
     },
-  },
-  tag: {
-    refresh: "refresh",
-    close: "close",
-    other: "close other tabs",
-    left: "close tabs to the left",
-    right: "close tabs to the right",
-    all: "close all tabs"
-  },
-  content: {
-    hide: "Hide",
-    show: "Show",
-    enable: "enable",
-    disable: "disable",
-    search_hide: "Hide Search",
-    search_show: "Show Search",
-    column_choose: "Choose Column",
-    success: " success",
-    failed: " failed",
-    profile: "Your profile",
-    layout: "Preference",
-    logout: "Sign out",
-    set: "set",
-    cancel: "cancel"
-  },
-  button: {
-    search: "Search",
-    reset: "Reset",
-    refresh: "Refresh",
-    cache: "Refresh Cache",
-    expand: "Expand",
-    collapse: "Collapse",
-    add: "New",
-    edit: "Edit",
-    delete: "Delete",
-    input: "Import",
-    output: "Export",
-    confirm: "Confirm",
-    cancel: "Cancel",
-    save: "Save",
-    close: "Close",
-    upload: "Upload",
-    more: "More",
-    check: "Check All/Cancle All",
-    parent: "Parent-Child"
-  },
-  label: {
-    index: "Index",
-    status: "Status",
-    remark: "Remark",
-    option: "Option",
-    readonly: "Readonly",
-    time_begin: "Time Begin",
-    time_end: "Time End",
-    date_begin: "Date Begin",
-    date_end: "Date End",
-    date_create: "Create Date"
-  },
-  theme: {
-    title: "Theme",
-    color: "Color",
-    layout: "Layout",
-    enable: "Enable",
-    fix: "Fix",
-    show: "Show",
-    dynamic: "Dynamic Title"
-  },
-  msg: {
-    success_create: "Create success",
-    success_edit: "Edit success",
-    success_delete: "Delete success",
-    success_reset: "Reset success",
-    success_grant: "Grant success",
-    success_refresh: "Refresh success",
-    logout: "Are you sure you want to sign out?"
+    frame: {
+      layout: 'Layout',
+      refresh: 'refresh',
+      close: 'close',
+      close_all: 'close all tabs',
+      close_other: 'close other tabs',
+      close_left: 'close tabs to the left',
+      close_right: 'close tabs to the right',
+    }
   },
   user: {
-    profile: "Profile",
-    basic: "Information",
-    info: "User",
-    roles: "Roles",
-    excel: "user",
-    template: "template_user",
-    avatar_failed: "Invalid file format, please upload the image type, such as: JPG, PNG",
     label: {
       id: "Id",
       name: "Name",
       account: "Account",
       passwd: "Password",
+      sex: "Sex",
       phone: "Phone",
       email: "Email",
-      sex: "Sex",
       rank: "Rank",
       status: "Status",
       dept: "Dept/Post",
@@ -200,48 +176,52 @@ export default {
       pwd_old: "Old Password",
       pwd_new: "New Password",
       pwd_confirm: "Confirm Password",
-      login_ip: "Login Ip",
-      login_time: "Login Time",
+    },
+    button: {
+      grant: 'Grant Role',
+      passwd: 'Reset Password',
+      add: "Add User",
+      remove: "Remove User",
+      select: "Select User"
     },
     placeholder: {
-      dept_choose: "Choose Dept/Post",
-      report: "Choose Report User",
       account: "Input User Account",
       passwd: "Input User Passwd",
-      dept: "Input Department",
       name: "Input User Name",
       phone: "Input User Phone",
       email: "Input User Email",
-      status: "Choose User Status",
-      sex: "Choose Sex",
-      rank: "Choose Rank",
-      role: "Choose Role",
-      post: "Choose Post",
+      status: "Select User Status",
+      sex: "Select Sex",
+      dept: "Select Dept/Post",
+      role: "Select Role",
+      rank: "Select Rank",
+      post: "Select Post",
+      report: "Select Report User",
       pwd_old: "Input old password",
       pwd_new: "Input new password",
       pwd_confirm: "Confirm new password"
     },
     dialog: {
       diagram: "User Diagram",
-      title_new: "New User",
-      title_edit: "Edit User",
-      title_import: "Import User",
-      title_pwd: "Reset Password",
-      title_avatar: "Change Avatar",
-      text_import1: "Drag files here, or",
-      text_import2: " click here ",
-      text_import3: "to upload",
-      text_import4: "Whether to overwrite if user exist",
-      text_import5: "Only accept files in xlsx and xls formats, ",
-      text_import6: "Template Download",
-      text_import7: "Import Result",
+      new: "New User",
+      edit: "Edit User",
+      passwd: "Reset Password",
+      avatar: "Change Avatar",
+      import: "Import User",
+      import_text1: "Drag files here, or",
+      import_text2: " click here ",
+      import_text3: "to upload",
+      import_text4: "Whether to overwrite if user exist",
+      import_text5: "Only accept files in xlsx and xls formats, ",
+      import_text6: "Template Download",
+      import_text7: "Import Result",
     },
     rules: {
       account: "user account can't be empty",
-      name1: "user name can't be empty",
-      name2: "user name length must be between 2 and 20",
-      pwd1: "user password can't be empty",
-      pwd2: "password length must be between 6 and 20",
+      name: "user name can't be empty",
+      name_len: "user name length must be between 2 and 20",
+      passwd: "user password can't be empty",
+      passwd_len: "password length must be between 6 and 20",
       email: "invalid email",
       phone: "invalid phone number",
       pwd_old: "old password can't be empty",
@@ -249,16 +229,68 @@ export default {
       pwd_confirm: "confirm password can't be empty",
       pwd_compare: "the two entered passwords doesn't match"
     },
+    confirm: {
+      status_enable: "Sure to enable user \"{arg1}\" ?",
+      status_disable: "Sure to disable user \"{arg1}\" ?",
+      delete: "Sure to delete user \"{arg1}\" ?",
+      delete_select: "Sure to delete the selected user ?",
+      remove: "Sure to remove user \"{arg1}\" ?",
+      remove_select: "Sure to remove the selected user ?",
+      passwd: "Input new password of user \"{arg1}\"",
+    },
     msg: {
-      confirm_status: "Are you sure to {var1} user[{var2}]?",
-      confirm_readonly: "Are you sure to {var1} user[{var2}] as readonly？",
-      reset_pwd: "Input new password of user[{var1}]",
-      confirm_delete: "Are you sure to delete user[{var1}]？",
-      select_delete: "Are you sure to delete the selected user？"
-    }
+      avatar_failed: "Invalid file format, please upload the image type, such as: JPG, PNG"
+    },
+    text: {
+      profile: "Profile",
+      info: "User Info",
+      basic: "Basic Info",
+      data: "user",
+      list: "Members",
+      template: "user_template",
+      unselect: "No user selected yet",
+    },
+  },
+  role: {
+    label: {
+      id: "Id",
+      name: "Role Name",
+      code: "Role Code",
+    },
+    button: {
+      menus: 'Menus',
+      scope: 'Data Scope',
+      members: 'Members',
+      remove: "Remove Grant",
+    },
+    placeholder: {
+      name: "Input role name",
+      code: "Input role code",
+    },
+    dialog: {
+      new: "New Role",
+      edit: "Edit Role",
+    },
+    rules: {
+      name: "role name can't be empty",
+      code: "role code can't be empty",
+    },
+    confirm: {
+      delete: "Sure to delete role \"{arg1}\" ?",
+      delete_select: "Sure to delete the selected role ?",
+      remove_grant: "Sure to remove the role of user \"{arg1}\" ?",
+      remove_grant_select: "Sure to remove the role of selected user ?",
+    },
+    msg: {
+      grant: "Grant Success",
+      remove_grant: "Remove Grant Success",
+    },
+    text: {
+      info: "Role Info",
+      members: "Members",
+    },
   },
   menu: {
-    excel: "menu",
     label: {
       root: "root",
       name: "Name",
@@ -270,18 +302,20 @@ export default {
       parent: "Parent",
       type: "Type",
       frame: "Frame",
-      visiable: "Visiable",
+      visible: "Visible",
       path: "Path",
       cacheable: "Cacheable",
       param: "Param",
       visibility: "Visibility"
     },
+    button: {
+      select: "Select: ",
+    },
     placeholder: {
-      parent: "Choose Parent Menu",
       name: "Input Menu Name",
-      status: "Choose Status",
-      en: "Input English Name",
-      icon: "Choose Menu Icon",
+      status: "Select Menu Status",
+      parent: "Select Parent Menu",
+      icon: "Select Menu Icon",
       path: "Input Route Path",
       param: "Input Route Param",
       permission: "Input Route Permission",
@@ -293,27 +327,252 @@ export default {
       order: "menu order can't be empty"
     },
     dialog: {
-      title_new: "New Menu",
-      title_edit: "Edit Menu"
+      new: "New Menu",
+      edit: "Edit Menu"
+    },
+    confirm: {
+      delete: "Sure to delete menu \"{arg1}\" ?",
     },
     content: {
       name: "The name supports internationalization and can be defined as the key in internationalized resource",
       status: "The disabled route will not appear in the sidebar and can't be accessed",
       frame: "The external route needs to start with `http(s)://`",
-      visiable: "The hidden route will not appear in the sidebar but still can be accessed",
+      visible: "The hidden route will not appear in the sidebar but still can be accessed",
       cacheable: "The cached route will be cached by `keep-alive`, but it's `name` and address of component need to be consistent",
       param: "The default parameters when you access route，such as：`{\"id\": 1, \"name\": \"cowave\"}`",
       visibility: "The public menu can be accessed by anyone",
       permission: "The permission is required when access if the menu is protected",
       component: "The path of the route component, such as: system/user/index, which is in the views directory by default"
     },
-    msg: {
-      confirm_delete: "Are you sure to delete menu[{var1}]?",
-      confirm_readonly: "Are you sure to {var1} menu[{var2}] as readonly？",
+    text: {
+      data: "menu",
+    },
+  },
+  dept: {
+    label: {
+      name: "Name",
+      phone: "Phone",
+      leader: "Leader",
+      addr: "Address",
+      parent: "Parent"
+    },
+    button: {
+      members: "Members",
+      positions: "Positions",
+    },
+    placeholder: {
+      name: "Input department name",
+      phone: "Input phone number",
+      addr: "Input department address",
+    },
+    dialog: {
+      diagram: "Department Diagram",
+      new: "New Department",
+      edit: "Edit Department",
+    },
+    rules: {
+      name: "department name can't be empty",
+      parent: "parent department can't be empty"
+    },
+    confirm: {
+      delete: "Sure to delete department \"{arg1}\" ?",
+    },
+    text: {
+      name: "Department",
+      info: "Dept Info",
+      data: "department",
+      leader: "Department Leader",
+      default_post: "Default Post",
+      default_user_post: "User Default Post",
+    },
+  },
+  post: {
+    label: {
+      name: "Name",
+      type: "Type",
+      parent: "Parent Post",
+      level: "Level",
+      status: "Status",
+    },
+    button: {
+      add: "Add Post",
+      remove: "Remove Post",
+      select: "Select Post"
+    },
+    placeholder: {
+      name: "Input post name",
+      type: "Select post type",
+      parent: "Select parent post",
+    },
+    dialog: {
+      diagram: "Post Diagram",
+      new: "New Post",
+      edit: "Edit Post",
+    },
+    rules: {
+      name: "post name can't be empty",
+      type: "post type can't be empty",
+      level: "post level can't be empty",
+    },
+    confirm: {
+      delete: "Sure to delete post \"{arg1}\" ?",
+      delete_select: "Sure to delete the selected post ?",
+      remove: "Sure to remove post \"{arg1}\" ?",
+      remove_select: "Sure to remove the selected post ?",
+    },
+    text: {
+      name: "Post",
+      list: "Positions",
+      data: "post",
+      unselect: "No post selected yet",
+    },
+  },
+  dict: {
+    label: {
+      name: "Name",
+      code: "Code",
+      type: "Type",
+      order: "Order",
+      css: "Css",
+      value: "Value",
+      valueType: "Value Type",
+      parser: "Value Parser",
+      default: "Default",
+      parent: "Parent Dict"
+    },
+    placeholder: {
+      name: "Input dictionary name",
+      code: "Input dictionary code",
+      value: "Input dictionary value",
+      parser: "Input class name of dictionary value parser",
+    },
+    dialog: {
+      new: "New Dictionary",
+      edit: "Edit Dictionary",
+    },
+    rules: {
+      groupcode: "group code can't be empty",
+      typecode: "type code can't be empty",
+      name: "dictionary name can't be empty",
+      english: "english name can't be empty",
+      code: "dictionary code can't be empty",
+      value: "dictionary value can't be empty",
+    },
+    confirm: {
+      delete: "Sure to delete dictionary \"{arg1}\" ？This will delete all associated sub dictionaries",
+      delete_select: "Sure to delete the selected dictionary？This will delete all associated sub dictionaries",
+    },
+    text: {
+      data: "dictionary",
+      parser: "If the value type is 'custom', a CustomValueParser implementation should be provided"
+    },
+    name: {
+      root: "Root Dict",
+      sys: "System dict",
+      yes_no: "Yes/No",
+      yes: "Yes",
+      no: "No",
+      enable_disable: "Enable/Disable",
+      enable: "Enable",
+      disable: "Disable",
+      success_failed: "Success/Failed",
+      success: "Success",
+      failed: "Failed",
+      show_hide: "Show/Hide",
+      show: "Show",
+      hide: "Hide",
+      public_protected: "Public/Protected",
+      public: "Public",
+      protected: "Protected",
+
+      flow: "Flow dict",
+      leave: "Leave Type",
+      annual: "Annual Leave",
+      personal: "Personal Leave",
+      sick: "Sick Leave",
+      bereavement: "Bereavement Leave",
+      maternity: "Maternity Leave",
+
+      user: "User dict",
+      sex: "User Sex",
+      post_type: "Post Type",
+      post_level: "Post Level",
+      male: "Male",
+      female: "Female",
+      unknown: "Unknown",
+      M: "Management",
+      T: "Technical",
+      A: "Administrative",
+      S: "Sales",
+      F: "Finance",
+      T0: "Trainee Engineer",
+      T1: "Junior Engineer",
+      T2: "Mid-level Engineer",
+      T3: "Senior Engineer",
+      T4: "Principal Engineer",
+      T5: "Specialist",
+      T6: "Senior Specialist",
+      T7: "Principal Specialist",
+      M0: "Intern",
+      M1: "Commissioner",
+      M2: "Senior Commissioner",
+      M3: "Manager",
+      M4: "Senior Manager",
+      M5: "Director",
+      M6: "Senior Director",
+      M7: "executives",
+
+      notice: "Notice dict",
+      notice_status: "notice status",
+      notice_type: "notice type",
+      notice_level: "notice level",
+      notice_common: "common",
+      notice_urgent: "urgent",
+      notice_draft: "draft",
+      notice_publish: "published",
+      notice_recall: "recall",
+      notice_announcement: "announcement",
+      notice_notice: "notice",
+      notice_press: "press",
+
+      op_log: "Operation log",
+      op_action: "log action",
+      op_admin: "system operation",
+      op_create: "create",
+      op_delete: "delete",
+      op_edit: "edit",
+      op_status: "status change",
+      op_passwd: "passwd change",
+      op_grant: "role change",
+      op_login: "login",
+      op_oauth: "OAuth Authorization",
+      op_logout: "logout",
+      op_logout_force: "force logout",
+      op_auth: "Authorization log",
+      op_user: "User",
+      op_dept: "Dept",
+      op_role: "Role",
+      op_post: "Post",
+
+      menu: "Menu dict",
+      menu_type: "Menu Type",
+      menu_cache: "Menu Cache",
+      menu_frame: "Menu Internal/External",
+      menu_cache_1: "Cache",
+      menu_cache_0: "NoCache",
+      menu_internal: "Internal",
+      menu_external: "External",
+      menu_M: "Catalog",
+      menu_C: "Menu",
+      menu_B: "Button",
+
+      quartz: "Quartz task",
+      quartz_group: "task group",
+      quartz_default: "quartz default",
+      quartz_test: "quartz test",
     }
   },
   config: {
-    excel: "system_config",
     label: {
       name : "Name",
       key: "Key",
@@ -330,192 +589,37 @@ export default {
       parser: "Input class name of value parser",
       param: "Input param of value parser"
     },
-    content: {
-      parser: "Implementation class of ValueParser",
-      param: "parameter type is string"
-    },
     dialog: {
-      title_new: "New Config",
-      title_edit: "Edit Config"
+      new: "New Config",
+      edit: "Edit Config"
     },
     rules: {
       name: "config name can't be empty",
       key: "config key can't be empty",
       value: "config value can't be empty"
     },
-    msg: {
-      confirm_delete: "Are you sure to delete config[{var1}]？",
-      select_delete: "Are you sure to delete the selected config？"
-    }
+    confirm: {
+      delete: "Sure to delete config \"{arg1}\" ?",
+      delete_select: "Sure to delete the selected config ?",
+    },
+    text: {
+      parser: "Implementation class of ValueParser",
+      param: "parameter type is string",
+      data: "system_param",
+    },
   },
-  dict: {
-    excel: "dictionary",
+  notice: {
     label: {
-      css: "Css-Type",
-      default: "Default",
-      name: "Name",
-      english: "English",
-      code: "Code",
-      value: "Value",
-      order: "Order",
-      group: "Group",
+      title: "Title",
       type: "Type",
-      groupname: "Group Name",
-      typename: "Type Name",
-      groupcode: "Group Code",
-      typecode: "Type Code",
-    },
-    placeholder: {
-      groupname: "Input group name",
-      typename: "Input type name",
-      groupcode: "Input group code",
-      typecode: "Input type code",
-      name: "Input dictionary name",
-      english: "Input english name",
-      code: "Input dictionary code",
-      value: "Input dictionary value",
-    },
-    rules: {
-      groupname: "group name can't be empty",
-      typename: "type name can't be empty",
-      groupcode: "group code can't be empty",
-      typecode: "type code can't be empty",
-      name: "dictionary name can't be empty",
-      english: "english name can't be empty",
-      code: "dictionary code can't be empty",
-      value: "dictionary value can't be empty",
-    },
-    dialog: {
-      title_new: "New Dictionary",
-      title_edit: "Edit Dictionary",
-    },
-    msg: {
-      confirm_delete: "Are you sure to delete dictionary[{var1}]？The operation will delete all associated subdictionaries",
-      select_delete: "Are you sure to delete the selected dictionary？The operation will delete all associated subdictionaries",
-      type_confirm_readonly: "Are you sure to {var1} dictionary[{var2}] as readonly？",
-    }
-  },
-  post: {
-    excel: "post",
-    label: {
-      name: "Name",
-      type: "Type",
-      parent: "Parent-post",
-      diagram: "Diagram",
       level: "Level",
-      status: "Status"
+      publishTime: "Publish Time",
+      read: "Read Statistics"
     },
     placeholder: {
-      name: "Input post name",
-      type: "Choose post type",
-      parent: "Choose parent post",
-    },
-    rules: {
-      name: "post name can't be empty",
-      type: "post type can't be empty",
-      level: "post level can't be empty",
-    },
-    dialog: {
-      diagram: "Post Diagram",
-      title_new: "New Post",
-      title_edit: "Edit Post",
-    },
-    msg: {
-      confirm_delete: "Are you sure to delete post[{var1}]？",
-      select_delete: "Are you sure to delete the selected post？",
-      confirm_readonly: "Are you sure to {var1} post[{var2}] as readonly？",
+      title: "Input Title",
+      type: "Select Type",
+      status: "Select Status"
     }
-  },
-  dept: {
-    excel: "department",
-    info: "Department",
-    label: {
-      name: "Name",
-      phone: "Phone",
-      leader: "Leader",
-      addr: "Address",
-      member: "Members",
-      position: "Positions",
-      parent: "Parent"
-
-    },
-    placeholder: {
-      name: "Input department name",
-      phone: "Input phone number",
-      addr: "Input department address",
-      parent: "Choose parent department"
-    },
-    dialog: {
-      diagram: "Department Diagram",
-      title_new: "New Department",
-      title_edit: "Edit Department",
-    },
-    msg: {
-      confirm_delete: "Are you sure to delete department[{var1}]？",
-      confirm_readonly: "Are you sure to {var1} department[{var2}] as readonly？",
-    },
-    rules: {
-      name: "department name can't be empty",
-      parent: "parent department can't be empty"
-    },
-    position:{
-      info: "Positions",
-      name: "Position Name",
-      type: "Position Type",
-      default: "Set As Default Position"
-    },
-    user: {
-      name: "User Name",
-      rank: "User Rank",
-      position: "Position",
-      default: "Make User Default Position",
-      leader: "Set As Department Leader"
-    }
-  },
-  role: {
-    menus: "Role Menus",
-    scope: "Role Data Scope",
-    menu_choose: "Choose: ",
-    label: {
-      id: "Id",
-      name: "Role Name",
-      code: "Role Code",
-    },
-    placeholder: {
-      name: "Input role name",
-      code: "Input role code",
-    },
-    msg: {
-      confirm_delete: "Are you sure to delete role[{var1}]？",
-      select_delete: "Are you sure to delete the selected role？",
-      confirm_readonly: "Are you sure to {var1} role[{var2}] as readonly？",
-      remove_success: "Remove Grant Success",
-      grant_success: "Grant Success",
-      unselect: "No user selected yet",
-      confirm_remove: "Are you sure to remove the role of user[{var1}]?",
-      select_remove: "Are you sure to remove the role of selected user？",
-    },
-    dialog: {
-      new: "New Role",
-      edit: "Edit Role",
-    },
-    rules: {
-      name: "role name can't be empty",
-      code: "role code can't be empty",
-    },
-    user: {
-      label: {
-        name: "User Name",
-        phone: "User Phone",
-        rank: "Rank",
-        dept: "Department",
-        post: "Post"
-      },
-      button: {
-        add: "Add User",
-        choose: "Choose User",
-        remove: "Remove Grant"
-      }
-    }
-  },
+  }
 }

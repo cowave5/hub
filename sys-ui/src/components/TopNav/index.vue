@@ -1,21 +1,17 @@
 <template>
-  <el-menu
-    :default-active="activeMenu"
-    mode="horizontal"
-    @select="handleSelect"
-  >
+  <el-menu :default-active="activeMenu" mode="horizontal" @select="handleSelect">
     <template v-for="(item, index) in topMenus">
       <el-menu-item :style="{'--theme': theme}" :index="item.path" :key="index" v-if="index < visibleNumber">
-        <svg-icon :icon-class="item.meta.icon" /> {{ $t(item.meta.title) }}
+        <svg-icon :icon-class="item.meta.icon"/> {{ $t(item.meta.title) }}
       </el-menu-item>
     </template>
 
     <!-- 顶部菜单超出数量折叠 -->
     <el-submenu :style="{'--theme': theme}" index="more" v-if="topMenus.length > visibleNumber">
-      <template slot="title">{{ $t(button.more) }}</template>
+      <template slot="title">{{ $t('commons.button.more') }}</template>
       <template v-for="(item, index) in topMenus">
         <el-menu-item :index="item.path" :key="index" v-if="index >= visibleNumber">
-          <svg-icon :icon-class="item.meta.icon" /> {{ $t(item.meta.title) }}
+          <svg-icon :icon-class="item.meta.icon"/> {{ $t(item.meta.title) }}
         </el-menu-item>
       </template>
     </el-submenu>
@@ -24,9 +20,10 @@
 
 <script>
 import { constantRoutes } from "@/router";
+import ParentView from '@/components/ParentView'
 
 // 隐藏侧边栏路由
-const hideList = ['/index', '/user/profile'];
+const hideList = ['/index', '/user/profile', '/user/notice', '/user/token'];
 
 export default {
   data() {
@@ -44,6 +41,9 @@ export default {
     // 顶部显示菜单
     topMenus() {
       let topMenus = [];
+      // 首页
+      topMenus.push({ path: '/index', meta: { title: 'commons.menu.dashboard', icon: "index" }});
+      // 其它路由
       this.routers.map((menu) => {
         if (menu.hidden !== true) {
           // 兼容顶部栏一级菜单内部跳转
@@ -88,12 +88,21 @@ export default {
         const tmpPath = path.substring(1, path.length);
         activePath = "/" + tmpPath.substring(0, tmpPath.indexOf("/"));
         this.$store.dispatch('app/toggleSideBarHide', false);
+        this.activeRoutes(activePath);
+        return activePath;
+      } else if(path === "/user/profile" || path === "/user/notice" || path === "/user/token"){
+        var routes = [];
+        routes.push({ path: '/user/profile', meta: { title: 'commons.theme.profile', icon: "user" }});
+        routes.push({ path: '/user/notice', meta: { title: 'commons.theme.notice', icon: "notice" }});
+        routes.push({ path: '/user/token', meta: { title: 'commons.theme.token', icon: "token" }});
+        this.$store.commit("SET_SIDEBAR_ROUTERS", routes);
+        this.$store.dispatch('app/toggleSideBarHide', false);
       } else if(!this.$route.children) {
         activePath = path;
         this.$store.dispatch('app/toggleSideBarHide', true);
+        this.activeRoutes(activePath);
+        return activePath;
       }
-      this.activeRoutes(activePath);
-      return activePath;
     },
   },
   beforeMount() {
@@ -124,7 +133,28 @@ export default {
         this.$store.dispatch('app/toggleSideBarHide', true);
       } else {
         // 显示左侧联动菜单
-        this.activeRoutes(key);
+        var routes = []
+        if (this.childrenMenus && this.childrenMenus.length > 0) {
+          this.childrenMenus.map((item) => {
+            if (key == item.parentPath || (key == 'index' && '' == item.path)) {
+              routes.push(item)
+            }
+          })
+        }
+        if (routes.length > 0) {
+          this.$store.commit('SET_SIDEBAR_ROUTERS', routes)
+        }
+
+        // 找出第一个 component 不为空的路由
+        const firstValid = routes.find(r => r.component
+            && r.component !== 'Layout'
+            && r.component !== ParentView
+            && r.component !== 'InnerLink'
+            && r.hidden !== true)
+        if (firstValid && firstValid.path) {
+          this.$router.push({ path: firstValid.path })
+        }
+
         this.$store.dispatch('app/toggleSideBarHide', false);
       }
     },

@@ -14,19 +14,26 @@ export const options = {
        * 字典响应数据转换器，方法签名为function(response: Object, dictMeta: DictMeta): DictData
        */
       responseConverter,
-      labelField: 'label',
-      labelEnField: 'dictEn',
-      valueField: 'value',
+      codeField: 'dictCode',
+      nameField: 'dictName',
+      valueField: 'dictValue',
+      cssField: 'css'
     },
   },
+
+  DEFAULT_CODE_FIELDS: ['code'],
   /**
    * 默认标签字段
    */
-  DEFAULT_LABEL_FIELDS: ['label', 'name', 'title'],
+  DEFAULT_NAME_FIELDS: ['name'],
   /**
    * 默认值字段
    */
-  DEFAULT_VALUE_FIELDS: ['value', 'id', 'uid', 'key'],
+  DEFAULT_VALUE_FIELDS: ['value'],
+  /**
+   * 默认值字段
+   */
+  DEFAULT_CSS_FIELDS: ['css'],
 }
 
 /**
@@ -38,7 +45,7 @@ export const options = {
 function responseConverter(response, dictMeta) {
   const dicts = response.list instanceof Array ? response.list : response
   if (dicts === undefined) {
-    console.warn(`no dict data of "${dictMeta.type}" found in the response`)
+    console.warn(`no dict data of "${dictMeta.type}"`)
     return []
   }
   return dicts.map(d => dictConverter(d, dictMeta))

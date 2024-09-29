@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2025 Cowave All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.admin.infra.auth.dao.mapper.dto.OAuthUserDtoMapper">
+
+    <resultMap id="userMap" type="com.cowave.sys.admin.domain.auth.dto.OAuthUserDto">
+        <result column="id"               property="id"/>
+        <result column="server_type"      property="serverType"/>
+        <result column="role_code"        property="roleCode"/>
+        <result column="role_name"        property="roleName"/>
+        <result column="user_name"        property="userName"/>
+        <result column="user_account"     property="userAccount"/>
+        <result column="user_avatar"      property="userAvatar"/>
+        <result column="user_email"       property="userEmail"/>
+        <result column="user_dept"        property="userDept" />
+        <result column="create_time"      property="createTime"/>
+        <result column="update_time"      property="updateTime"/>
+    </resultMap>
+
+    <select id="listUser" resultMap="userMap">
+        select u.id,
+               u.server_type,
+               u.user_name,
+               u.user_account,
+               u.user_avatar,
+               u.user_email,
+               u.user_dept,
+               u.role_code,
+               u.create_time,
+               u.update_time,
+               r.role_name
+        from oauth_user u
+        left join sys_role r on u.role_code = r.role_code
+        where server_type = #{query.serverType}
+        <if test="query.userAccount != null and query.userAccount != ''">
+            and user_account like concat('%', #{query.userAccount}, '%')
+        </if>
+    </select>
+
+    <resultMap id="profileMap" type="com.cowave.sys.admin.domain.auth.dto.UserProfile">
+        <result column="user_id"       property="userId"/>
+        <result column="user_account"  property="userAccount"/>
+        <result column="user_name"     property="userName"/>
+        <result column="user_email"    property="userEmail"/>
+        <result column="user_avatar"   property="avatar"/>
+        <result column="user_phone"    property="userPhone"/>
+        <result column="user_sex"      property="userSex"/>
+        <result column="create_time"   property="createTime"/>
+        <result column="userType"       property="userType"/>
+        <collection property="roles" javaType="list" ofType="java.lang.String">
+            <result column="role_name"/>
+        </collection>
+        <collection property="depts" javaType="list" ofType="java.lang.String">
+            <result column="deptName"/>
+        </collection>
+    </resultMap>
+
+    <select id="getOauthProfile" resultMap="profileMap">
+        select u.id        user_id,
+               u.user_account,
+               u.user_name,
+               u.user_email,
+               u.user_avatar,
+               u.create_time,
+               u.user_dept deptName,
+               2 as        user_sex,
+               r.role_name
+        from oauth_user u
+        left join sys_role r on u.role_code = r.role_code
+        where u.id = #{userId}
+    </select>
+</mapper>
+

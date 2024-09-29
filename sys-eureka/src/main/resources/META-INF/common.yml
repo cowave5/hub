@@ -1,0 +1,43 @@
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+  health:
+    mail:
+      enabled: false
+    ping:
+      enabled: false
+    diskSpace:
+      enabled: false
+
+spring:
+  cloud:
+    discovery:
+      client:
+        composite-indicator:
+          enabled: false
+  mail:
+    host: smtp.163.com
+    username: cowaveAdmin@163.com
+    password: TQQWRIRSQLTEELPT
+  boot:
+    admin:
+      ui:
+        title: Health
+        brand: "<img src='assets/img/icon-spring-boot-admin.svg'><span>Health</span>"
+      context-path: /health
+      monitor:
+        default-timeout: 30000
+        status-interval: 15000
+        status-lifetime: 15000
+
+mybatis-plus:
+  global-config:
+    banner: false

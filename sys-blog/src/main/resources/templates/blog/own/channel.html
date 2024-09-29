@@ -58,7 +58,7 @@
 <script th:inline="javascript">
     var editFlag = [[${@permission.hasPermi('mto:channel:edit')}]];
     var removeFlag = [[${@permission.hasPermi('mto:channel:remove')}]];
-    var datas = [[${@dict.getType('sys_show_hide')}]];
+    var datas = [[${@dict.getType('show_hide')}]];
     var prefix = ctx + "mto/channel";
 
     $(function () {

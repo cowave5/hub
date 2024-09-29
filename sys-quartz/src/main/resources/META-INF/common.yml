@@ -1,0 +1,22 @@
+mybatis-plus:
+  global-config:
+    banner: false
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+  health:
+    mail:
+      enabled: false
+    ping:
+      enabled: false
+    diskSpace:
+      enabled: false

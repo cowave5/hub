@@ -9,20 +9,33 @@ export function checkPermit(value) {
   if (value && value instanceof Array && value.length > 0) {
     const permissions = store.getters && store.getters.permissions
     const permissionDatas = value
-    const all_permission = "*:*:*";
-
-    const hasPermission = permissions.some(permission => {
-      return all_permission === permission || permissionDatas.includes(permission)
-    })
-
-    if (!hasPermission) {
-      return false
-    }
-    return true
+    return permissions.some(permission => {
+      if (!permission) {
+        return false;
+      }
+      return permissionDatas.some(flag => matchPermit(permission, flag));
+    });
   } else {
     console.error(`need roles! Like checkPermi="['']"`)
     return false
   }
+}
+
+function matchPermit(srcPermit, destPermit) {
+  const src = srcPermit.split(":");
+  const dest = destPermit.split(":");
+  for (let i = 0; i < src.length; i++) {
+    if (src[i] === "*") {
+      return true;
+    }
+    if (i >= dest.length) {
+      return false;
+    }
+    if (src[i] !== dest[i]) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
@@ -34,14 +47,9 @@ export function checkRole(value) {
   if (value && value instanceof Array && value.length > 0) {
     const roles = store.getters && store.getters.roles
     const permissionRoles = value
-    const hasRole = roles.some(role => {
-      return  permissionRoles.includes(role)
-    })
-
-    if (!hasRole) {
-      return false
-    }
-    return true
+    return roles.some(role => {
+      return permissionRoles.includes(role)
+    });
   } else {
     console.error(`need roles! Like checkRole="['admin','editor']"`)
     return false

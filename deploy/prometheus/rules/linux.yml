@@ -1,0 +1,103 @@
+groups:
+  - name: Linux
+    rules:
+      - alert: 宕机
+        expr: up{app="linux"} == 0
+        for: 0m
+        labels:
+          severity: 故障
+          target: linux
+        annotations:
+          description: "Linux出现宕机"
+
+      - alert: 内存使用率
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 90
+        for: 1m
+        labels:
+          severity: 严重
+        annotations:
+          value: '{{ printf "%.2f" $value }}%'
+          description: '内存使用率持续1min高于90%'
+          graph: 'http://10.64.4.74:9090/graph?g0.expr=(node_memory_MemTotal_bytes%20-%20node_memory_MemAvailable_bytes)%20%2F%20node_memory_MemTotal_bytes%20*%20100&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+
+      - alert: CPU使用率
+        expr: 100 - (avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance) * 100) > 95
+        for: 1m
+        labels:
+          severity: 严重
+        annotations:
+          value: '{{ printf "%.2f" $value }}%'
+          description: 'CPU使用率持续1min高于95%'
+          graph: 'http://10.64.4.74:9090/graph?g0.expr=100%20-%20(avg(irate(node_cpu_seconds_total%7Bmode%3D%22idle%22%7D%5B5m%5D))%20by%20(instance)%20*%20100)&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+
+      - alert: 磁盘使用率
+        expr: 100 - (node_filesystem_free_bytes{fstype=~"ext4|xfs"} / node_filesystem_size_bytes{fstype=~"ext4|xfs"} * 100) > 95
+        for: 1m
+        labels:
+          severity: 警告
+        annotations:
+          value: '{{ printf "%.2f" $value }}%'
+          description: '磁盘使用率持续1min高于95%'
+          graph: 'http://10.64.4.74:9090/graph?g0.expr=100%20-%20(node_filesystem_free_bytes%7Bfstype%3D~%22ext4%7Cxfs%22%7D%20%2F%20node_filesystem_size_bytes%7Bfstype%3D~%22ext4%7Cxfs%22%7D%20*%20100)&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+
+      - alert: 磁盘IO负载
+        expr: avg(irate(node_disk_io_time_seconds_total[1m])) by (cluster,instance) * 100 > 90
+        for: 1m
+        labels:
+          severity: 警告
+        annotations:
+          value: '{{ printf "%.2f" $value }}%'
+          description: '磁盘IO负载持续1min高于90%'
+          graph: 'http://10.64.4.74:9090/graph?g0.expr=avg(irate(node_disk_io_time_seconds_total%5B1m%5D))%20by%20(instance%2C%20device)%20*%20100&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+
+      - alert: 上传带宽
+        expr: (sum(irate(node_network_receive_bytes_total{device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])) by (cluster,instance)) / 1024 / 1024 / 1024 > 1
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          value: '{{ printf "%.2f" $value }}Gb/s'
+          description: '上传带宽最近5min内高于1Gb/s'
+          graph: 'http://10.64.4.74:9090/graph?g0.expr=(sum(irate(node_network_receive_bytes_total%7Bdevice!~%27tap.*%7Cveth.*%7Cbr.*%7Cdocker.*%7Cvirbr*%7Clo*%27%7D%5B5m%5D))%20by%20(instance))%20%2F%201024%20%2F%201024&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+
+      - alert: 下载带宽
+        expr: (sum(irate(node_network_transmit_bytes_total{device!~'tap.*|veth.*|br.*|docker.*|virbr*|lo*'}[5m])) by (cluster,instance)) / 1024 / 1024 / 1024 > 1
+        for: 0m
+        labels:
+          severity: 警告
+          target: linux
+        annotations:
+          value: '{{ printf "%.2f" $value }}Gb/s'
+          description: '下载带宽最近5min内高于1Gb/s'
+          graph: 'http://10.64.4.74:9090/graph?g0.expr=(sum(irate(node_network_transmit_bytes_total%7Bdevice!~%27tap.*%7Cveth.*%7Cbr.*%7Cdocker.*%7Cvirbr*%7Clo*%27%7D%5B5m%5D))%20by%20(instance))%20%2F%201024%20%2F%201024&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+
+      - alert: TCP连接数
+        expr: node_netstat_Tcp_CurrEstab > 1000
+        for: 1m
+        labels:
+          severity: 警告
+        annotations:
+          value: "{{ $value }}"
+          description: 'TCP连接数持续1min大于1000'
+          graph: 'http://10.64.4.74:9090/graph?g0.expr=node_netstat_Tcp_CurrEstab&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+
+      - alert: 网络包重传数
+        expr: rate(node_netstat_Tcp_RetransSegs[1m]) > 100
+        for: 0m
+        labels:
+          severity: 警告
+        annotations:
+          value: '{{ printf "%.2f" $value }}'    
+          description: '最近1min内发生网络包重传'
+          graph: 'http://10.64.4.74:9090/graph?g0.expr=rate(node_netstat_Tcp_RetransSegs%5B1m%5D)&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+
+      - alert: 网络包错误数  
+        expr: rate(node_netstat_Tcp_InErrs[1m]) > 100 
+        for: 0m
+        labels:
+          severity: 警告   
+        annotations:
+          value: '{{ printf "%.2f" $value }}'   
+          description: '最近1min内发生网络包错误'
+          graph: 'http://10.64.4.74:9090/graph?g0.expr=rate(node_netstat_Tcp_InErrs%5B1m%5D)&g0.tab=0&g0.display_mode=lines&g0.show_exemplars=0&g0.range_input=1h'
+

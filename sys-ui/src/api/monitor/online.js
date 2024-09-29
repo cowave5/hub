@@ -1,6 +1,8 @@
 import request from '@/utils/request'
 
-// 查询在线用户列表
+/**
+ * 在线用户列表
+ */
 export function list(data) {
   return request({
     url: '/admin/api/v1/auth/online',
@@ -9,10 +11,12 @@ export function list(data) {
   })
 }
 
-// 强退用户
-export function forceLogout(tokenType, userAccount) {
+/**
+ * 强退用户
+ */
+export function forceLogout(accessId) {
   return request({
-    url: '/admin/api/v1/auth/outline/' + tokenType + '/' + userAccount,
+    url: '/admin/api/v1/auth/outline/' + accessId,
     method: 'get'
   })
 }

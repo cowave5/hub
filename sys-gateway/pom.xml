@@ -14,11 +14,20 @@
 	<url>https://www.cowave.com/</url>
 	<description>服务网关</description>
 
-	<properties>
-		<skip.changelog>true</skip.changelog>
-	</properties>
-
 	<dependencies>
+		<dependency>
+			<groupId>com.cowave.commons</groupId>
+			<artifactId>commons-framework</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+		</dependency>
+		<!-- redis -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
@@ -28,17 +37,24 @@
 			<artifactId>spring-boot-actuator-autoconfigure</artifactId>
 		</dependency>
 		<dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-server</artifactId>
+        </dependency>
+		<dependency>
 			<groupId>com.alibaba.cloud</groupId>
 			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
 		</dependency>
 		<dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
+		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-loadbalancer</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.github.chen-gliu</groupId>
-			<artifactId>nacos-consul-adapter</artifactId>
-			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
@@ -49,6 +65,11 @@
 			<artifactId>netty-resolver-dns-native-macos</artifactId>
 			<version>4.1.90.Final</version>
 			<classifier>osx-aarch_64</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
 		</dependency>
 	</dependencies>
 </project>

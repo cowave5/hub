@@ -123,8 +123,7 @@ export function sprintf(str) {
   return flag ? str : '';
 }
 
-// 转换字符串，undefined,null等转化为""
-export function parseStrEmpty(str) {
+export function trim(str) {
   if (!str || str === "undefined" || str === "null") {
     return "";
   }

@@ -1,100 +1,73 @@
 import request from '@/utils/request'
 
-// 查询角色列表
-export function listRole(data) {
+/**
+ * 角色列表
+ */
+export function getRoleList(params) {
   return request({
-    url: '/admin/api/v1/role/list',
-    method: 'post',
-    data: data
+    url: '/admin/api/v1/role',
+    method: 'get',
+    params: params
   })
 }
 
-// 查询角色详细
-export function getRole(roleId) {
+/**
+ * 角色详情
+ */
+export function getRoleInfo(roleId) {
   return request({
-    url: '/admin/api/v1/role/info/' + roleId,
+    url: '/admin/api/v1/role/' + roleId,
     method: 'get'
   })
 }
 
-// 新增角色
+/**
+ * 新增角色
+ */
 export function addRole(data) {
   return request({
-    url: '/admin/api/v1/role/add',
+    url: '/admin/api/v1/role',
     method: 'post',
     data: data
   })
 }
 
-// 修改角色
+/**
+ * 删除角色
+ */
+export function delRole(roleIds) {
+  return request({
+    url: '/admin/api/v1/role/' + roleIds,
+    method: 'delete'
+  })
+}
+
+/**
+ * 修改角色
+ */
 export function updateRole(data) {
   return request({
-    url: '/admin/api/v1/role/edit',
-    method: 'post',
+    url: '/admin/api/v1/role',
+    method: 'patch',
     data: data
   })
 }
 
-// 删除角色
-export function delRole(roleId) {
+/**
+ * 修改角色菜单
+ */
+export function updateRoleMenus(data) {
   return request({
-    url: '/admin/api/v1/role/delete?roleId=' + roleId,
-    method: 'get'
-  })
-}
-
-// 修改角色菜单
-export function changeRoleMenus(data) {
-  return request({
-    url: '/admin/api/v1/role/change/menus',
-    method: 'post',
+    url: '/admin/api/v1/role/menus',
+    method: 'patch',
     data: data
   })
 }
 
-// 角色只读修改
-export function changeReadonly(roleId, readOnly, roleName) {
-  const data = {
-    roleId,
-    readOnly,
-    roleName
-  }
-  return request({
-    url: '/admin/api/v1/role/change/readonly',
-    method: 'post',
-    data: data
-  })
-}
-
-// 已授权用户列表
-export function allocatedUserList(data) {
-  return request({
-    url: '/admin/api/v1/role/user/authed',
-    method: 'post',
-    data: data
-  })
-}
-
-// 未授权用户列表
-export function unallocatedUserList(data) {
-  return request({
-    url: '/admin/api/v1/role/user/unauthed',
-    method: 'post',
-    data: data
-  })
-}
-
-// 取消用户授权角色
-export function authUserCancel(data) {
-  return request({
-    url: '/admin/api/v1/role/user/cancel',
-    method: 'post',
-    data: data
-  })
-}
-
-// 授权用户选择
-export function authUserSelectAll(data) {
+/**
+ * 授权用户角色
+ */
+export function grantRoleUser(data) {
   return request({
     url: '/admin/api/v1/role/user/grant',
     method: 'post',
@@ -102,11 +75,46 @@ export function authUserSelectAll(data) {
   })
 }
 
-// 角色数据权限
-export function dataScope(data) {
+/**
+ * 取消用户角色
+ */
+export function cancelRoleUser(data) {
   return request({
-    url: '/system/role/dataScope',
-    method: 'put',
+    url: '/admin/api/v1/role/user/cancel',
+    method: 'post',
     data: data
   })
 }
+
+/**
+ * 用户列表（已授权）
+ */
+export function getAuthedUser(params) {
+  return request({
+    url: '/admin/api/v1/role/users/authed',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 用户列表（未授权）
+ */
+export function getUnAuthedUser(params) {
+  return request({
+    url: '/admin/api/v1/role/users/unAuthed',
+    method: 'get',
+    params: params
+  })
+}
+
+/**
+ * 查询角色名称
+ */
+export function getRoleNames(roleIds) {
+  return request({
+    url: '/admin/api/v1/role/name/' + roleIds,
+    method: 'get'
+  })
+}
+

@@ -1,19 +1,21 @@
-server:
-  port: ${server_port:80}
-  servlet:
-    context-path: /
-
-info:
-  cluster:
-    id: ${cluster_id:10}
-    level: ${cluster_level:1}
-    name: ${cluster_name:default}
-
 spring:
+  access:
+    always-success: true
+    auth:
+      enable: true
+      mode: access
+      tokenStore: cookie
+      authUrls:
+        - /post/**
+        - /category/**
+        - /comment/**
   datasource:
     url: ${datasource_url:jdbc:postgresql://127.0.0.1:5432/sys-blog}
     username: ${datasource_username:postgres}
     password: ${datasource_password:postgres}
+  liquibase:
+    enabled: true
+    change-log: sql/changelog.yml
   redis:
     host: ${redis_host:127.0.0.1}
     port: ${redis_port:6379}
@@ -28,15 +30,11 @@ spring:
     suffix:  .html
     encoding: utf-8
     cache: false
-  cloud:
-    nacos:
-      discovery:
-        server-addr: ${nacos_server:10.64.4.74:8848}
 
 blog:
   # IP地址获取
   addressEnabled: true
   # 开启页面静态化
-  pageStaticEnabled: true
+  pageStaticEnabled: false
   # 上传路径
   profile: public

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2025 Cowave All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.sys.meter.mapper.TableMapper">
+    <resultMap id="tableMap" type="com.cowave.sys.meter.entity.DbTable">
+        <result column="id" property="id"/>
+        <result column="table_name" property="tableName"/>
+        <result column="table_comment" property="tableComment"/>
+        <result column="db_id" property="dbId"/>
+        <result column="db_name" property="dbName"/>
+        <result column="db_code" property="dbCode"/>
+        <result column="db_type" property="dbType"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="options" resultType="com.cowave.sys.meter.entity.SelectOption">
+        select t.id as key,
+          case when t.table_comment = '' and d.db_name = '' then t.table_name || '（' || d.db_code || '）'
+               when t.table_comment = '' then t.table_name || '（' || d.db_name || '｜' || d.db_code || '）'
+               when d.db_name = '' then t.table_comment || '｜' || t.table_name || '（' || d.db_code || '）'
+               else t.table_comment || '｜' || t.table_name || '（' || d.db_name || '｜' || d.db_code || '）' end as label
+        from db_table t
+        left join db_info d on d.id = t.db_id
+        join app_info a on a.db_id = t.db_id
+        where a.id = #{appId}
+    </select>
+
+    <select id="list" resultMap="tableMap">
+        select t.id, t.table_name, t.table_comment, t.update_time, d.db_name, d.db_code
+        from db_table t
+        left join db_info d on d.id = t.db_id
+        <where>
+            <if test="dbId != null">
+                and t.db_id = #{dbId}
+            </if>
+            <if test="tableName != null and tableName != ''">
+                and t.table_name like concat('%', #{tableName}, '%')
+            </if>
+        </where>
+        order by t.db_id
+    </select>
+
+    <select id="info" resultMap="tableMap">
+        select t.id, t.db_id,t.table_name, t.table_comment, d.db_name, d.db_code, d.db_type
+        from db_table t
+        left join db_info d on d.id = t.db_id
+        where t.id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into db_table(db_id,table_name, table_comment, update_time)
+        values (#{dbId},#{tableName}, #{tableComment}, #{accessTime})
+    </insert>
+
+    <update id="update">
+        update db_table
+        set table_name    = #{tableName},
+            table_comment = #{tableComment},
+            db_id         = #{dbId},
+            update_time   = #{accessTime}
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from db_table where id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteTableColumns">
+        delete from db_table_column where table_id in
+        <foreach collection="array"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteDbTables">
+        delete from db_table where db_id = #{dbId}
+    </delete>
+
+    <select id="countTableModels" resultType="java.lang.Integer">
+        select count(m.id)
+          from model_info m, db_info d, db_table t
+         where d.id = #{dbId} and d.id = t.db_id and t.id = m.table_id
+    </select>
+</mapper>

@@ -2,9 +2,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import app from './modules/app'
 import user from './modules/user'
-import socket from './modules/socket'
 import tagsView from './modules/tagsView'
 import permission from './modules/permission'
+import noticeSocket from './modules/noticeSocket'
 import settings from './modules/settings'
 import getters from './getters'
 
@@ -14,7 +14,7 @@ const store = new Vuex.Store({
   modules: {
     app,
     user,
-    socket,
+    noticeSocket,
     tagsView,
     permission,
     settings

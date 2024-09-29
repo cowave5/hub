@@ -1,20 +1,22 @@
 /*
- * Copyright (c) 2017～2099 Cowave All Rights Reserved.
+ * Copyright (c) 2017～2025 Cowave All Rights Reserved.
  *
- * For licensing information, please contact: https://www.cowave.com.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
- * This code is proprietary and confidential.
- * Unauthorized copying of this file, via any medium is strictly prohibited.
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 package com.cowave.sys.blog.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cowave.commons.client.http.asserts.Asserts;
+import com.cowave.commons.client.http.response.Response;
 import com.cowave.commons.framework.access.Access;
-import com.cowave.commons.framework.access.AccessLogger;
-import com.cowave.commons.tools.Asserts;
 import com.cowave.commons.tools.DateUtils;
 import com.cowave.sys.blog.api.cache.BlogCache;
-import com.cowave.sys.blog.api.entity.*;
+import com.cowave.sys.blog.api.entity.AboutInfo;
+import com.cowave.sys.blog.api.entity.PostInfo;
 import com.cowave.sys.blog.api.mapper.CategoryMapper;
 import com.cowave.sys.blog.api.mapper.PostMapper;
 import com.cowave.sys.blog.api.service.BlogService;
@@ -23,8 +25,8 @@ import com.cowave.sys.blog.configuration.BlogConfiguration;
 import com.cowave.sys.blog.configuration.ViewConfiguration;
 import com.cowave.sys.blog.utils.MarkdownUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.feign.codec.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.thymeleaf.TemplateEngine;
@@ -32,7 +34,10 @@ import org.thymeleaf.context.WebContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.*;
@@ -41,10 +46,9 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author shanhuiming
- *
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class BlogServiceImpl implements BlogService {
@@ -86,7 +90,7 @@ public class BlogServiceImpl implements BlogService {
     /**
      * 加载首页数据
      */
-    private void loadIndexData(ModelMap modelMap) throws Exception {
+    private void loadIndexData(ModelMap modelMap) {
         // 首页加载轮播图
         if (1 == Access.pageIndex()) {
             loadSlideshow(modelMap);
@@ -94,10 +98,10 @@ public class BlogServiceImpl implements BlogService {
         // 文章列表
         CompletableFuture<Void> postFuture = loadPost(modelMap, new PostInfo());
         // 导航栏
-        CompletableFuture<Void> navFuture = loadNavigation(modelMap);
+        loadNavigation(modelMap);
         // 侧边栏
         CompletableFuture<Void> sideFuture = loadSidebar(modelMap);
-        CompletableFuture.allOf(postFuture, navFuture, sideFuture).join();
+        CompletableFuture.allOf(postFuture, sideFuture).join();
     }
 
     /**
@@ -106,7 +110,7 @@ public class BlogServiceImpl implements BlogService {
     private CompletableFuture<Void> loadPost(ModelMap modelMap, PostInfo postInfo) {
         return CompletableFuture.runAsync(
                 () -> modelMap.put("postPage", blogCache.getPostPage(postInfo)), applicationExecutor)
-                .exceptionally(e -> {AccessLogger.error("", e); return null;});
+                .exceptionally(e -> {log.error("", e); return null;});
     }
 
     /**
@@ -115,16 +119,14 @@ public class BlogServiceImpl implements BlogService {
     private CompletableFuture<Void> loadTagPost(ModelMap modelMap, String tag) {
         return CompletableFuture.runAsync(
                         () -> modelMap.put("postPage", blogCache.getTagPostPage(tag)), applicationExecutor)
-                .exceptionally(e -> {AccessLogger.error("", e); return null;});
+                .exceptionally(e -> {log.error("", e); return null;});
     }
 
     /**
      * 导航栏
      */
-    private CompletableFuture<Void> loadNavigation(ModelMap modelMap) {
-        return CompletableFuture.runAsync(
-                () -> modelMap.put("navigations", blogCache.getNavigations()), applicationExecutor)
-                .exceptionally(e -> {AccessLogger.error("", e); return null;});
+    private void loadNavigation(ModelMap modelMap) {
+        modelMap.put("navigations", blogCache.getNavigations());
     }
 
     /**
@@ -144,7 +146,7 @@ public class BlogServiceImpl implements BlogService {
                     modelMap.put("recommendPosts", blogCache.getRecommendPosts()); // 推荐文章
                     modelMap.put("hotPosts", blogCache.getHotPosts());             // 浏览排行
                 }, applicationExecutor)
-                .exceptionally(e -> {AccessLogger.error("", e); return null;});
+                .exceptionally(e -> {log.error("", e); return null;});
     }
 
     /**
@@ -153,7 +155,7 @@ public class BlogServiceImpl implements BlogService {
     private CompletableFuture<Void> loadSlideshow(ModelMap modelMap) {
         return CompletableFuture.runAsync(
                 () -> modelMap.put("slideshow", blogCache.getSlideshow()), applicationExecutor)
-                .exceptionally(e -> {AccessLogger.error("", e); return null;});
+                .exceptionally(e -> {log.error("", e); return null;});
     }
 
     /**
@@ -202,7 +204,7 @@ public class BlogServiceImpl implements BlogService {
             }
         }
         // 导航栏
-        loadNavigation(modelMap).get();
+        loadNavigation(modelMap);
         // 专栏，侧边栏
         if (Objects.equals("2", postInfo.getChannelType())) {
             List<PostInfo> specialPostList = postMapper.queryChannelPosts(postInfo.getChannelId());
@@ -264,31 +266,31 @@ public class BlogServiceImpl implements BlogService {
 
     private void loadDynamicData(ModelMap modelMap) {
         // 获取导航
-        CompletableFuture<Void> navFuture = loadNavigation(modelMap);
+        loadNavigation(modelMap);
         // 获取侧边栏
         CompletableFuture<Void> sideFuture = loadSidebar(modelMap);
         // 获取动态列表
-        CompletableFuture.allOf(navFuture, sideFuture).join();
+        CompletableFuture.allOf(sideFuture).join();
         modelMap.put("notePage", noteService.notePage(modelMap));
     }
 
     @Override
     public String news(ModelMap modelMap) {
         // 获取导航
-        CompletableFuture<Void> navFuture = loadNavigation(modelMap);
+        loadNavigation(modelMap);
         // 获取侧边栏
         CompletableFuture<Void> sideFuture = loadSidebar(modelMap);
-        CompletableFuture.allOf(navFuture, sideFuture).join();
+        CompletableFuture.allOf(sideFuture).join();
         return "blog/news";
     }
 
     @Override
     public String comments(ModelMap modelMap) {
         // 获取导航
-        CompletableFuture<Void> navFuture = loadNavigation(modelMap);
+        loadNavigation(modelMap);
         // 获取侧边栏
         CompletableFuture<Void> sideFuture = loadSidebar(modelMap);
-        CompletableFuture.allOf(navFuture, sideFuture).join();
+        CompletableFuture.allOf(sideFuture).join();
         return "blog/comment";
     }
 
@@ -310,10 +312,10 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public String timeArchives(ModelMap modelMap) {
         // 获取导航
-        CompletableFuture<Void> navFuture = loadNavigation(modelMap);
+        loadNavigation(modelMap);
         // 获取侧边栏
         CompletableFuture<Void> sideFuture = loadSidebar(modelMap);
-        CompletableFuture.allOf(navFuture, sideFuture).join();
+        CompletableFuture.allOf(sideFuture).join();
         // 获取文章
         Page<PostInfo> blogPostPage = postMapper.timeArchives(Access.page(15));
         Map<String, Object> postPage = new HashMap<>();
@@ -331,17 +333,17 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public String tags(ModelMap modelMap) {
         // 获取导航
-        CompletableFuture<Void> navFuture = loadNavigation(modelMap);
+        loadNavigation(modelMap);
         // 获取侧边栏
         CompletableFuture<Void> sideFuture = loadSidebar(modelMap);
-        CompletableFuture.allOf(navFuture, sideFuture).join();
+        CompletableFuture.allOf(sideFuture).join();
         return "blog/tags";
     }
 
     @Override
     public String focus(ModelMap modelMap) {
         // 获取导航
-        CompletableFuture<Void> navFuture = loadNavigation(modelMap);
+        loadNavigation(modelMap);
         // 获取侧边栏
         CompletableFuture<Void> sideFuture = loadSidebar(modelMap);
         // 文章列表
@@ -354,8 +356,8 @@ public class BlogServiceImpl implements BlogService {
             postPage.setPage(Access.pageIndex());
             postPage.setPageSize(Access.pageSize(15));
             modelMap.put("postPage", postPage);
-        }, applicationExecutor).exceptionally(e -> {AccessLogger.error("", e); return null;});
-        CompletableFuture.allOf(navFuture, sideFuture, postFuture).join();
+        }, applicationExecutor).exceptionally(e -> {log.error("", e); return null;});
+        CompletableFuture.allOf(sideFuture, postFuture).join();
         return "blog/focus";
     }
 
@@ -366,10 +368,10 @@ public class BlogServiceImpl implements BlogService {
         // 文章列表
         CompletableFuture<Void> postFuture = loadPost(modelMap, postInfo);
         // 导航栏
-        CompletableFuture<Void> navFuture = loadNavigation(modelMap);
+        loadNavigation(modelMap);
         // 侧边栏
         CompletableFuture<Void> sideFuture = loadSidebar(modelMap);
-        CompletableFuture.allOf(postFuture, navFuture, sideFuture).join();
+        CompletableFuture.allOf(postFuture, sideFuture).join();
         return "blog/index";
     }
 
@@ -378,10 +380,10 @@ public class BlogServiceImpl implements BlogService {
         // 文章列表
         CompletableFuture<Void> postFuture = loadTagPost(modelMap, tag);
         // 导航栏
-        CompletableFuture<Void> navFuture = loadNavigation(modelMap);
+        loadNavigation(modelMap);
         // 侧边栏
         CompletableFuture<Void> sideFuture = loadSidebar(modelMap);
-        CompletableFuture.allOf(postFuture, navFuture, sideFuture).join();
+        CompletableFuture.allOf(postFuture, sideFuture).join();
         return "blog/index";
     }
 

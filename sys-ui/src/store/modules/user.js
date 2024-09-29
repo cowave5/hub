@@ -1,5 +1,4 @@
-import {login, logout, getInfo} from '@/api/login'
-import {gitlab} from "@/api/callback";
+import { login, logout, getAuthInfo, ldapLogin, gitlabLogin, getOAuth2Token } from '@/api/auth'
 import cache from "@/plugins/cache";
 
 const user = {
@@ -31,7 +30,7 @@ const user = {
     },
     SET_PERMISSIONS: (state, permissions) => {
       state.permissions = permissions
-    }
+    },
   },
 
   actions: {
@@ -40,7 +39,6 @@ const user = {
       const password = userInfo.password
       const code = userInfo.code
       const uuid = userInfo.uuid
-
       return new Promise((resolve, reject) => {
         login(username, password, code, uuid).then(res => {
           commit('SET_TOKEN', res.data);
@@ -53,9 +51,24 @@ const user = {
       })
     },
 
+    Ldap({ commit }, ldapInfo) {
+      const username = ldapInfo.username.trim()
+      const password = ldapInfo.password
+      return new Promise((resolve, reject) => {
+        ldapLogin(username, password).then(res => {
+          commit('SET_TOKEN', res.data);
+          commit('SET_USERID', user.userId)
+          commit('SET_NAME', user.userName)
+          resolve();
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
     OauthGitlab({ commit }, code) {
       return new Promise((resolve, reject) => {
-        gitlab(code).then(res => {
+        gitlabLogin(code).then(res => {
           commit('SET_TOKEN', res.data);
           commit('SET_USERID', user.userId)
           commit('SET_NAME', user.userName)
@@ -68,7 +81,7 @@ const user = {
 
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getInfo().then(res => {
+        getAuthInfo().then(res => {
           const user = res.data
           const avatar = (user.avatar === "" || user.avatar == null) ? require("@/assets/images/profile.jpg") : user.avatar;
           if (user.roles && user.roles.length > 0) {
@@ -101,7 +114,8 @@ const user = {
           reject(error)
         })
       })
-    }
+    },
+
   }
 }
 
