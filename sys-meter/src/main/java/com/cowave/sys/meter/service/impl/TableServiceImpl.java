@@ -9,6 +9,8 @@
  */
 package com.cowave.sys.meter.service.impl;
 
+import com.cowave.commons.tools.DateUtils;
+import com.cowave.sys.job.client.annotation.Job;
 import com.cowave.sys.meter.entity.*;
 import com.cowave.sys.meter.mapper.ColumnMapper;
 import com.cowave.sys.meter.mapper.IndexMapper;
@@ -39,8 +41,10 @@ public class TableServiceImpl implements TableService {
 
     private final IndexMapper indexMapper;
 
+    @Job("test")
     @Override
     public List<SelectOption> options(Long appId) {
+        System.out.println(DateUtils.format("yyyy-mm-dd HH:MM:ss SSS"));
         return tableMapper.options(appId);
     }
 

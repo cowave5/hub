@@ -18,11 +18,10 @@
 
     <modules>
         <module>sys-admin</module>
-        <module>sys-quartz</module>
-        <module>sys-meter</module>
-        <module>sys-flow</module>
         <module>sys-blog</module>
-        <module>sys-eureka</module>
+        <module>sys-flow</module>
+        <module>sys-meter</module>
+        <module>sys-quartz</module>
         <module>sys-gateway</module>
         <module>sys-ui</module>
     </modules>

@@ -9,8 +9,12 @@
  */
 package com.cowave.sys.meter;
 
+import com.cowave.sys.job.client.JobContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import java.util.List;
 
 /**
  * @author shanhuiming
@@ -19,5 +23,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
+	}
+
+	@Bean
+    public JobContext jobContext() {
+		JobContext jobContext = new JobContext();
+		jobContext.setServerList(List.of("http://localhost:19050"));
+		jobContext.setClinetName("sys-meter");
+        jobContext.setClientAddress("http://localhost:3000");
+		jobContext.setClientPort(3000);
+		return jobContext;
 	}
 }
