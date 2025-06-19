@@ -68,7 +68,7 @@
         from(select
              <include refid="userColumns"/>
              from sys_user u
-             where u.user_id > 1
+             where 1 = 1
              <if test="userName != null and userName != ''">
                  and u.user_name like concat('%', #{userName}, '%')
              </if>
@@ -88,7 +88,7 @@
     <select id="count" resultType="java.lang.Integer">
         select count(1)
         from sys_user u
-        where u.user_id > 1
+        where 1 = 1
         <if test="userName != null and userName != ''">
             and u.user_name like concat('%', #{userName}, '%')
         </if>
@@ -113,7 +113,7 @@
              from d
              join sys_user_dept ud on d.dept_id = ud.dept_id
              join sys_user u on ud.user_id = u.user_id
-             where u.user_id > 1
+             where 1 = 1
              <if test="userName != null and userName != ''">
                  and u.user_name like concat('%', #{userName}, '%')
              </if>
@@ -139,7 +139,7 @@
         from d
         join sys_user_dept ud on d.dept_id = ud.dept_id
         join sys_user u on ud.user_id = u.user_id
-        where u.user_id > 1
+        where 1 = 1
         <if test="userName != null and userName != ''">
             and u.user_name like concat('%', #{userName}, '%')
         </if>

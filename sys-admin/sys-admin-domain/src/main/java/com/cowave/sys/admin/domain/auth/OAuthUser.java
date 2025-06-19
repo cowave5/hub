@@ -18,7 +18,7 @@ import lombok.Data;
 
 import java.util.Date;
 
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.GITLAB;
+import static com.cowave.sys.admin.domain.auth.AccessType.GITLAB;
 
 /**
  * 授权用户

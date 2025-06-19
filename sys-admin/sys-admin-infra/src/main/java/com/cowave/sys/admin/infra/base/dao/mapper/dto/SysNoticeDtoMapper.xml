@@ -21,6 +21,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         on conflict(user_code, notice_id) do nothing
     </insert>
 
+    <insert id="insertReadOfAdmin">
+        insert into sys_notice_user(notice_id, user_code)
+        select #{noticeId}, user_code from sys_user_admin
+        on conflict(user_code, notice_id) do nothing
+    </insert>
+
     <insert id="insertReadOfLdap">
         insert into sys_notice_user(notice_id, user_code)
         select #{noticeId}, user_code from ldap_user

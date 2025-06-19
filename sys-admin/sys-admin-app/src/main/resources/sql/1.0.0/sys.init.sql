@@ -110,7 +110,33 @@ INSERT INTO "sys_dict" ("parent_code", "dict_code", "dict_name", "dict_value", "
 ('menu_type', 'menu_C', 'dict.name.menu_C', 'C', NULL, NULL, 2, 0, 'success', 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-03-07 11:01:22.65'),
 ('menu_type', 'menu_B', 'dict.name.menu_B', 'B', NULL, NULL, 3, 0, 'danger', 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-03-07 11:01:27.282'),
 
-('group', 'quartz', 'dict.name.quartz', '-', NULL, NULL, 5, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-03-07 09:54:53.347'),
-('quartz', 'quartz_group', 'dict.name.quartz_group', '-', NULL, NULL, 6, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-03-07 10:41:07.584'),
-('quartz_group', 'quartz_default', 'dict.name.quartz_default', '-', NULL, NULL, 1, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-03-07 10:41:33.676'),
-('quartz_group', 'quartz_test', 'dict.name.quartz_test', '-', NULL, NULL, 2, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-03-07 10:41:37.89');
+('group', 'job', 'dict.name.job', '-', NULL, NULL, 5, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-03-07 09:54:53.347'),
+
+('job', 'job_task', '任务类型', '-', NULL, NULL, 1, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_task', 'job_task_bean', 'Java实例', 'BEAN', NULL, NULL, 1, 1, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_task', 'job_task_groovy', 'Groovy脚本', 'GROOVY', NULL, NULL, 2, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_task', 'job_task_python', 'Python脚本', 'PYTHON', NULL, NULL, 3, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_task', 'job_task_php', 'Php脚本', 'PHP', NULL, NULL, 4, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_task', 'job_task_nodejs', 'Nodejs脚本', 'NODEJS', NULL, NULL, 5, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_task', 'job_task_shell', 'Shell脚本', 'SHELL', NULL, NULL, 6, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+
+('job', 'job_route', '路由策略', '-', NULL, NULL, 2, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_route', 'job_route_round', '轮询', 'ROUND', NULL, NULL, 1, 1, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544'),
+('job_route', 'job_route_random', '随机', 'RANDOM', NULL, NULL, 2, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544'),
+('job_route', 'job_route_hash', 'Hash散列', 'CONSISTENT_HASH', NULL, NULL, 3, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544'),
+('job_route', 'job_route_fail', '故障转移', 'FAIL_OVER', NULL, NULL, 4, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544'),
+('job_route', 'job_route_busy', '忙碌转移', 'BUSY_OVER', NULL, NULL, 5, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544'),
+('job_route', 'job_route_shard', '分片广播', 'SHARDING_BROADCAST', NULL, NULL, 6, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544'),
+('job_route', 'job_route_lfu', '最不经常使用', 'LEAST_FREQUENTLY_USED', NULL, NULL, 7, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544'),
+('job_route', 'job_route_lru', '最久未使用', 'LEAST_RECENTLY_USED', NULL, NULL, 8, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544'),
+('job_route', 'job_route_first', '取第一个', 'FIRST', NULL, NULL, 9, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544'),
+('job_route', 'job_route_last', '取最后一个', 'LAST', NULL, NULL, 10, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:13:13.544'),
+
+('job', 'job_block', '阻塞策略', '-', NULL, NULL, 3, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_block', 'job_block_serial', '单机串行', 'SERIAL_EXECUTION', NULL, NULL, 1, 1, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_block', 'job_block_discard', '丢弃后续任务', 'DISCARD_LATER', NULL, NULL, 2, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_block', 'job_block_cover', '覆盖之前任务', 'COVER_EARLY', NULL, NULL, 3, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+
+('job', 'job_misfire', '过期策略', '-', NULL, NULL, 4, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_misfire', 'job_misfire_ignore', '忽略', 'IGNORE', NULL, NULL, 1, 1, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5'),
+('job_misfire', 'job_misfire_fire', '立即执行', 'FIRE_NOW', NULL, NULL, 2, 0, NULL, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:28.745', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2025-06-23 20:11:48.5');

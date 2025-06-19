@@ -1,11 +1,13 @@
 import request from '@/utils/request'
 
-// 查询调度日志列表
-export function listJobLog(data) {
+/**
+ * 日志列表
+ */
+export function listJobLog(params) {
   return request({
-    url: '/quartz/api/v1/task/log/list',
-    method: 'post',
-    data: data
+    url: '/job/api/v1/trigger/log',
+    method: 'get',
+    params: params
   })
 }
 

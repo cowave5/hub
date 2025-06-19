@@ -25,6 +25,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static com.cowave.sys.admin.domain.AdminRedisKeys.*;
+
 /**
  * @author shanhuiming
  */
@@ -32,10 +34,6 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class SysDeptRedis implements ApplicationRunner {
-    private static final String KEY_DEPT = "sys-admin:tree:dept";
-    private static final String KEY_DEPT_USER = "sys-admin:tree:dept-user";
-    private static final String KEY_DEPT_POST = "sys-admin:tree:dept-post";
-
     private final TreeNodeConfig treeConfig = new TreeNodeConfig()
             .setIdKey("id").setParentIdKey("pid").setNameKey("label").setChildrenKey("children");
     private final RedisHelper redisHelper;
@@ -58,12 +56,12 @@ public class SysDeptRedis implements ApplicationRunner {
             node.setParentId(String.valueOf(d.getPid()));
             node.setName(d.getLabel());
         });
-        redisHelper.putValue(KEY_DEPT, deptTree.get(0));
+        redisHelper.putValue(DEPT_TREE, deptTree.get(0));
     }
 
     public void refreshUserDiagram() {
         // 部门树
-        Tree<String> tree = redisHelper.getValue(KEY_DEPT);
+        Tree<String> tree = redisHelper.getValue(DEPT_TREE);
         // 部门用户
         List<TreeChildren> deptUserList = sysDeptDtoMapper.deptUserOptions();
         // Map<deptId, List<userId>>
@@ -89,7 +87,7 @@ public class SysDeptRedis implements ApplicationRunner {
             root.put("isDept", true);
             root.setId(root.getId() + "d"); // 避免dept与user的id相同导致选择问题
         }
-        redisHelper.putValue(KEY_DEPT_USER, tree);
+        redisHelper.putValue(DEPT_USER_TREE, tree);
     }
 
     // id = deptId-postId, label = postName
@@ -101,7 +99,7 @@ public class SysDeptRedis implements ApplicationRunner {
         }
 
         // tree.id = deptId, label = deptName
-        Tree<String> tree = redisHelper.getValue(KEY_DEPT);
+        Tree<String> tree = redisHelper.getValue(DEPT_TREE);
         Tree<String> root = tree;
         Deque<Tree<String>> queue = new LinkedList<>(List.of(root));
         while (!queue.isEmpty()) {
@@ -119,11 +117,11 @@ public class SysDeptRedis implements ApplicationRunner {
                 }
             }
         }
-        redisHelper.putValue(KEY_DEPT_POST, tree);
+        redisHelper.putValue(DEPT_POST_TREE, tree);
     }
 
     public List<Tree<String>> getDiagram(String deptId) {
-        Tree<String> root = redisHelper.getValue(KEY_DEPT);
+        Tree<String> root = redisHelper.getValue(DEPT_TREE);
         // 如果没有传deptId，或者传的根部门id，则返回整棵树
         if (deptId == null || deptId.equals(root.getId())) {
             return List.of(root);
@@ -149,10 +147,10 @@ public class SysDeptRedis implements ApplicationRunner {
     }
 
     public Tree<String> getUserDiagram() {
-        return redisHelper.getValue(KEY_DEPT_USER);
+        return redisHelper.getValue(DEPT_USER_TREE);
     }
 
     public Tree<String> getPostDiagram() {
-        return redisHelper.getValue(KEY_DEPT_POST);
+        return redisHelper.getValue(DEPT_POST_TREE);
     }
 }

@@ -35,13 +35,13 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.GITLAB;
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.SYS;
+import static com.cowave.sys.admin.domain.auth.AccessType.*;
 
 /**
  * 鉴权
- * @order 8
+ *
  * @author shanhuiming
+ * @order 8
  */
 @RequiredArgsConstructor
 @RestController
@@ -141,13 +141,18 @@ public class AuthController {
         authInfo.setUserName(userDetails.getUserNick());
         authInfo.setRoles(userDetails.getRoles());
         authInfo.setPermissions(userDetails.getPermissions());
-        if(GITLAB.isEqual(userDetails.getType())){
+        if (GITLAB.equalsVal(userDetails.getType())) {
             OAuthUser oAuthUser = oauthService.infoUser(userId);
             authInfo.setUserEmail(oAuthUser.getUserEmail());
             authInfo.setAvatar(oAuthUser.getUserAvatar());
-        }else if(SYS.isEqual(userDetails.getType())){
+        } else if (ADMIN.equalsVal(userDetails.getType())) {
+            SysAttach avatar = attachService.latestOfMaster(Long.valueOf(userId), "admin-user");
+            if (avatar != null) {
+                authInfo.setAvatar(avatar.getViewUrl());
+            }
+        } else if (SYS.equalsVal(userDetails.getType())) {
             SysAttach avatar = attachService.latestOfMaster(Long.valueOf(userId), "sys-user");
-            if(avatar != null){
+            if (avatar != null) {
                 authInfo.setAvatar(avatar.getViewUrl());
             }
         }

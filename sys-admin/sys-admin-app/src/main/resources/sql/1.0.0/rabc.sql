@@ -1,3 +1,15 @@
+-- 系统管理员
+drop table if exists sys_user_admin;
+create table sys_user_admin
+(
+    user_id      serial primary key,
+    user_type    int2 default -1,
+    user_code    character varying(64),
+    user_name    character varying(64)  not null,
+    user_account character varying(64)  not null,
+    user_passwd  character varying(256) not null
+);
+
 -- 1.部门信息
 drop table if exists sys_dept;
 create table sys_dept(

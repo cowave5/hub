@@ -86,7 +86,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join sys_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
         left join sys_dept d on ud.dept_id = d.dept_id
         left join sys_post p on ud.post_id = p.post_id
-        where u.user_id > 1
+        where 1 = 1
         <if test="query.userName != null and query.userName != ''">
             and u.user_name like concat('%', #{query.userName}, '%')
         </if>

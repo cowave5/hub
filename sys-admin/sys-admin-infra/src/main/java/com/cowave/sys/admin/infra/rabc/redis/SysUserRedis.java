@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.cowave.sys.admin.domain.AdminRedisKeys.USER_TREE;
+
 /**
  * @author shanhuiming
  */
@@ -30,8 +32,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class SysUserRedis implements ApplicationRunner {
-    private static final String KEY_USER = "sys-admin:tree:user";
-
     private final TreeNodeConfig treeConfig = new TreeNodeConfig()
             .setIdKey("id").setParentIdKey("pid").setNameKey("label").setChildrenKey("children");
     private final RedisHelper redisHelper;
@@ -51,10 +51,10 @@ public class SysUserRedis implements ApplicationRunner {
             node.setName(u.getLabel());
             node.put("content", u.getContent());
         });
-        redisHelper.putValue(KEY_USER, deptTree.get(0));
+        redisHelper.putValue(USER_TREE, deptTree.get(0));
     }
 
     public Tree<String> getDiagram() {
-        return redisHelper.getValue(KEY_USER);
+        return redisHelper.getValue(USER_TREE);
     }
 }

@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.cowave.commons.client.http.constants.HttpCode.*;
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.SYS;
+import static com.cowave.sys.admin.domain.auth.AccessType.SYS;
 
 /**
  * @author shanhuiming

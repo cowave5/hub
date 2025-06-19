@@ -22,6 +22,8 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 
+import static com.cowave.sys.admin.domain.AdminRedisKeys.CONFIG_KEY;
+
 /**
  * @author shanhuiming
  */
@@ -29,7 +31,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class SysConfigRedis implements ApplicationRunner {
-    private static final String KEY_CONFIG = "sys-admin:config:";
     private final RedisHelper redisHelper;
     private final SysConfigDao sysConfigDao;
 
@@ -40,7 +41,7 @@ public class SysConfigRedis implements ApplicationRunner {
     }
 
     public void refreshConfig() {
-        Collection<String> keys = redisHelper.keys(KEY_CONFIG + "*");
+        Collection<String> keys = redisHelper.keys(CONFIG_KEY.formatted("*"));
         redisHelper.delete(keys);
         List<SysConfig> list = sysConfigDao.list();
         for (SysConfig conf : list) {
@@ -50,14 +51,14 @@ public class SysConfigRedis implements ApplicationRunner {
 
     public void putConfig(SysConfig conf) {
         Object configValue = CustomValueParser.getValue(conf.getConfigValue(), conf.getValueType(), conf.getValueParser());
-        redisHelper.putValue(KEY_CONFIG + conf.getConfigKey(), configValue);
+        redisHelper.putValue(CONFIG_KEY.formatted(conf.getConfigKey()), configValue);
     }
 
     public void removeConfig(SysConfig conf) {
-        redisHelper.delete(KEY_CONFIG + conf.getConfigKey());
+        redisHelper.delete(CONFIG_KEY.formatted(conf.getConfigKey()));
     }
 
     public <T> T getConfigValue(String configKey) {
-        return redisHelper.getValue(KEY_CONFIG + configKey);
+        return redisHelper.getValue(CONFIG_KEY.formatted(configKey));
     }
 }

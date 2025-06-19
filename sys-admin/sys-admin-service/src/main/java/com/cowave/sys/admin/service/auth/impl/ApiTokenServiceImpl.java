@@ -42,7 +42,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.cowave.commons.framework.access.security.BearerTokenService.*;
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.API;
+import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_API;
+import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_API_CURRENT;
+import static com.cowave.sys.admin.domain.auth.AccessType.API;
 
 /**
  * @author shanhuiming
@@ -51,7 +53,6 @@ import static com.cowave.sys.admin.domain.rabc.enums.AccessType.API;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class ApiTokenServiceImpl implements ApiTokenService {
-    private static final String PREFIX = "sys-admin:token:api:";
     private final ApplicationProperties applicationProperties;
     private final AccessProperties accessProperties;
     private final SysMenuDao sysMenuDao;
@@ -72,10 +73,10 @@ public class ApiTokenServiceImpl implements ApiTokenService {
         if (apiToken.getExpire() != null) {
             long expire = apiToken.getExpire().getTime() - System.currentTimeMillis();
             if (expire > 0) {
-                redisHelper.putExpire(PREFIX + apiToken.getTokenId(), ipRules, expire, TimeUnit.MILLISECONDS);
+                redisHelper.putExpire(AUTH_API.formatted(apiToken.getTokenId()), ipRules, expire, TimeUnit.MILLISECONDS);
             }
         } else {
-            redisHelper.putValue(PREFIX + apiToken.getTokenId(), ipRules);
+            redisHelper.putValue(AUTH_API.formatted(apiToken.getTokenId()), ipRules);
         }
     }
 
@@ -95,11 +96,9 @@ public class ApiTokenServiceImpl implements ApiTokenService {
     @Override
     public List<ApiTokenVo> listApiToken(){
         List<ApiToken> tokenList = apiTokenDao.listByUserCode(Access.userCode());
-
         List<ApiTokenVo> list = Collections.copyToList(tokenList, ApiTokenVo.class);
         for(ApiTokenVo tokenVo : list){
-            Map<String, Object> accessInfo =
-                    redisHelper.getValue("sys-admin:token:api:current:" + tokenVo.getTokenId());
+            Map<String, Object> accessInfo = redisHelper.getValue(AUTH_API_CURRENT.formatted(tokenVo.getTokenId()));
             if(accessInfo != null){
                 tokenVo.setAccessIp((String)accessInfo.get("ip"));
                 tokenVo.setAccessUrl((String)accessInfo.get("url"));
@@ -179,6 +178,6 @@ public class ApiTokenServiceImpl implements ApiTokenService {
         apiTokenDao.removeById(tokenId);
         apiTokenMenuDao.removeByTokenId(tokenId);
         // 从缓存删除
-        redisHelper.delete(PREFIX + tokenId);
+        redisHelper.delete(AUTH_API.formatted(tokenId));
     }
 }

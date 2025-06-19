@@ -32,7 +32,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
 
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.SYS;
+import static com.cowave.sys.admin.domain.auth.AccessType.SYS;
 
 /**
  * @author shanhuiming

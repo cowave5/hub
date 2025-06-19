@@ -16,7 +16,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.GITLAB;
+import static com.cowave.sys.admin.domain.auth.AccessType.GITLAB;
 
 /**
  * @author shanhuiming

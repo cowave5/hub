@@ -25,6 +25,8 @@ public interface SysNoticeDtoMapper {
 
     void insertReadOfAll(Long noticeId);
 
+    void insertReadOfAdmin(Long noticeId);
+
     void insertReadOfLdap(Long noticeId);
 
     void insertReadOfOauth(Long noticeId);

@@ -7,7 +7,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.sys.admin.domain.rabc.enums;
+package com.cowave.sys.admin.domain.auth;
 
 import com.cowave.commons.tools.EnumVal;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +27,11 @@ public enum AccessType implements EnumVal<String> {
      * OAuth授权
      */
     OAUTH("oauth"),
+
+    /**
+     * 系统管理员
+     */
+    ADMIN("admin"),
 
     /**
      * 系统用户
@@ -54,7 +59,7 @@ public enum AccessType implements EnumVal<String> {
         return val + "-" + java.util.UUID.randomUUID();
     }
 
-    public boolean isTypeEquals(String userCode){
+    public boolean equalsType(String userCode){
         return userCode.startsWith(val);
     }
 }

@@ -21,7 +21,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.base.enums.NoticeStatus.DRAFT;
+import static com.cowave.sys.admin.domain.base.NoticeStatus.DRAFT;
 
 /**
  * @author shanhuiming

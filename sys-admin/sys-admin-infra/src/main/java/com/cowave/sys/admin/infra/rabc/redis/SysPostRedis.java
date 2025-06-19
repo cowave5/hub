@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.cowave.sys.admin.domain.AdminRedisKeys.POST_TREE;
+
 /**
  * @author shanhuiming
  */
@@ -30,8 +32,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class SysPostRedis implements ApplicationRunner {
-    private static final String KEY_POST = "sys-admin:tree:post";
-
     private final TreeNodeConfig treeConfig = new TreeNodeConfig()
             .setIdKey("id").setParentIdKey("pid").setNameKey("label").setChildrenKey("children");
     private final RedisHelper redisHelper;
@@ -51,10 +51,10 @@ public class SysPostRedis implements ApplicationRunner {
             node.setParentId(p.getPid());
             node.setName(p.getLabel());
         });
-        redisHelper.putValue(KEY_POST, deptTree.get(0));
+        redisHelper.putValue(POST_TREE, deptTree.get(0));
     }
 
     public Tree<String> getDiagram() {
-        return redisHelper.getValue(KEY_POST);
+        return redisHelper.getValue(POST_TREE);
     }
 }

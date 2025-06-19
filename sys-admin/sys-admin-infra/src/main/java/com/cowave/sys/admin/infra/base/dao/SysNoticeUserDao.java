@@ -20,8 +20,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.base.enums.NoticeReadStatus.READ_PUBLISH;
-import static com.cowave.sys.admin.domain.base.enums.NoticeReadStatus.UNREAD_PUBLISH;
+import static com.cowave.sys.admin.domain.base.NoticeReadStatus.READ_PUBLISH;
+import static com.cowave.sys.admin.domain.base.NoticeReadStatus.UNREAD_PUBLISH;
 
 /**
  * @author shanhuiming

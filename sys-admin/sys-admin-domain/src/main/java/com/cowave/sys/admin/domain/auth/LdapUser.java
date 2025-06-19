@@ -13,7 +13,7 @@ import com.cowave.commons.framework.access.security.AccessUserDetails;
 import lombok.Data;
 import java.util.Date;
 
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.LDAP;
+import static com.cowave.sys.admin.domain.auth.AccessType.LDAP;
 
 /**
  * Ldap用户信息

@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
 import static com.cowave.commons.client.http.constants.HttpCode.FORBIDDEN;
+import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_CAPTCHA;
 
 /**
  *
@@ -51,7 +52,6 @@ public class CaptchaService {
     private static final int     SIGN                 = -128;
     private static final char    PAD                  = '=';
     private static final char[] LOOKUP_BASE64_ALPHABET = new char[LOOKUPLENGTH];
-    private static final String CAPTCHA_KEY = "sys-admin:captcha:";
     private static final Integer CAPTCHA_EXPIRATION = 3;
 
     static {
@@ -111,11 +111,21 @@ public class CaptchaService {
             capStr = code = captchaProducer.createText();
             image = captchaProducer.createImage(capStr);
         }
-        redisHelper.putExpire(CAPTCHA_KEY + uuid, code, CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+
+        redisHelper.putExpire(AUTH_CAPTCHA.formatted(uuid), code, CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
         FastByteArrayOutputStream os = new FastByteArrayOutputStream();
         assert image != null;
         ImageIO.write(image, "jpg", os);
         return new CaptchaInfo(uuid, encode(os.toByteArray()), true, registerOnOff, oauthUrl);
+    }
+
+    public void validCaptcha(LoginRequest request){
+        boolean captchaOnOff = sysConfigRedis.getConfigValue("sys.account.captchaOnOff");
+        if(captchaOnOff){
+            String captcha = redisHelper.getValue(AUTH_CAPTCHA.formatted(request.getCaptchaId()));
+            HttpAsserts.notNull(captcha, BAD_REQUEST, "{admin.captcha.expired}");
+            HttpAsserts.equals(captcha, request.getCaptcha(), BAD_REQUEST, "{admin.captcha.failed}");
+        }
     }
 
     public void captchaEmail(String email) {
@@ -126,23 +136,14 @@ public class CaptchaService {
         mailMessage.setSubject(I18Messages.msg("admin.captcha.title"));
         mailMessage.setText(I18Messages.msg("admin.captcha.msg", String.valueOf(code), CAPTCHA_EXPIRATION));
         mailSender.send(mailMessage);
-        redisHelper.putExpire(CAPTCHA_KEY + code, email, CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
-    }
-
-    public void validCaptcha(LoginRequest request){
-        boolean captchaOnOff = sysConfigRedis.getConfigValue("sys.account.captchaOnOff");
-        if(captchaOnOff){
-            String captcha = redisHelper.getValue(CAPTCHA_KEY + request.getCaptchaId());
-            HttpAsserts.notNull(captcha, BAD_REQUEST, "{admin.captcha.expired}");
-            HttpAsserts.equals(captcha, request.getCaptcha(), BAD_REQUEST, "{admin.captcha.failed}");
-        }
+        redisHelper.putExpire(AUTH_CAPTCHA.formatted(code), email, CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
     }
 
     public void validEmail(RegisterRequest request){
         boolean registerOnOff = sysConfigRedis.getConfigValue("sys.account.registerOnOff");
         HttpAsserts.isTrue(registerOnOff, FORBIDDEN, "{admin.register.disable}");
 
-        String email = redisHelper.getValue(CAPTCHA_KEY + request.getCaptcha());
+        String email = redisHelper.getValue(AUTH_CAPTCHA.formatted(request.getCaptcha()));
         HttpAsserts.notNull(email, BAD_REQUEST, "{admin.captcha.expired}");
         HttpAsserts.equals(email, request.getUserEmail(), BAD_REQUEST, "{admin.register.failed}");
     }

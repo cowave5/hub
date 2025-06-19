@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.cowave.sys</groupId>
+        <artifactId>sys-job</artifactId>
+        <version>1.0.3</version>
+    </parent>
+
+    <artifactId>sys-job-app</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.cowave.sys</groupId>
+            <artifactId>sys-job-service</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cowave.sys</groupId>
+            <artifactId>sys-job-client</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <!-- jraft -->
+        <dependency>
+            <groupId>com.alipay.sofa</groupId>
+            <artifactId>jraft-core</artifactId>
+            <version>1.3.14</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alipay.sofa</groupId>
+            <artifactId>bolt</artifactId>
+            <version>1.6.12</version>
+        </dependency>
+        <!-- postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+        <!-- liquibase -->
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+		</dependency>
+    </dependencies>
+</project>

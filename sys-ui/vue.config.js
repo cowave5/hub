@@ -62,11 +62,11 @@ module.exports = {
           ['^' + process.env.VUE_APP_BASE_API + '/meter']: ''
         }
       },
-      ['/dev-api/quartz']: {
-        target: `http://localhost:19040/quartz`,
+      ['/dev-api/job']: {
+        target: `http://localhost:19040/job`,
         changeOrigin: true,
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API + '/quartz']: ''
+          ['^' + process.env.VUE_APP_BASE_API + '/job']: ''
         }
       },
     },

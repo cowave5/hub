@@ -16,11 +16,9 @@ import com.cowave.sys.admin.domain.auth.request.ApiTokenRequest;
 import com.cowave.sys.admin.domain.auth.request.PasswdReset;
 import com.cowave.sys.admin.domain.auth.request.ProfileUpdate;
 import com.cowave.sys.admin.domain.auth.vo.ApiTokenVo;
-import com.cowave.sys.admin.domain.base.SysAttach;
 import com.cowave.sys.admin.domain.base.request.AttachUpload;
 import com.cowave.sys.admin.service.auth.ApiTokenService;
 import com.cowave.sys.admin.service.auth.ProfileService;
-import com.cowave.sys.admin.service.base.SysAttachService;
 import com.cowave.sys.admin.service.rabc.SysMenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -41,7 +39,6 @@ public class ProfileController {
     private final ProfileService profileService;
     private final ApiTokenService apiTokenService;
     private final SysMenuService sysMenuService;
-    private final SysAttachService sysAttachService;
 
     /**
      * 详情
@@ -71,10 +68,8 @@ public class ProfileController {
      * 头像上传
      */
     @PatchMapping("/avatar")
-    public Response<String> avatar(@RequestParam("file") MultipartFile file, AttachUpload attachUpload) throws Exception {
-        SysAttach attach = sysAttachService.upload(file, attachUpload);
-        sysAttachService.masterReserve(attach.getMasterId(), attach.getAttachGroup(), attach.getAttachType(), 3);
-        return Response.success(sysAttachService.preview(attach));
+    public Response<String> uploadAvatar(@RequestParam("file") MultipartFile file, AttachUpload attachUpload) throws Exception {
+        return Response.success(profileService.uploadAvatar(file, attachUpload));
     }
 
     /**

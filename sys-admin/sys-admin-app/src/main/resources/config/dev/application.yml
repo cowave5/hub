@@ -1,4 +1,11 @@
+server:
+  port: ${http_port:19010}
+  servlet:
+    context-path: /admin
+
 spring:
+  application:
+    name: sys-admin
   access:
     always-success: true
     filter:

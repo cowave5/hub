@@ -133,24 +133,26 @@ INSERT INTO "sys_post_tree" ("post_id", "parent_id", "tree_type") VALUES (24, 21
 INSERT INTO "sys_post_tree" ("post_id", "parent_id", "tree_type") VALUES (26, 21, 1);
 
 --用户数据
+INSERT INTO "sys_user_admin" ("user_code", "user_name", "user_account", "user_passwd") VALUES
+('admin-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '系统管理员', 'sysAdmin', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq');
+
 INSERT INTO "sys_user" ("user_id", "user_code", "user_name", "user_account", "user_passwd", "user_sex", "user_phone", "user_email", "user_status", "user_rank", "remark", "create_by", "create_time", "update_by", "update_time") VALUES
-(1, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '系统管理员', 'sysAdmin', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, NULL, 'sysAdmin@cowave.com', 1, NULL, NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(2, 'sys-56ae4df2-e9fd-4ece-a5cb-5893e3b29dc7', '刘备', 'liubei', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'liubei@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(3, 'sys-8d234c95-2d19-4ca0-ab13-76be013c3dc2', '诸葛亮', 'zhugeliang', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'zhugeliang@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(4, 'sys-a3cda9ab-737f-4bce-865b-df226338bf54', '关羽', 'guanyu', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'guanyu@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(5, 'sys-3960dc81-b4a9-4bce-8b37-cbdd2869e75d', '张飞', 'zhangfei', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'zhangfei@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(6, 'sys-8ea84a28-98a1-4f8f-80e7-0c333bac5eeb', '马超', 'machao', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'machao@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(7, 'sys-de1db190-d899-4f2e-b96f-5bdf9b954073', '赵云', 'zhaoyun', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'zhaoyun@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(8, 'sys-0a6f0c32-b1a9-4051-bd26-a0062acd58ae', '黄忠', 'huangzhong', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'huangzhong@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(9, 'sys-d0369ec0-a572-4fe2-879e-8ab969331ba4', '大乔', 'daqiao', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 1, '13288888888', 'daqiao@cowave.com', 1, 'M2', NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(10, 'sys-3268546f-9e08-4018-b8e7-8eb95ebe0679', '小乔', 'xiaoqiao', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 1, '13288888888', 'xiaoqiao@cowave.com', 1, 'M2', NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00');
+(1, 'sys-56ae4df2-e9fd-4ece-a5cb-5893e3b29dc7', '刘备', 'liubei', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'liubei@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(2, 'sys-8d234c95-2d19-4ca0-ab13-76be013c3dc2', '诸葛亮', 'zhugeliang', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'zhugeliang@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(3, 'sys-a3cda9ab-737f-4bce-865b-df226338bf54', '关羽', 'guanyu', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'guanyu@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(4, 'sys-3960dc81-b4a9-4bce-8b37-cbdd2869e75d', '张飞', 'zhangfei', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'zhangfei@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(5, 'sys-8ea84a28-98a1-4f8f-80e7-0c333bac5eeb', '马超', 'machao', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'machao@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(6, 'sys-de1db190-d899-4f2e-b96f-5bdf9b954073', '赵云', 'zhaoyun', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'zhaoyun@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(7, 'sys-0a6f0c32-b1a9-4051-bd26-a0062acd58ae', '黄忠', 'huangzhong', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 0, '13288888888', 'huangzhong@cowave.com', 1, 'M7', NULL,  'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(8, 'sys-d0369ec0-a572-4fe2-879e-8ab969331ba4', '大乔', 'daqiao', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 1, '13288888888', 'daqiao@cowave.com', 1, 'M2', NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(9, 'sys-3268546f-9e08-4018-b8e7-8eb95ebe0679', '小乔', 'xiaoqiao', '$2a$10$q8HvVpWNp0kadKq49IQO/OT2ZVK9HeimiEVNbb61LTWMmtvUIuZnq', 1, '13288888888', 'xiaoqiao@cowave.com', 1, 'M2', NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00');
 SELECT setval('sys_user_user_id_seq', (SELECT max(user_id) FROM sys_user));
 
 --角色数据
 INSERT INTO "sys_role" ("role_id", "role_code", "role_name", "role_type", "remark", "create_by", "create_time", "update_by", "update_time") VALUES
 (1, 'sysAdmin', '系统管理员', 'sys', NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
 (2, 'flowAdmin', '流程管理员', 'flow', NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(3, 'user-readonly', '只读用户', 'sys', NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00');
+(3, 'role-readonly', '只读用户', 'sys', NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00');
 SELECT setval('sys_role_role_id_seq', (SELECT max(role_id) FROM sys_role));
 
 --菜单数据
@@ -234,18 +236,18 @@ INSERT INTO "sys_menu" ("menu_id", "parent_id", "menu_name", "menu_order", "menu
 (102, 11, 'commons.button.cache', 6, 'sys:config:cache', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
 
 -- 定时任务
-(15, 1, 'commons.menu.sys.schedule.root', 9, 'monitor:quartz:query', 'job', NULL, 'C', 'job', 'system/job/index', 1, 1, 1, 1, 1, '定时任务菜单', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2023-08-10 06:41:40.275'),
-(67, 15, 'commons.button.query', 1, 'monitor:quartz:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(68, 15, 'commons.button.create', 2, 'monitor:quartz:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(69, 15, 'commons.button.edit', 3, 'monitor:quartz:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(70, 15, 'commons.button.delete', 4, 'monitor:quartz:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(72, 15, 'commons.button.export', 5, 'monitor:quartz:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(117, 15, 'commons.button.exec', 6, 'monitor:quartz:exec', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(71, 15, 'commons.button.status', 7, 'monitor:quartz:status', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(118, 15, 'commons.menu.sys.schedule.refresh', 8, 'monitor:quartz:refresh', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(138, 15, 'commons.menu.sys.schedule.logQuery', 9, 'monitor:quartz:log:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(140, 15, 'commons.menu.sys.schedule.logExport', 9, 'monitor:quartz:log:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
-(139, 15, 'commons.menu.sys.schedule.logDelete', 9, 'monitor:quartz:log:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(15, 1, 'commons.menu.sys.schedule.root', 9, 'sys:job:query', 'job', NULL, 'C', 'job', 'system/job/index', 1, 1, 1, 1, 1, '定时任务菜单', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2023-08-10 06:41:40.275'),
+(67, 15, 'commons.button.query', 1, 'sys:job:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(68, 15, 'commons.button.create', 2, 'sys:job:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(69, 15, 'commons.button.edit', 3, 'sys:job:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(70, 15, 'commons.button.delete', 4, 'sys:job:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(72, 15, 'commons.button.export', 5, 'sys:job:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(117, 15, 'commons.button.exec', 6, 'sys:job:exec', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(71, 15, 'commons.button.status', 7, 'sys:job:status', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(118, 15, 'commons.menu.sys.schedule.refresh', 8, 'sys:job:refresh', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(138, 15, 'commons.menu.sys.schedule.logQuery', 9, 'sys:job:log:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(140, 15, 'commons.menu.sys.schedule.logExport', 9, 'sys:job:log:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
+(139, 15, 'commons.menu.sys.schedule.logDelete', 9, 'sys:job:log:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
 
 -- api文档
 (21, 1, 'commons.menu.sys.doc.api', 10, NULL, 'doc', NULL, 'M', 'api', '', 1, 1, 1, 1, 1, '系统接口菜单', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00', 'sys-8a1f2a30-6136-4d2a-b883-70800c09ef0e', '2022-04-25 09:00:00'),
@@ -328,39 +330,37 @@ INSERT INTO "sys_menu" ("menu_id", "parent_id", "menu_name", "menu_order", "menu
 SELECT setval('sys_menu_menu_id_seq', (SELECT max(menu_id) FROM sys_menu));
 
 --用户部门岗位
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (2, 1, 1, 1, 1);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (3, 1, 2, 1, 0);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (4, 1, 3, 1, 0);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (5, 1, 6, 1, 0);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (7, 1, 4, 1, 0);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (6, 1, 7, 1, 0);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (8, 1, 5, 1, 0);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (3, 4, 19, 0, 1);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (4, 8, 10, 0, 1);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (5, 9, 12, 0, 1);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (7, 6, 18, 0, 1);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (6, 7, 16, 0, 1);
-INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (8, 5, 14, 0, 1);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (1, 1, 1, 1, 1);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (2, 1, 2, 1, 0);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (3, 1, 3, 1, 0);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (4, 1, 6, 1, 0);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (6, 1, 4, 1, 0);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (5, 1, 7, 1, 0);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (7, 1, 5, 1, 0);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (2, 4, 19, 0, 1);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (3, 8, 10, 0, 1);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (4, 9, 12, 0, 1);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (6, 6, 18, 0, 1);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (5, 7, 16, 0, 1);
+INSERT INTO "sys_user_dept" ("user_id", "dept_id", "post_id", "is_default", "is_leader") VALUES (7, 5, 14, 0, 1);
 
 --用户角色
-INSERT INTO "sys_user_role" ("user_id", "role_id") VALUES (1, 1);
-INSERT INTO "sys_user_role" ("user_id", "role_id") VALUES (1, 2);
+INSERT INTO "sys_user_role" ("user_id", "role_id") VALUES (1, 3);
 INSERT INTO "sys_user_role" ("user_id", "role_id") VALUES (2, 3);
 INSERT INTO "sys_user_role" ("user_id", "role_id") VALUES (3, 3);
 INSERT INTO "sys_user_role" ("user_id", "role_id") VALUES (4, 3);
 INSERT INTO "sys_user_role" ("user_id", "role_id") VALUES (5, 3);
 INSERT INTO "sys_user_role" ("user_id", "role_id") VALUES (6, 3);
 INSERT INTO "sys_user_role" ("user_id", "role_id") VALUES (7, 3);
-INSERT INTO "sys_user_role" ("user_id", "role_id") VALUES (8, 3);
 
 --用户关系
-INSERT INTO "sys_user_tree" ("user_id", "parent_id", "tree_type") VALUES (2, 0, 1);
+INSERT INTO "sys_user_tree" ("user_id", "parent_id", "tree_type") VALUES (1, 0, 1);
+INSERT INTO "sys_user_tree" ("user_id", "parent_id", "tree_type") VALUES (2, 2, 1);
 INSERT INTO "sys_user_tree" ("user_id", "parent_id", "tree_type") VALUES (3, 2, 1);
 INSERT INTO "sys_user_tree" ("user_id", "parent_id", "tree_type") VALUES (4, 2, 1);
 INSERT INTO "sys_user_tree" ("user_id", "parent_id", "tree_type") VALUES (5, 2, 1);
 INSERT INTO "sys_user_tree" ("user_id", "parent_id", "tree_type") VALUES (6, 2, 1);
 INSERT INTO "sys_user_tree" ("user_id", "parent_id", "tree_type") VALUES (7, 2, 1);
-INSERT INTO "sys_user_tree" ("user_id", "parent_id", "tree_type") VALUES (8, 2, 1);
 
 --只读用户菜单
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 1);

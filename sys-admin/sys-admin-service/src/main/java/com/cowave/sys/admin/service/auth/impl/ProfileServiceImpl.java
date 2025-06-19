@@ -15,7 +15,10 @@ import com.cowave.sys.admin.domain.auth.dto.UserProfile;
 import com.cowave.sys.admin.domain.auth.request.PasswdReset;
 import com.cowave.sys.admin.domain.auth.request.ProfileUpdate;
 import com.cowave.sys.admin.domain.base.SysAttach;
+import com.cowave.sys.admin.domain.base.request.AttachUpload;
+import com.cowave.sys.admin.domain.rabc.SysUserAdmin;
 import com.cowave.sys.admin.infra.auth.dao.mapper.dto.OAuthUserDtoMapper;
+import com.cowave.sys.admin.infra.rabc.dao.SysUserAdminDao;
 import com.cowave.sys.admin.infra.rabc.dao.SysUserDao;
 import com.cowave.sys.admin.infra.rabc.dao.mapper.dto.SysUserDtoMapper;
 import com.cowave.sys.admin.service.auth.ProfileService;
@@ -24,10 +27,10 @@ import com.cowave.sys.admin.service.base.SysAttachService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.LDAP;
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.GITLAB;
+import static com.cowave.sys.admin.domain.auth.AccessType.*;
 
 /**
  * @author shanhuiming
@@ -38,6 +41,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final PasswordEncoder passwordEncoder;
     private final SysAttachService attachService;
     private final SysUserDao sysUserDao;
+    private final SysUserAdminDao sysUserAdminDao;
     private final SysUserDtoMapper sysUserDtoMapper;
     private final LdapUserDtoMapper ldapUserDtoMapper;
     private final OAuthUserDtoMapper oauthUserDtoMapper;
@@ -46,14 +50,22 @@ public class ProfileServiceImpl implements ProfileService {
     public UserProfile info() throws Exception {
         Integer userId = Access.userId();
         String userCode = Access.userCode();
-        if(GITLAB.isTypeEquals(userCode)){
+        if (GITLAB.equalsType(userCode)) {
             return oauthUserDtoMapper.getOauthProfile(userId);
-        }else if(LDAP.isTypeEquals(userCode)){
+        } else if (LDAP.equalsType(userCode)) {
             return ldapUserDtoMapper.getLdapUserProfile(userId);
-        }else{
+        } else if (ADMIN.equalsType(userCode)) {
+            SysUserAdmin userAdmin = sysUserAdminDao.getById(userId);
+            UserProfile userProfile = userAdmin.newUserProfile();
+            SysAttach avatar = attachService.latestOfMaster(Long.valueOf(userId), "admin-user");
+            if (avatar != null) {
+                userProfile.setAvatar(avatar.getViewUrl());
+            }
+            return userProfile;
+        } else {
             UserProfile userProfile = sysUserDtoMapper.getUserProfile(userId);
             SysAttach avatar = attachService.latestOfMaster(Long.valueOf(userId), "sys-user");
-            if(avatar != null){
+            if (avatar != null) {
                 userProfile.setAvatar(avatar.getViewUrl());
             }
             return userProfile;
@@ -67,9 +79,33 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public void resetPasswd(PasswdReset passwdReset) {
-        String passwd = sysUserDao.queryPasswdById(Access.userId());
+        String passwd;
+        String userCode = Access.userCode();
+        if (ADMIN.equalsType(userCode)) {
+            passwd = sysUserAdminDao.getByUserCode(userCode).getUserPasswd();
+        } else {
+            passwd = sysUserDao.getByUserCode(userCode).getUserPasswd();
+        }
+
         HttpAsserts.isTrue(passwordEncoder.matches(passwdReset.getOldPasswd(), passwd), BAD_REQUEST, "{admin.user.passwd.failed}");
         HttpAsserts.isFalse(passwordEncoder.matches(passwdReset.getNewPasswd(), passwd), BAD_REQUEST, "{admin.user.passwd.repeat}");
-        sysUserDao.updatePasswdById(Access.userId(), passwordEncoder.encode(passwdReset.getNewPasswd()));
+        if (ADMIN.equalsType(userCode)) {
+            sysUserAdminDao.updatePasswdByUserCode(userCode, passwordEncoder.encode(passwdReset.getNewPasswd()));
+        } else {
+            sysUserDao.updatePasswdById(Access.userId(), passwordEncoder.encode(passwdReset.getNewPasswd()));
+        }
+    }
+
+    @Override
+    public String uploadAvatar(MultipartFile file, AttachUpload attachUpload) throws Exception {
+        String userCode = Access.userCode();
+        if (ADMIN.equalsType(userCode)) {
+            attachUpload.setAttachGroup("admin-user");
+        } else if (SYS.equalsType(userCode)) {
+            attachUpload.setAttachGroup("sys-user");
+        }
+        SysAttach attach = attachService.upload(file, attachUpload);
+        attachService.masterReserve(attach.getMasterId(), attach.getAttachGroup(), attach.getAttachType(), 3);
+        return attachService.preview(attach);
     }
 }

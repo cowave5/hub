@@ -566,7 +566,7 @@ export default {
       menu_C: "菜单",
       menu_B: "按钮",
 
-      quartz: "定时任务",
+      job: "定时任务",
       quartz_group: "任务分组",
       quartz_default: "默认分组",
       quartz_test: "测试分组",

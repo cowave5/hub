@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import static com.cowave.commons.client.http.constants.HttpCode.*;
 import static com.cowave.commons.client.http.constants.HttpHeader.*;
 import static com.cowave.commons.framework.access.security.BearerTokenService.*;
+import static com.cowave.commons.framework.access.security.BearerTokenServiceImpl.AUTH_ACCESS_KEY;
 
 /**
  * @author shanhuiming
@@ -93,9 +94,8 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
 
         String accessIp = getAccessIp(httpRequest);
         if ("api".equals(tokenType)) {
-            String accessKey = "sys-admin:token:api:" + accessId;
             // 是否已注销
-            List<NetUtils.IpMask> ipRules = redisHelper.getValue(accessKey);
+            List<NetUtils.IpMask> ipRules = redisHelper.getValue("sys-admin:auth:api:" + accessId);
             if(ipRules == null){
                 return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.denied");
             }
@@ -116,11 +116,9 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
                 return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.ip");
             }
 
-            Map<String, Object> accessInfo = Map.of(
-                    "ip", accessIp,
-                    "url", accessUrl,
-                    "time", new Date());
-            redisHelper.putExpire("sys-admin:token:api:current:" + accessId, accessInfo, 15, TimeUnit.MINUTES);
+            // 最近一次访问信息
+            Map<String, Object> accessInfo = Map.of("ip", accessIp, "url", accessUrl, "time", new Date());
+            redisHelper.putExpire("sys-admin:auth:api:current:" + accessId, accessInfo, 15, TimeUnit.MINUTES);
         } else {
             // IP变化要求重新刷一下accessToken
             String userIp = (String) claims.get(CLAIM_ACCESS_IP);
@@ -130,8 +128,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
             }
 
             // 是否已注销
-            String accessKey = "sys-admin:token:access:" + accessId;
-            if(!redisHelper.existKey(accessKey)){
+            if(!redisHelper.existKey(AUTH_ACCESS_KEY.formatted("sys-admin", accessId))){
                 return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.denied");
             }
         }

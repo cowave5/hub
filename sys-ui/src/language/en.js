@@ -566,7 +566,7 @@ export default {
       menu_C: "Menu",
       menu_B: "Button",
 
-      quartz: "Quartz task",
+      job: "Schedules",
       quartz_group: "task group",
       quartz_default: "quartz default",
       quartz_test: "quartz test",

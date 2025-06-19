@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="user-info-head" @click="editCropper()"><img v-bind:src="options.img" class="img-circle img-lg"  alt=""/></div>
+    <div class="user-info-head" @click="editCropper()" :style="{ pointerEvents: user.userType <= 0 ? 'auto' : 'none', opacity: user.userType <= 0 ? 1 : 0.5}">
+      <img v-bind:src="options.img" class="img-circle img-lg" alt=""/>
+    </div>
     <el-dialog :title="$t('user.dialog.avatar')" :visible.sync="open" width="800px" append-to-body @opened="modalOpened"  @close="closeDialog">
       <el-row>
         <el-col :xs="24" :md="12" :style="{height: '350px'}">

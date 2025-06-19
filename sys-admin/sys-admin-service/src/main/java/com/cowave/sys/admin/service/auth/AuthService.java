@@ -9,11 +9,13 @@
  */
 package com.cowave.sys.admin.service.auth;
 
+import com.cowave.commons.client.http.asserts.HttpHintException;
 import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.access.operation.OperationInfo;
 import com.cowave.commons.framework.access.security.AccessTokenInfo;
 import com.cowave.commons.framework.access.security.AccessUserDetails;
 import com.cowave.commons.framework.access.security.BearerTokenService;
+import com.cowave.commons.framework.helper.redis.RedisHelper;
 import com.cowave.sys.admin.domain.auth.request.RegisterRequest;
 import com.cowave.sys.admin.domain.rabc.SysMenu;
 import com.cowave.sys.admin.domain.rabc.SysUser;
@@ -30,6 +32,7 @@ import com.cowave.sys.admin.service.rabc.SysMenuService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,8 +44,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static com.cowave.sys.admin.domain.rabc.enums.AccessType.SYS;
+import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
+import static com.cowave.sys.admin.domain.AdminRedisKeys.LOGIN_FAILS;
+import static com.cowave.sys.admin.domain.AdminRedisKeys.LOGIN_LOCK;
+import static com.cowave.sys.admin.domain.auth.AccessType.SYS;
 
 /**
  * @author shanhuiming
@@ -50,6 +57,7 @@ import static com.cowave.sys.admin.domain.rabc.enums.AccessType.SYS;
 @RequiredArgsConstructor
 @Service
 public class AuthService {
+    private final RedisHelper redisHelper;
     private final AuthenticationManager authenticationManager;
     private final SysOperationHandler sysOperationHandler;
     private final PasswordEncoder passwordEncoder;
@@ -81,7 +89,7 @@ public class AuthService {
                 .build();
         sysUserDao.save(sysUser);
 
-        Integer readOnlyRoleId = sysRoleDao.queryIdByCode("user-readonly");
+        Integer readOnlyRoleId = sysRoleDao.queryIdByCode("role-readonly");
         sysUserRoleDao.save(new SysUserRole(sysUser.getUserId(), readOnlyRoleId));
 
         // 注册用户的通知消息
@@ -94,17 +102,36 @@ public class AuthService {
      * 登录
      */
     public AccessUserDetails login(String userAccount, String passwd) {
-        Authentication authentication =
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userAccount, passwd));
-        // 登录日志
-        OperationInfo operationInfo = new OperationInfo();
-        operationInfo.setSuccess(true);
-        operationInfo.setOpModule("op_admin");
-        operationInfo.setOpType("op_auth");
-        operationInfo.setOpAction("op_login");
-        operationInfo.setDesc("用户登录：" + userAccount);
-        sysOperationHandler.create(operationInfo, null);
-        return (AccessUserDetails) authentication.getPrincipal();
+        Long lockTime = redisHelper.getExpire(LOGIN_LOCK.formatted(userAccount));
+        if (lockTime != null && lockTime > 0) {
+            long minutes = (lockTime + 59) / 60;
+            throw new HttpHintException(BAD_REQUEST, "{admin.login.locked}", minutes);
+        }
+
+        try {
+            Authentication authentication =
+                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userAccount, passwd));
+            // 登录日志
+            OperationInfo operationInfo = new OperationInfo();
+            operationInfo.setSuccess(true);
+            operationInfo.setOpModule("op_admin");
+            operationInfo.setOpType("op_auth");
+            operationInfo.setOpAction("op_login");
+            operationInfo.setDesc("用户登录：" + userAccount);
+            sysOperationHandler.create(operationInfo, null);
+            return (AccessUserDetails) authentication.getPrincipal();
+        } catch (BadCredentialsException e) {
+            // 5min内最多允许尝试5次密码，否则锁定30min
+            Long failCount = redisHelper.incrementValue(LOGIN_FAILS.formatted(userAccount), 1);
+            if (failCount == 1) {
+                redisHelper.expire(LOGIN_FAILS.formatted(userAccount), 300, TimeUnit.SECONDS);
+            }
+            if (failCount >= 5) {
+                redisHelper.putExpire(LOGIN_LOCK.formatted(userAccount), "-", 1800, TimeUnit.SECONDS);
+                throw new HttpHintException(BAD_REQUEST, "{admin.login.locked}", 30);
+            }
+            throw new HttpHintException("{admin.login.failed}", 5 - failCount);
+        }
     }
 
     /**
@@ -180,7 +207,7 @@ public class AuthService {
     }
 
     private boolean hasChild(List<SysMenu> list, SysMenu t) {
-        return getChildList(list, t).size() > 0;
+        return !getChildList(list, t).isEmpty();
     }
 
     private List<SysMenu> getChildList(List<SysMenu> list, SysMenu parent) {
