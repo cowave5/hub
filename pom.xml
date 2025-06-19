@@ -17,12 +17,11 @@
     <description>管理应用</description>
 
     <modules>
-        <module>sys-admin</module>
+        <module>sys-ui</module>
+        <module>sys-gateway</module>
         <module>sys-blog</module>
+        <module>sys-admin</module>
         <module>sys-flow</module>
         <module>sys-meter</module>
-        <module>sys-quartz</module>
-        <module>sys-gateway</module>
-        <module>sys-ui</module>
     </modules>
 </project>
