@@ -1,4 +1,4 @@
-package com.cowave.sys.job.infra.schedule;
+package com.cowave.sys.job.domain.enums;
 
 import com.cowave.commons.tools.EnumVal;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Getter;
  * @author xuxueli/shanhuiming
  */
 @Getter
-public enum TriggerTypeEnum implements EnumVal<Void> {
+public enum JobTriggerType implements EnumVal<Void> {
 
     /**
      * 手动触发

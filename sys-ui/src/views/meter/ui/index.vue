@@ -1,327 +1,1287 @@
 <template>
-  <div class="app-container">
-    <!--  筛选栏  -->
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item :label="$t('config.label.name')" prop="configName">
-        <el-input v-model="queryParams.configName" :placeholder="$t('config.placeholder.name')"
-                  clearable style="width: 240px" @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item :label="$t('commons.label.createTime')" label-width="120">
-        <el-date-picker v-model="dateRange" style="width: 240px" type="daterange"
-                        value-format="yyyy-MM-dd HH:mm:ss" range-separator="-"
-                        :start-placeholder="$t('commons.label.beginDate')" :end-placeholder="$t('commons.label.endDate')"/>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
-          {{$t('commons.button.search')}}
-        </el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">{{$t('commons.button.reset')}}</el-button>
-      </el-form-item>
-    </el-form>
-
-    <!--  操作栏  -->
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                   :disabled="!checkPermit(['sys:config:create'])">
-          {{$t('commons.button.create')}}
-        </el-button>
+  <div class="app-container" style="height: 100vh; display: flex; flex-direction: column;">
+    <el-row :gutter="20">
+      <el-col :span="4" :xs="24">
+        <div class="head-container">
+          <el-input placeholder="搜索操作"
+                    clearable size="small" prefix-icon="el-icon-search" style="margin-bottom: 20px"/>
+        </div>
+        <div class="head-container">
+          <button @click="toggleCommon" class="toggle-btn">
+            {{ openCommon ? '▼  通用操作' : '▶  通用操作' }}
+          </button>
+          <transition name="collapse">
+            <div v-show="openCommon">
+              <div class="circle-row">
+                <div class="dnd-item" @mousedown="startDrag('start-node', '开始', $event)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="24" fill="#f1fbfc4d" stroke="#A2B1C3" stroke-width="2"/>
+                    <text x="25" y="25" text-anchor="middle" alignment-baseline="middle" font-size="14" fill="#000">
+                      开始
+                    </text>
+                  </svg>
+                </div>
+                <div class="dnd-item" @mousedown="startDrag('pause-node', '等待', $event)">
+                  <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="25" cy="25" r="24" stroke="#A2B1C3" stroke-width="2" fill="#f1fbfc4d"/>
+                    <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="14" fill="#000">
+                      等待
+                    </text>
+                    <rect x="21" y="33" width="3" height="12" rx="1" fill="#383737"/>
+                    <rect x="27" y="33" width="3" height="12" rx="1" fill="#383737"/>
+                  </svg>
+                </div>
+                <div class="dnd-item" @mousedown="startDrag('end-node', '结束', $event)">
+                  <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="25" cy="25" r="24" stroke="#A2B1C3" stroke-width="2" fill="#f1fbfc4d"/>
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="14" fill="#000">
+                      结束
+                    </text>
+                    <rect x="19" y="33" width="12" height="12" rx="1" fill="#383737"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="other-row">
+                <div class="dnd-item" @mousedown="startDrag('gateway-node', '网关', $event)">
+                  <svg width="60" height="50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 50">
+                    <polygon points="30,0 60,25 30,50 0,25" stroke="#A2B1C3" stroke-width="2" fill="#f1fbfc4d"/>
+                    <text x="30" y="25" text-anchor="middle" dominant-baseline="middle" fill="#000" font-size="14">
+                      网关
+                    </text>
+                  </svg>
+                </div>
+                <div class="dnd-item" @mousedown="startDrag('judge-node', '判断', $event)">
+                  <svg width="120" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
+                    <polygon points="60,0 120,20 60,40 0,20" stroke="#A2B1C3" stroke-width="2" fill="#f1fbfc4d"/>
+                    <text x="60" y="20" text-anchor="middle" dominant-baseline="middle" fill="#000" font-size="14">
+                      判断
+                    </text>
+                  </svg>
+                </div>
+              </div>
+              <div class="other-row">
+                <div class="dnd-item" @mousedown="startDrag('handle-node', '逻辑处理', $event)">
+                  <svg width="100" height="40" viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="1" y="1" width="98" height="38" rx="6" ry="6" fill="#f1fbfc4d" stroke="#A2B1C3"
+                          stroke-width="2"/>
+                    <text x="50" y="20" font-size="14" fill="#000" text-anchor="middle" alignment-baseline="middle"
+                          font-family="Arial, sans-serif">逻辑处理
+                    </text>
+                  </svg>
+                </div>
+                <div class="dnd-item" @mousedown="startDrag('manual-node', '人工操作', $event)">
+                  <svg width="100" height="60" viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="20,0 100,0 80,40 0,40" fill="#f1fbfc4d" stroke="#A2B1C3" stroke-width="2"/>
+                    <text x="50" y="20" font-size="14" fill="#000" text-anchor="middle" alignment-baseline="middle"
+                          font-family="Arial, sans-serif">人工操作
+                    </text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
       </el-col>
-      <el-col :span="1.5">
-        <el-button type="success" plain icon="el-icon-edit" size="mini" @click="handleUpdate" :disabled="single">
-          {{$t('commons.button.edit')}}
-        </el-button>
+      <el-col :span="20" :xs="24">
+        <el-button type="primary" plain  size="mini" icon="el-icon-plus" @click="toSvg">导出</el-button>
+        <el-button type="success" plain  size="mini" icon="el-icon-plus" @click="graphSave">保存</el-button>
+        <div ref="container" id="container" style="margin-top: 20px; flex: 1; min-height: 0; overflow: hidden; position: relative;"/>
       </el-col>
-      <el-col :span="1.5">
-        <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="handleDelete"
-                   :disabled="multiple || !checkPermit(['sys:config:delete'])">
-          {{$t('commons.button.delete')}}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
-                   :disabled="!checkPermit(['sys:config:export'])">
-          {{$t('commons.button.export')}}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="danger" plain icon="el-icon-refresh" size="mini" @click="handleRefreshCache"
-                   :disabled="!checkPermit(['sys:config:cache'])">
-          {{$t('commons.button.cache')}}
-        </el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :cols="cols"/>
     </el-row>
-
-    <!--  列表数据  -->
-    <el-table :data="configList" @selection-change="handleSelectionChange"
-              v-loading="loading"  :header-cell-style="{'text-align':'center'}">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column :label="$t('commons.label.index')" type="index" align="center" width="55">
-        <template slot-scope="scope">
-          <span>{{(queryParams.page - 1) * queryParams.pageSize + scope.$index + 1}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="cols[0].show" :label="$t('config.label.name')" align="left" prop="configName" :show-overflow-tooltip="true" />
-      <el-table-column v-if="cols[1].show" :label="$t('config.label.key')" align="left" prop="configKey" :show-overflow-tooltip="true" />
-      <el-table-column v-if="cols[2].show" :label="$t('config.label.value')" align="center" prop="configValue" />
-      <el-table-column v-if="cols[3].show" :label="$t('dict.label.valueType')" align="center" prop="valueType" />
-      <el-table-column v-if="cols[4].show" :label="$t('config.label.remark')" align="left" prop="remark" :show-overflow-tooltip="true" />
-      <el-table-column v-if="cols[5].show" :label="$t('config.label.default')" align="center" prop="isDefault">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.yes_no" :value="scope.row.isDefault"/>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="cols[6].show" :label="$t('commons.label.createTime')" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="cols[7].show" :label="$t('commons.label.updateTime')" align="center" prop="updateTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('commons.label.options')" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">
-            {{$t('commons.button.edit')}}
-          </el-button>
-          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-                     :disabled="!checkPermit(['sys:config:delete'])">
-            {{$t('commons.button.delete')}}
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination v-show="total>0" :total="total" :limit.sync="queryParams.pageSize" :page.sync="queryParams.page" @pagination="getList"/>
-
-    <!-- 添加或修改 -->
-    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-form-item :label="$t('config.label.key')" prop="configKey">
-          <el-input v-model="form.configKey" :placeholder="$t('config.placeholder.key')" />
-        </el-form-item>
-        <el-form-item :label="$t('config.label.name')" prop="configName">
-          <el-input v-model="form.configName" :placeholder="$t('config.placeholder.name')" />
-        </el-form-item>
-        <el-form-item :label="$t('config.label.value')" prop="configValue">
-          <el-input v-model="form.configValue" :placeholder="$t('config.placeholder.value')" />
-        </el-form-item>
-        <el-form-item :label="$t('config.label.default')" prop="configType">
-          <el-radio-group v-model="form.isDefault">
-            <el-radio v-for="dict in dict.type.yes_no" :key="dict.value" :label="dict.value">{{$t(dict.name)}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item :label="$t('dict.label.valueType')" prop="valueType">
-          <el-select v-model="form.valueType" style="width: 100%;">
-            <el-option v-for="item in valueOptions" :key="item.value" :value="item.value" :label="item.value"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item prop="valueParser">
-          <span slot="label">
-            <el-tooltip :content="$t('dict.text.parser')" placement="top">
-              <i class="el-icon-question"></i>
-            </el-tooltip>
-            {{$t('dict.label.parser')}}
-          </span>
-          <el-input v-model="form.valueParser" :placeholder="$t('dict.placeholder.parser')" />
-        </el-form-item>
-        <el-form-item :label="$t('config.label.remark')" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="..." />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm" :disabled="!checkPermit(['sys:config:edit'])">
-          {{$t('commons.button.confirm')}}
-        </el-button>
-        <el-button @click="cancel">{{$t('commons.button.cancel')}}</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
+
 <script>
-import { getConfigList, getConfigInfo, delConfig, addConfig, updateConfig, refreshConfig } from "@/api/system/config";
-import {checkPermit} from "@/utils/permission";
+import {Graph} from '@antv/x6'
+import {Export} from '@antv/x6-plugin-export'
+import {Transform} from '@antv/x6-plugin-transform'
+import {Snapline} from '@antv/x6-plugin-snapline'
+import {Clipboard} from '@antv/x6-plugin-clipboard'
+import {Keyboard} from '@antv/x6-plugin-keyboard'
+import {Selection} from '@antv/x6-plugin-selection'
+import {History} from '@antv/x6-plugin-history'
+import {Dnd} from '@antv/x6-plugin-dnd'
 
 export default {
   name: "Config",
   dicts: ['yes_no'],
   data() {
     return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 参数表格数据
-      configList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      // 日期范围
-      dateRange: [],
-      // 查询参数
-      queryParams: {
-        page: 1,
-        pageSize: 10,
-        configName: undefined,
-        configKey: undefined,
-        configType: undefined
-      },
-      // 类型
-      valueOptions: [
-        {value: "int32"},
-        {value: "int64"},
-        {value: "bool"},
-        {value: "float"},
-        {value: "double"},
-        {value: "decimal"},
-        {value: "datetime"},
-        {value: "custom"},
+      openCommon: true,
+      graph: null,
+      dnd: null,
+      saveData: [],
+      saveId: '',
+      saveVal: '',
+      canRedo: false, // 恢复
+      canUndo: false, // 撤销
+      menus: [
+
+
       ],
-      // 表单参数
-      form: {},
-      cols: [
-        {key: 0, label: 'config.label.name', show: true},
-        {key: 1, label: 'config.label.key', show: true},
-        {key: 2, label: 'config.label.value', show: true},
-        {key: 3, label: 'dict.label.valueType', show: true},
-        {key: 4, label: 'commons.label.remark', show: true},
-        {key: 5, label: 'config.label.default', show: true},
-        {key: 6, label: 'commons.label.createTime', show: true},
-        {key: 7, label: 'commons.label.updateTime', show: false},
-      ],
+      data: {
+
+      }
     };
   },
   created() {
-    this.getList();
+
+  },
+  mounted() {
+    this.initGraph()
   },
   computed: {
     rules() {
       return {
         configName: [
-          { required: true, message: this.$t('config.rules.name'), trigger: "blur" }
+          {required: true, message: this.$t('config.rules.name'), trigger: "blur"}
         ],
-        configKey: [
-          { required: true, message: this.$t('config.rules.key'), trigger: "blur" }
-        ],
-        configValue: [
-          { required: true, message: this.$t('config.rules.value'), trigger: "blur" }
-        ]
       };
     }
   },
   methods: {
-    checkPermit,
-    /** 多选框 */
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.configId)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 搜索 */
-    handleQuery() {
-      this.queryParams.page = 1;
-      this.getList();
-    },
-    /** 重置 */
-    resetQuery() {
-      this.dateRange = [];
-      this.$refs.queryForm.resetFields();
-      this.handleQuery();
-    },
-    /** 列表 */
-    getList() {
-      this.loading = true;
-      getConfigList(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.configList = response.data.list;
-          this.total = response.data.total;
-          this.loading = false;
-        }
+    /** 初始化画布 */
+    initGraph() {
+      this.graph = new Graph({
+        container: this.$refs.container,
+        autoResize: true,
+        color: '#A2B1C3',
+        // 背景
+        background: {
+          color: '#fff',
+        },
+        // 禁止移到画布之外
+        translating: {
+          restrict: true,
+        },
+        // 画布平移
+        panning: {
+          enabled: true,
+          modifiers: 'shift',
+        },
+        // 线条样式
+        grid: {
+          visible: true, // 渲染网格背景
+          type: 'doubleMesh',
+          args: [
+            {
+              color: '#eee', // 主网格线颜色
+              thickness: 1, // 主网格线宽度
+            },
+            {
+              color: '#ddd', // 次网格线颜色
+              thickness: 1, // 次网格线宽度
+              factor: 4, // 主次网格线间隔
+            },
+          ]
+        },
+        // 缩放
+        mousewheel: {
+          enabled: true,
+          modifiers: 'Ctrl',
+          maxScale: 2,
+          minScale: 0.5,
+        },
+        // 连接桩
+        highlighting: {
+          magnetAdsorbed: {
+            name: 'stroke',
+            args: {
+              attrs: {
+                fill: '#5F95FF',
+                fillOpacity: '0.3',
+                stroke: '#5F95FF',
+                strokeOpacity: '0'
+              },
+            },
+          },
+        },
+        // 连接线
+        connecting: {
+          snap: true,        // 自动吸附，可以通过配置radius属性来自定义吸附半径
+          allowBlank: false, // 是否允许连接到画布空白位置的点
+          allowLoop: false,  // 是否允许创建循环连线，即边的起始节点和终止节点为同一节点
+          allowNode: true,   // 是否允许边连接到节点（非节点上的连接桩）
+          allowEdge: false,  // 是否允许边连接到另一个边
+          allowPort: true,   // 是否允许边连接到连接桩
+          allowMulti: true,  // 是否允许在相同的起始节点和终止之间创建多条边
+          highlight: true,
+          router: 'manhattan',
+          connector: {
+            name: 'rounded',
+            args: {
+              radius: 6,
+            },
+          },
+          anchor: 'center',
+          connectionPoint: 'anchor',
+          createEdge() {
+            return this.createEdge({
+              shape: 'edge',
+              router: {
+                name: 'manhattan',
+                args: {
+                  startDirections: ['top', 'right', 'bottom', 'left'],
+                  endDirections: ['top', 'right', 'bottom', 'left'],
+                },
+              },
+              connector: {
+                name: 'rounded',
+              },
+              attrs: {
+                line: {
+                  stroke: '#A2B1C3',
+                  strokeWidth: 2,
+                  targetMarker: {
+                    name: 'block',
+                    width: 12,
+                    height: 8,
+                  },
+                },
+              },
+              zIndex: 1,
+              tools: ['edge-editor'], // 文本编辑器
+            })
+          },
+          validateConnection({ targetMagnet }) {
+            return !!targetMagnet
+          },
+        },
+      });
+      // 处理节点
+      Graph.registerNode('handle-node', {
+        inherit: 'rect',
+        width: 100,
+        height: 40,
+        label: '逻辑处理',
+        markup: [
+          {tagName: 'rect', selector: 'body'},
+          {tagName: 'text', selector: 'label'},
+        ],
+        attrs: {
+          body: {
+            stroke: '#A2B1C3',
+            fill: '#f1fbfc4d',
+            strokeWidth: 2,
+            rx: 6,
+            ry: 6
+          },
+        },
+        ports: {
+          groups: {
+            top: {
+              position: 'top',
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  r: 3,
+                },
+              },
+            },
+            bottom: {
+              position: 'bottom',
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  r: 3,
+                },
+              },
+            },
+            left: {
+              position: 'left',
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  r: 3,
+                },
+              },
+            },
+            right: {
+              position: 'right',
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  r: 3,
+                },
+              },
+            },
+          },
+          items: [
+            {id: 'port', group: 'bottom'},
+            {id: 'port2', group: 'top'},
+            {id: 'port3', group: 'left'},
+            {id: 'port4', group: 'right'}
+          ],
+        },
+      }, true);
+      // 人工操作
+      Graph.registerNode('manual-node', {
+        inherit: 'polygon',
+        label: '人工操作',
+        width: 100,
+        height: 40,
+        markup: [
+          {tagName: 'polygon', selector: 'body'},
+          {tagName: 'text', selector: 'label'},
+        ],
+        attrs: {
+          body: {
+            refPoints: '20,0 100,0 80,60 0,60',
+            stroke: '#A2B1C3',
+            fill: '#f1fbfc4d',
+            strokeWidth: 2,
+          },
+          label: {
+            textAnchor: 'middle',
+            textVerticalAnchor: 'middle',
+            fill: '#000',
+            fontSize: 14,
+            refX: '50%',
+            refY: '50%',
+          },
+        },
+        ports: {
+          groups: {
+            top: {
+              position: 'top',
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            right: {
+              position: {
+                name: 'absolute',
+                args: {x: 90, y: 20},
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  r: 3,
+                  stroke: 'black',
+                  fill: '#fff',
+                },
+              },
+            },
+            bottom: {
+              position: 'bottom',
+              attrs: {
+                circle: {
+                  magnet: true,
+                  r: 3,
+                  stroke: 'black',
+                  fill: '#fff',
+                },
+              },
+            },
+            left: {
+              position: {
+                name: 'absolute',
+                args: {x: 10, y: 20},
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  r: 3,
+                  stroke: 'black',
+                  fill: '#fff',
+                },
+              },
+            },
+          },
+          items: [
+            {id: 'port1', group: 'top'},
+            {id: 'port2', group: 'right'},
+            {id: 'port3', group: 'bottom'},
+            {id: 'port4', group: 'left'},
+          ],
+        },
+      }, true);
+      // 开始节点
+      Graph.registerNode('start-node', {
+        inherit: 'circle',
+        label: '开始',
+        width: 50,
+        height: 50,
+        markup: [
+          {tagName: 'circle', selector: 'body'},
+          {tagName: 'text', selector: 'label'},
+        ],
+        attrs: {
+          body: {
+            stroke: '#A2B1C3',
+            fill: '#f1fbfc4d',
+            strokeWidth: 2,
+          },
+        },
+        ports: {
+          groups: {
+            top: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: -90,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            right: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: 0,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            bottom: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: 90,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            left: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: 180,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+          },
+          items: [
+            {id: 'port1', group: 'top'},
+            {id: 'port2', group: 'right'},
+            {id: 'port3', group: 'bottom'},
+            {id: 'port4', group: 'left'},
+          ],
+        },
+      }, true);
+      // 结束节点
+      Graph.registerNode('end-node', {
+        inherit: 'circle',
+        label: '结束',
+        width: 50,
+        height: 50,
+        markup: [
+          {tagName: 'circle', selector: 'body'},
+          {tagName: 'text', selector: 'label'},
+          {tagName: 'rect', selector: 'bar1'},
+        ],
+        attrs: {
+          body: {
+            stroke: '#A2B1C3',
+            fill: '#f1fbfc4d',
+            strokeWidth: 2,
+          },
+          bar1: {
+            fill: '#383737',
+            x: 19,
+            y: 33,
+            width: 12,
+            height: 12,
+            rx: 1,
+          },
+        },
+        ports: {
+          groups: {
+            top: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: -90,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            right: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: 0,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            bottom: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: 90,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            left: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: 180,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+          },
+          items: [
+            {id: 'port1', group: 'top'},
+            {id: 'port2', group: 'right'},
+            {id: 'port3', group: 'bottom'},
+            {id: 'port4', group: 'left'},
+          ],
+        },
+      }, true);
+      // 暂停节点
+      Graph.registerNode('pause-node', {
+        inherit: 'circle',
+        label: '等待',
+        width: 50,
+        height: 50,
+        markup: [
+          {tagName: 'circle', selector: 'body'},
+          {tagName: 'text', selector: 'label'},
+          {tagName: 'rect', selector: 'bar1'},
+          {tagName: 'rect', selector: 'bar2'},
+        ],
+        attrs: {
+          body: {
+            stroke: '#A2B1C3',
+            strokeWidth: 2,
+            fill: '#f1fbfc4d',
+          },
+          bar1: {
+            fill: '#383737',
+            x: 21,
+            y: 33,
+            width: 3,
+            height: 12,
+            rx: 1,
+          },
+          bar2: {
+            fill: '#383737',
+            x: 27,
+            y: 33,
+            width: 3,
+            height: 12,
+            rx: 1,
+          },
+        },
+        ports: {
+          groups: {
+            top: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: -90,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            right: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: 0,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            bottom: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: 90,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            left: {
+              position: {
+                name: 'ellipseSpread',
+                args: {
+                  start: 180,
+                  step: 90,
+                },
+              },
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+          },
+          items: [
+            {id: 'port1', group: 'top'},
+            {id: 'port2', group: 'right'},
+            {id: 'port3', group: 'bottom'},
+            {id: 'port4', group: 'left'},
+          ],
+        },
+      }, true);
+      // 判断节点
+      Graph.registerNode('judge-node', {
+        inherit: 'polygon',
+        label: '判断',
+        width: 120,
+        height: 40,
+        markup: [
+          {tagName: 'polygon', selector: 'body'},
+          {tagName: 'text', selector: 'label'},
+        ],
+        attrs: {
+          body: {
+            refPoints: '0,40 40,0 80,40 40,80', // 菱形的四个点
+            stroke: '#A2B1C3',
+            fill: '#f1fbfc4d',
+            strokeWidth: 2,
+          },
+          label: {
+            textAnchor: 'middle',
+            textVerticalAnchor: 'middle',
+            fill: '#000',
+            fontSize: 14,
+            refX: '50%',
+            refY: '50%',
+          },
+        },
+        ports: {
+          groups: {
+            top: {
+              position: {name: 'ellipseSpread', args: {start: -90, step: 90}},
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            right: {
+              position: {name: 'ellipseSpread', args: {start: 0, step: 90}},
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            bottom: {
+              position: {name: 'ellipseSpread', args: {start: 90, step: 90}},
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+            left: {
+              position: {name: 'ellipseSpread', args: {start: 180, step: 90}},
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  fill: '#fff',
+                  r: 3,
+                },
+              },
+            },
+          },
+          items: [
+            {id: 'port1', group: 'top'},
+            {id: 'port2', group: 'right'},
+            {id: 'port3', group: 'bottom'},
+            {id: 'port4', group: 'left'},
+          ],
+        },
+      }, true);
+      // 网关节点
+      Graph.registerNode('gateway-node', {
+        inherit: 'polygon',
+        label: '网关',
+        width: 60,
+        height: 50,
+        attrs: {
+          body: {
+            refPoints: '30,0 60,30 30,60 0,30', // 标准菱形
+            stroke: '#A2B1C3',
+            strokeWidth: 2,
+            fill: '#f1fbfc4d',
+          },
+          label: {
+            textAnchor: 'middle',
+            textVerticalAnchor: 'middle',
+            fill: '#000',
+            fontSize: 14,
+            refX: '50%',
+            refY: '50%',
+          },
+        },
+        ports: {
+          groups: {
+            top: {
+              position: 'top',
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  r: 3,
+                },
+              },
+            },
+            bottom: {
+              position: 'bottom',
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  r: 3,
+                },
+              },
+            },
+            left: {
+              position: 'left',
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  r: 3,
+                },
+              },
+            },
+            right: {
+              position: 'right',
+              attrs: {
+                circle: {
+                  magnet: true,
+                  stroke: 'black',
+                  r: 3,
+                },
+              },
+            },
+          },
+          items: [
+            {id: 'port1', group: 'bottom'},
+            {id: 'port2', group: 'top'},
+            {id: 'port3', group: 'left'},
+            {id: 'port4', group: 'right'}
+          ],
+        },
+      });
+      // 允许调整
+      this.graph.use(
+          new Transform({
+            // 调整大小
+            resizing: {
+              enabled: true
+            },
+            // 旋转角度
+            rotating: {
+              enabled: false
+            }
+          }),
       );
-    },
-    /** 新增 */
-    handleAdd() {
-      this.form = {
-        configId: undefined,
-        configName: undefined,
-        configKey: undefined,
-        configValue: undefined,
-        valueType: undefined,
-        valueParser: undefined,
-        isDefault: 1,
-        remark: undefined
-      };
-      this.title = this.$t('config.dialog.new');
-      this.open = true;
-    },
-    /** 修改 */
-    handleUpdate(row) {
-      const configId = row.configId || this.ids
-      this.title = this.$t('config.dialog.edit');
-      getConfigInfo(configId).then(response => {
-        this.form = response.data;
-        this.open = true;
+      // 允许拖拽
+      this.dnd = new Dnd({
+        target: this.graph,
+        scaled: false,
       });
-    },
-    /** 删除 */
-    handleDelete(row) {
-      const configIds = row.configId || this.ids;
-      const msg = row.configId
-          ? this.$t('config.confirm.delete', { arg1: row.configName })
-          : this.$t('config.confirm.delete_select');
-      this.$modal.confirm(msg).then(function() {
-        return delConfig(configIds);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess(this.$t('commons.msg.success.delete'));
-      }).catch(() => {});
-    },
-    /** 导出 */
-    handleExport() {
-      this.download('/admin/api/v1/config/export', {
-        ...this.queryParams
-      }, this.$t('config.text.data') + `_${new Date().getTime()}.xlsx`)
-    },
-    /** 刷新缓存 */
-    handleRefreshCache() {
-      refreshConfig().then(() => {
-        this.$modal.msgSuccess(this.$t('commons.msg.success.refresh'));
+      // 允许导出
+      this.graph.use(new Export());
+      // 框选移动
+      this.graph.use(
+          new Selection({
+            enabled: true,
+            multiple: true,
+            movable: true,
+            rubberband: true,
+            showNodeSelectionBox: true,
+            showEdgeSelectionBox: true,
+            pointerEvents: 'all',
+          }),
+      );
+      // 监听历史
+      this.graph.on('history:change', () => {
+        this.canRedo = this.graph.canRedo();
+        this.canUndo = this.graph.canUndo()
       });
-    },
-    /** 取消 */
-    cancel() {
-      this.open = false;
-    },
-    /** 提交 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.configId !== undefined) {
-            updateConfig(this.form).then(() => {
-              this.$modal.msgSuccess(this.$t('commons.msg.success.edit'));
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addConfig(this.form).then(() => {
-              this.$modal.msgSuccess(this.$t('commons.msg.success.create'));
-              this.open = false;
-              this.getList();
-            });
-          }
+      // 鼠标移入
+      this.graph.on('node:mouseenter', () => {
+        const container = document.getElementById('container')
+        const ports = container.querySelectorAll('.x6-port-body');
+        this.showPorts(ports, true)
+      });
+      // 鼠标移出
+      this.graph.on('node:mouseleave', () => {
+        const container = document.getElementById('container')
+        const ports = container.querySelectorAll('.x6-port-body')
+        this.showPorts(ports, false)
+      });
+      // 鼠标点击空白处
+      this.graph.on('blank:mousedown', () => {
+        const container = document.getElementById('container')
+        const ports = container.querySelectorAll('.x6-port-body')
+        this.showPorts(ports, false)
+      });
+      // 对齐线
+      this.graph.use(new Snapline({
+            enabled: true,
+            clean: false, // true会3s后清除对齐线，false不会清除，数字则在指定时间后清除对齐线
+          }),
+      );
+      // 复制粘贴
+      this.graph.use(new Clipboard({
+            enabled: true,
+            global: false //是否为全局键盘事件
+          }),
+      );
+      //撤销
+      this.graph.use(new History({
+            enabled: true,
+          }),
+      );
+      // 快捷键
+      this.graph.use(new Keyboard({
+            enabled: true
+          }),
+      );
+      // 复制
+      this.graph.bindKey('ctrl+c', () => {
+        const cells = this.graph.getSelectedCells()
+        if (cells.length) {
+          this.graph.copy(cells)
+        }
+        return false
+      });
+      // 剪切
+      this.graph.bindKey('ctrl+x', () => {
+        const cells = this.graph.getSelectedCells()
+        if (cells.length) {
+          this.graph.copy(cells)
+          this.graph.removeCells(cells)
         }
       });
-    }
+      // 粘贴
+      this.graph.bindKey('ctrl+v', () => {
+        if (!this.graph.isClipboardEmpty()) {
+          const cells = this.graph.paste({offset: 32})
+          this.graph.cleanSelection()
+          this.graph.select(cells)
+        }
+        return false
+      });
+      // 撤销
+      this.graph.bindKey('ctrl+z', () => {
+        this.graph.undo()
+      });
+      // 恢复
+      this.graph.bindKey('ctrl+y', () => {
+        this.graph.redo()
+      });
+      // 删除
+      this.graph.bindKey('Backspace', () => {
+        const cells = this.graph.getSelectedCells()
+        if (cells.length) {
+          this.graph.removeCells(cells)
+        }
+        return false
+      });
+      // 节点右键
+      this.graph.on('node:contextmenu', ({e, x, y, cell, view}) => {
+        this.onContextmenu(e, x, y, cell, view)
+      });
+      // 连线右击
+      this.graph.on('edge:contextmenu', ({e, x, y, cell, view}) => {
+        this.onContextmenu(e, x, y, cell, view)
+      });
+      // 空白右击
+      this.graph.on('blank:contextmenu', ({e, x, y, cell, view}) => {
+        this.onContextmenu(e, x, y, cell, view)
+      });
+      // 绑定数据
+      this.graph.fromJSON(this.data);
+    },
+    /** 桩点显示/隐藏 */
+    showPorts(ports, show) {
+      for (let i = 0, len = ports.length; i < len; i = i + 1) {
+        ports[i].style.visibility = show ? 'visible' : 'hidden'
+      }
+    },
+    /** 右键菜单 */
+    onContextmenu(event, x, y, cell, view) {
+      const isRedo = this.canRedo;
+      const isUndo = this.canUndo;
+      const cells = this.graph.getSelectedCells();
+      const items = [
+          {
+            label: "复制 ctrl+z",
+            disabled: cells.length === 0,
+            onClick: () => {
+              if (cells.length) {
+                this.graph.copy(cells)
+              }
+            }
+          },
+          {
+            label: "粘贴 ctrl+c ",
+            disabled: this.graph.isClipboardEmpty(),
+            onClick: () => {
+              if (!this.graph.isClipboardEmpty()) {
+                const cells = this.graph.paste({offset: 32})
+                this.graph.cleanSelection()
+                this.graph.select(cells)
+              }
+            }
+          },
+          {
+            label: "剪切 ctrl+x",
+            divided: true,
+            disabled: cells.length === 0,
+            onClick: () => {
+              if (cells.length) {
+                this.graph.copy(cells)
+                this.graph.removeCells(cells)
+              }
+            }
+          },
+          {
+            label: "撤销 ctrl+z",
+            disabled: !isUndo,
+            onClick: () => {
+              this.undo()
+            }
+          },
+          {
+            label: "恢复 ctrl+y",
+            disabled: !isRedo,
+            divided: true,
+            onClick: () => {
+              this.redo()
+            }
+          },
+          {
+            label: "删除 backspace",
+            disabled: cells.length === 0,
+            onClick: () => {
+              if (cells.length) {
+                this.graph.removeCells(cells)
+              }
+            }
+          }
+      ];
+      // 节点编辑
+      if (this.graph.isNode(cell)) {
+        items.unshift({
+          label: "编辑",
+          disabled: false,
+          onClick: () => {
+            alert(1);
+          }
+        });
+      }
+      this.$contextmenu({
+        items: items,
+        event, // 鼠标事件信息
+        customClass: "custom-class", // 自定义菜单 class
+        zIndex: 100, // 菜单样式 z-index
+        minWidth: 150 // 主菜单最小宽度
+      });
+      return false;
+    },
+    /** 撤销 */
+    undo() {
+      this.graph.undo()
+    },
+    /** 恢复 */
+    redo() {
+      this.graph.redo()
+    },
+    /** 创建节点，移入画布 */
+    startDrag(shape, label, e) {
+      const node = this.graph.createNode({
+        shape: shape,
+        label: label,
+        data: {
+          minNum: 0,
+          maxNum: 0
+        }
+      })
+      this.dnd.start(node, e)
+    },
+    /** 保存画布 */
+    graphSave() {
+      this.saveData = this.graph.toJSON()
+      const saveDataTrans = JSON.stringify(this.saveData)
+      // 存到库中
+      this.$http({
+        url: this.$http.adornUrl('/basedata/transrelation/update'),
+        method: 'post',
+        data: this.$http.adornData({
+          'id': this.saveId,
+          'chartCode': saveDataTrans
+        })
+      }).then(({data}) => {
+        if (data && data.code === 0) {
+          this.$emit('reassign', this.saveVal)
+          this.$message({
+            message: '保存成功',
+            type: 'success'
+          })
+        } else {
+          this.$message.error(data.msg);
+        }
+      })
+    },
+    /** 通用模板展开/收起 */
+    toggleCommon() {
+      this.openCommon = !this.openCommon;
+    },
+
+
+
+
+    // 导出svg
+    toSvg() {
+      this.graph.exportSVG('导出svg格式')
+    },
+    // 导出png
+    toJpg() {
+      this.graph.exportPNG('导出png格式')
+    },
+    // 销毁画布
+    graphDispose() {
+      this.graph.dispose()
+    },
+    // 将画布中元素居中展示
+    graphCenter() {
+      this.graph.centerContent()
+    },
+    // 添加节点
+    graphAddNode() {
+      this.graph.addNode({
+        shape: 'custom-node',
+        x: 10,
+        y: 10,
+        width: 100,
+        height: 40,
+        label: 'hello',
+      })
+    },
+    // 修改节点
+    graphUpdate() {
+      const nodes = this.graph.getNodes()
+      nodes.forEach((node) => {
+        const width = 100 + Math.floor(Math.random() * 50)
+        const height = 40 + Math.floor(Math.random() * 10)
+        node.prop('size', {width, height})
+        const color = this.color16()
+        node.attr('body/fill', color)
+      })
+    },
+    // 十六进制颜色随机
+    color16() {
+      var r = Math.floor(Math.random() * 256);
+      var g = Math.floor(Math.random() * 256);
+      var b = Math.floor(Math.random() * 256);
+      var color = "#" + r.toString(16) + g.toString(16) + b.toString(16);
+      return color;
+    },
+    // 重新渲染
+    graphRecreate(val) {
+      if (val === undefined || val === null || val === '') {
+        this.initGraph()
+      } else {
+        this.saveData = JSON.parse(val.chartCode)
+        this.saveId = val.id
+        this.saveVal = val
+        this.graph.fromJSON(this.saveData)
+        this.$message({
+          message: '渲染成功',
+          type: 'success'
+        })
+      }
+    },
+    // 弹框赋值
+    updateByAlert(min, max, cell) {
+      if (min === "") {
+        min = 0
+      }
+      if (max === "") {
+        max = 0
+      }
+      cell.setData({minNum: min, maxNum: max}, {overwrite: true})
+      cell.label = cell.label.substr(0, cell.label.lastIndexOf("\n")) + "\n(" + min + "%~" + max + "%)"
+    },
   }
 };
 </script>
+
+<style>
+  .head-container > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  /* 三个圆形节点容器 */
+  .circle-row {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    justify-content: start; /* 可调整为center或space-around */
+  }
+  /* 其他两个节点容器 */
+  .other-row {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    justify-content: start;
+  }
+  .dnd-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .dnd-item svg {
+    max-width: 100%;
+  }
+
+  .toggle-btn {
+    background: none;
+    color: #635e5e;
+    cursor: pointer;
+    width: 100%;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid #d9e1ec;
+    border-bottom: 1px solid #d9e1ec;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+  }
+  .toggle-btn:hover {
+    background-color: #d9e1ec; /* 浅灰色背景，可自定义颜色 */
+  }
+  /* 过渡动画 */
+  .collapse-enter-active, .collapse-leave-active {
+    transition: max-height 0.3s ease;
+  }
+  .collapse-enter, .collapse-leave-to /* .collapse-leave-active in <2.1.8 */
+  {
+    max-height: 0;
+    overflow: hidden;
+  }
+  .collapse-enter-to, .collapse-leave {
+    max-height: 500px; /* 设个大一点，保证内容都能显示 */
+    overflow: hidden;
+  }
+</style>

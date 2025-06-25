@@ -1,4 +1,4 @@
-package com.cowave.sys.job.domain.constant;
+package com.cowave.sys.job.domain.enums;
 
 import lombok.Getter;
 
@@ -6,7 +6,7 @@ import lombok.Getter;
  * @author xuxueli/shanhuiming
  */
 @Getter
-public enum TriggerStatusEnum {
+public enum JobTriggerStatus {
 
     /**
      * 初始化
@@ -48,7 +48,7 @@ public enum TriggerStatusEnum {
      */
     EXEC_SUCCESS(70);
 
-    TriggerStatusEnum(int status) {
+    JobTriggerStatus(int status) {
         this.status = status;
     }
 

@@ -9,13 +9,13 @@ import com.cowave.sys.job.client.handler.ScriptJobHandler;
 import com.cowave.sys.job.domain.client.IdleCheck;
 import com.cowave.sys.job.domain.client.KillRequest;
 import com.cowave.sys.job.domain.client.TriggerRequest;
-import com.cowave.sys.job.domain.constant.TaskTypeEnum;
+import com.cowave.sys.job.domain.enums.JobTaskType;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.cowave.sys.job.domain.constant.BlockStrategyEnum.COVER_EARLY;
-import static com.cowave.sys.job.domain.constant.BlockStrategyEnum.DISCARD_LATER;
-import static com.cowave.sys.job.domain.constant.TaskTypeEnum.BEAN;
-import static com.cowave.sys.job.domain.constant.TaskTypeEnum.GROOVY;
+import static com.cowave.sys.job.domain.enums.JobBlockStrategy.COVER_EARLY;
+import static com.cowave.sys.job.domain.enums.JobBlockStrategy.DISCARD_LATER;
+import static com.cowave.sys.job.domain.enums.JobTaskType.BEAN;
+import static com.cowave.sys.job.domain.enums.JobTaskType.GROOVY;
 
 /**
  * @author xuxueli/shanhuiming
@@ -45,8 +45,8 @@ public class MsgHandlerImpl implements MsgHandler {
         JobHandler lastHandler = jobThread != null ? jobThread.getJobHandler() : null;
 
         // Spring Bean处理
-        TaskTypeEnum taskTypeEnum = EnumVal.getInstance(TaskTypeEnum.class, triggerRequest.getGlueType());
-        if (BEAN == taskTypeEnum) {
+        JobTaskType jobTaskType = EnumVal.getInstance(JobTaskType.class, triggerRequest.getGlueType());
+        if (BEAN == jobTaskType) {
             JobHandler currentHandler = JobContext.getJobHandler(triggerRequest.getHandlerName());
             // jobHandler变化
             if (jobThread != null && lastHandler != currentHandler) {
@@ -57,7 +57,7 @@ public class MsgHandlerImpl implements MsgHandler {
             if (lastHandler == null) {
                 return Response.error("handler[" + triggerRequest.getHandlerName() + "] not found");
             }
-        } else if (GROOVY == taskTypeEnum) {
+        } else if (GROOVY == jobTaskType) {
             // jobHandler变化
             if (jobThread != null &&
                     !(jobThread.getJobHandler() instanceof GlueJobHandler
@@ -76,7 +76,7 @@ public class MsgHandlerImpl implements MsgHandler {
                     return Response.error(e.getMessage());
                 }
             }
-        } else if (taskTypeEnum != null && taskTypeEnum.isScript()) {
+        } else if (jobTaskType != null && jobTaskType.isScript()) {
             if (jobThread != null &&
                     !(jobThread.getJobHandler() instanceof ScriptJobHandler
                             && ((ScriptJobHandler) jobThread.getJobHandler()).getGlueUpdatetime() == triggerRequest.getGlueUpdateTime())) {
@@ -86,7 +86,7 @@ public class MsgHandlerImpl implements MsgHandler {
 
             // valid handler
             if (lastHandler == null) {
-                lastHandler = new ScriptJobHandler(triggerRequest.getTriggerId(), triggerRequest.getGlueUpdateTime(), triggerRequest.getGlueSource(), taskTypeEnum);
+                lastHandler = new ScriptJobHandler(triggerRequest.getTriggerId(), triggerRequest.getGlueUpdateTime(), triggerRequest.getGlueSource(), jobTaskType);
             }
         } else {
             return Response.error("invalid glueType[" + triggerRequest.getGlueType() + "]");

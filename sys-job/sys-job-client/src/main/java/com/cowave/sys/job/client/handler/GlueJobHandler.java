@@ -1,7 +1,7 @@
 package com.cowave.sys.job.client.handler;
 
 import com.cowave.sys.job.client.TriggerContext;
-import com.cowave.sys.job.domain.constant.TriggerStatusEnum;
+import com.cowave.sys.job.domain.enums.JobTriggerStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +26,10 @@ public class GlueJobHandler implements JobHandler {
         TriggerContext.get().setHandleTime(new Date());
         try {
             jobHandler.execute();
-            TriggerContext.get().setHandleStatus(TriggerStatusEnum.EXEC_SUCCESS.getStatus());
+            TriggerContext.get().setHandleStatus(JobTriggerStatus.EXEC_SUCCESS.getStatus());
         } catch (Exception e) {
             log.error("", e);
-            TriggerContext.get().setHandleStatus(TriggerStatusEnum.EXEC_FAIL.getStatus());
+            TriggerContext.get().setHandleStatus(JobTriggerStatus.EXEC_FAIL.getStatus());
             TriggerContext.get().setHandleMsg(e.getMessage());
         }
         TriggerContext.get().setHandleCost(System.currentTimeMillis() - startTime);

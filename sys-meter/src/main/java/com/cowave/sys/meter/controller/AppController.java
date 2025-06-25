@@ -11,7 +11,9 @@ package com.cowave.sys.meter.controller;
 
 import com.cowave.commons.client.http.response.Response;
 import com.cowave.sys.meter.entity.AppInfo;
+import com.cowave.sys.meter.lite.LiteProcessor;
 import com.cowave.sys.meter.service.AppService;
+import com.yomahub.liteflow.flow.LiteflowResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,13 @@ import java.io.IOException;
 public class AppController {
 
     private final AppService appService;
+
+    private final LiteProcessor liteProcessor;
+
+    @GetMapping
+    public LiteflowResponse info() {
+        return liteProcessor.xx();
+    }
 
     /**
      * 列表

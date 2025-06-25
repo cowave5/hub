@@ -1,4 +1,4 @@
-package com.cowave.sys.job.domain.constant;
+package com.cowave.sys.job.domain.enums;
 
 import com.cowave.commons.tools.EnumVal;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Getter;
  * @author xuxueli/shanhuiming
  */
 @Getter
-public enum TaskTypeEnum implements EnumVal<Void> {
+public enum JobTaskType implements EnumVal<Void> {
 
     /**
      * BEAN
@@ -49,7 +49,7 @@ public enum TaskTypeEnum implements EnumVal<Void> {
     private final String cmd;
     private final String suffix;
 
-    TaskTypeEnum(String desc, boolean isScript, String cmd, String suffix) {
+    JobTaskType(String desc, boolean isScript, String cmd, String suffix) {
         this.desc = desc;
         this.isScript = isScript;
         this.cmd = cmd;

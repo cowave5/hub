@@ -2,8 +2,8 @@ package com.cowave.sys.job.client.handler;
 
 import com.cowave.sys.job.client.TriggerContext;
 import com.cowave.sys.job.client.util.ScriptUtil;
-import com.cowave.sys.job.domain.constant.TaskTypeEnum;
-import com.cowave.sys.job.domain.constant.TriggerStatusEnum;
+import com.cowave.sys.job.domain.enums.JobTaskType;
+import com.cowave.sys.job.domain.enums.JobTriggerStatus;
 import lombok.Getter;
 
 import java.io.File;
@@ -21,9 +21,9 @@ public class ScriptJobHandler implements JobHandler {
 
     private final String gluesource;
 
-    private final TaskTypeEnum glueType;
+    private final JobTaskType glueType;
 
-    public ScriptJobHandler(int jobId, long glueUpdatetime, String gluesource, TaskTypeEnum glueType){
+    public ScriptJobHandler(int jobId, long glueUpdatetime, String gluesource, JobTaskType glueType){
         this.jobId = jobId;
         this.glueUpdatetime = glueUpdatetime;
         this.gluesource = gluesource;
@@ -45,7 +45,7 @@ public class ScriptJobHandler implements JobHandler {
     @Override
     public void execute() throws Exception {
         if (!glueType.isScript()) {
-            TriggerContext.get().setHandleStatus(TriggerStatusEnum.EXEC_FAIL.getStatus());
+            TriggerContext.get().setHandleStatus(JobTriggerStatus.EXEC_FAIL.getStatus());
             TriggerContext.get().setHandleMsg("glueType["+ glueType +"] invalid");
             return;
         }
@@ -73,9 +73,9 @@ public class ScriptJobHandler implements JobHandler {
         int exitValue = ScriptUtil.execToFile(cmd, scriptFileName, scriptParams);
         TriggerContext.get().setHandleCost(System.currentTimeMillis() - startTime);
         if (exitValue == 0) {
-            TriggerContext.get().setHandleStatus(TriggerStatusEnum.EXEC_SUCCESS.getStatus());
+            TriggerContext.get().setHandleStatus(JobTriggerStatus.EXEC_SUCCESS.getStatus());
         } else {
-            TriggerContext.get().setHandleStatus(TriggerStatusEnum.EXEC_FAIL.getStatus());
+            TriggerContext.get().setHandleStatus(JobTriggerStatus.EXEC_FAIL.getStatus());
         }
     }
 }

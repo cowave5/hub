@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.cowave.sys.job.infra.schedule.TriggerTypeEnum.MANUAL;
+import static com.cowave.sys.job.domain.enums.JobTriggerType.MANUAL;
 
 /**
  * @author xuxueli/shanhuiming

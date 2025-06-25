@@ -19,10 +19,17 @@
 			<groupId>com.cowave.commons</groupId>
 			<artifactId>commons-framework</artifactId>
 		</dependency>
+
+
+
+		<!--	xxxxx	-->
 		<dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-        </dependency>
+			<groupId>com.yomahub</groupId>
+			<artifactId>liteflow-spring-boot-starter</artifactId>
+			<version>2.13.2</version>
+		</dependency>
+
+
 		<!--velocity -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>

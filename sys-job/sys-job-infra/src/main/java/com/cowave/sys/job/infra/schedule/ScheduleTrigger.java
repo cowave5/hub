@@ -5,16 +5,17 @@ import com.cowave.commons.client.http.response.Response;
 import com.cowave.commons.tools.Collections;
 import com.cowave.commons.tools.EnumVal;
 import com.cowave.sys.job.domain.*;
-import com.cowave.sys.job.domain.constant.BlockStrategyEnum;
-import com.cowave.sys.job.domain.constant.TaskTypeEnum;
-import com.cowave.sys.job.domain.constant.TriggerStatusEnum;
+import com.cowave.sys.job.domain.enums.JobBlockStrategy;
+import com.cowave.sys.job.domain.enums.JobTaskType;
+import com.cowave.sys.job.domain.enums.JobTriggerStatus;
 import com.cowave.sys.job.domain.client.TriggerRequest;
+import com.cowave.sys.job.domain.enums.JobTriggerType;
 import com.cowave.sys.job.infra.dao.JobClientDao;
 import com.cowave.sys.job.infra.dao.JobClientHandlerDao;
 import com.cowave.sys.job.infra.dao.JobTriggerLogDao;
 import com.cowave.sys.job.infra.dao.JobTriggerDao;
 import com.cowave.sys.job.infra.ClientService;
-import com.cowave.sys.job.infra.route.RouteStrategyEnum;
+import com.cowave.sys.job.infra.route.JobRouteStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.cowave.sys.job.domain.constant.BlockStrategyEnum.SERIAL_EXECUTION;
-import static com.cowave.sys.job.infra.route.RouteStrategyEnum.SHARDING_BROADCAST;
+import static com.cowave.sys.job.domain.enums.JobBlockStrategy.SERIAL_EXECUTION;
+import static com.cowave.sys.job.infra.route.JobRouteStrategy.SHARDING_BROADCAST;
 
 /**
  * @author xuxueli/shanhuiming
@@ -48,7 +49,7 @@ public class ScheduleTrigger {
     @Resource
     private JobClientHandlerDao jobClientHandlerDao;
 
-    public void trigger(int jobId, TriggerTypeEnum triggerType, String executorShardingParam, String executorParam) {
+    public void trigger(int jobId, JobTriggerType triggerType, String executorShardingParam, String executorParam) {
         JobTrigger jobTrigger = jobTriggerDao.getById(jobId);
         if (jobTrigger == null) {
             return;
@@ -70,7 +71,7 @@ public class ScheduleTrigger {
         String handler = jobTrigger.getHandlerName();
         // 找到client列表
         List<JobClient> clientList;
-        if (TaskTypeEnum.BEAN.name().equals(jobTrigger.getTaskType())) {
+        if (JobTaskType.BEAN.name().equals(jobTrigger.getTaskType())) {
             List<Integer> clientIdList = jobClientHandlerDao.listClientByHandler(handler);
             if (clientIdList.isEmpty()) {
                 log.warn("no client exist for handler[{}]", handler);
@@ -99,8 +100,8 @@ public class ScheduleTrigger {
         }
     }
 
-    private void processTrigger(List<JobClient> clientList, JobTrigger jobTrigger, TriggerTypeEnum triggerType, int index, int total) {
-        BlockStrategyEnum blockStrategy = EnumVal.getInstance(BlockStrategyEnum.class, jobTrigger.getBlockStrategy());
+    private void processTrigger(List<JobClient> clientList, JobTrigger jobTrigger, JobTriggerType triggerType, int index, int total) {
+        JobBlockStrategy blockStrategy = EnumVal.getInstance(JobBlockStrategy.class, jobTrigger.getBlockStrategy());
         if(blockStrategy == null){
             blockStrategy = SERIAL_EXECUTION;
         }
@@ -133,7 +134,7 @@ public class ScheduleTrigger {
         triggerRequest.setBroadIndex(index);
         triggerRequest.setBroadTotal(total);
 
-        RouteStrategyEnum routeStrategy = EnumVal.getInstance(RouteStrategyEnum.class, jobTrigger.getRouteStrategy());
+        JobRouteStrategy routeStrategy = EnumVal.getInstance(JobRouteStrategy.class, jobTrigger.getRouteStrategy());
         // 路由地址
         String address = null;
         if (!clientList.isEmpty()) {
@@ -151,7 +152,7 @@ public class ScheduleTrigger {
 
         // 路由失败
         if (address == null) {
-            triggerLog.setTriggerStatus(TriggerStatusEnum.ROUTE_FAIL.getStatus());
+            triggerLog.setTriggerStatus(JobTriggerStatus.ROUTE_FAIL.getStatus());
             jobTriggerLogDao.updateById(triggerLog);
             return;
         }
@@ -161,13 +162,13 @@ public class ScheduleTrigger {
         try {
             Response<String> response = clientService.exec(address, triggerRequest);
             if (Objects.equals(response.getCode(), HttpCode.SUCCESS.getCode())) {
-                triggerLog.setTriggerStatus(TriggerStatusEnum.REMOTE_SUCCESS.getStatus());
+                triggerLog.setTriggerStatus(JobTriggerStatus.REMOTE_SUCCESS.getStatus());
             } else {
-                triggerLog.setTriggerStatus(TriggerStatusEnum.REMOTE_FAIL.getStatus());
+                triggerLog.setTriggerStatus(JobTriggerStatus.REMOTE_FAIL.getStatus());
                 triggerLog.setFailMsg(response.getMsg());
             }
         } catch (Exception e) {
-            triggerLog.setTriggerStatus(TriggerStatusEnum.HTTP_FAIL.getStatus());
+            triggerLog.setTriggerStatus(JobTriggerStatus.HTTP_FAIL.getStatus());
             triggerLog.setFailMsg(e.getMessage());
         }
         jobTriggerLogDao.updateById(triggerLog);

@@ -3,7 +3,7 @@ package com.cowave.sys.job.service.impl;
 import com.cowave.commons.tools.Collections;
 import com.cowave.sys.job.domain.JobClient;
 import com.cowave.sys.job.domain.JobClientHandler;
-import com.cowave.sys.job.domain.constant.TriggerStatusEnum;
+import com.cowave.sys.job.domain.enums.JobTriggerStatus;
 import com.cowave.sys.job.domain.client.ClientRegistry;
 import com.cowave.sys.job.domain.client.TriggerResponse;
 import com.cowave.sys.job.infra.dao.JobClientDao;
@@ -50,7 +50,7 @@ public class JobClientServiceImpl implements JobClientService {
     public void callback(List<TriggerResponse> list) {
         for(TriggerResponse triggerResponse : list){
             jobTriggerLogDao.completeTriggerLog(triggerResponse);
-            if(TriggerStatusEnum.EXEC_SUCCESS.getStatus() ==  triggerResponse.getHandleStatus()){
+            if(JobTriggerStatus.EXEC_SUCCESS.getStatus() ==  triggerResponse.getHandleStatus()){
                 jobTriggerDao.increaseTriggerSuccessTimes(triggerResponse.getTriggerId());
             }
         }

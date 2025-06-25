@@ -2,7 +2,7 @@ package com.cowave.sys.job.client;
 
 import com.cowave.commons.client.http.response.Response;
 import com.cowave.sys.job.client.handler.JobHandler;
-import com.cowave.sys.job.domain.constant.TriggerStatusEnum;
+import com.cowave.sys.job.domain.enums.JobTriggerStatus;
 import com.cowave.sys.job.domain.client.TriggerResponse;
 import com.cowave.sys.job.domain.client.TriggerRequest;
 import lombok.Getter;
@@ -98,7 +98,7 @@ public class JobThread extends Thread{
 							futureThread.start();
 							futureTask.get(triggerRequest.getTimeOut(), TimeUnit.SECONDS);
 						} catch (TimeoutException e) {
-							TriggerContext.get().setHandleStatus(TriggerStatusEnum.EXEC_OVERTIME.getStatus());
+							TriggerContext.get().setHandleStatus(JobTriggerStatus.EXEC_OVERTIME.getStatus());
 						} finally {
 							futureThread.interrupt();
 						}
@@ -131,7 +131,7 @@ public class JobThread extends Thread{
 						TriggerResponse triggerResponse = new TriggerResponse();
 						triggerResponse.setLogId(triggerRequest.getLogId());
 						triggerResponse.setTriggerId(triggerRequest.getTriggerId());
-						triggerResponse.setHandleStatus(TriggerStatusEnum.EXEC_FAIL.getStatus());
+						triggerResponse.setHandleStatus(JobTriggerStatus.EXEC_FAIL.getStatus());
 						triggerResponse.setHandleTime(TriggerContext.get().getHandleTime());
 						triggerResponse.setHandleCost(TriggerContext.get().getHandleCost());
 						triggerResponse.setHandleMsg("client killed");
@@ -147,7 +147,7 @@ public class JobThread extends Thread{
 				TriggerResponse triggerResponse = new TriggerResponse();
 				triggerResponse.setLogId(triggerRequest.getLogId());
 				triggerResponse.setTriggerId(triggerRequest.getTriggerId());
-				triggerResponse.setHandleStatus(TriggerStatusEnum.EXEC_FAIL.getStatus());
+				triggerResponse.setHandleStatus(JobTriggerStatus.EXEC_FAIL.getStatus());
 				triggerResponse.setHandleTime(TriggerContext.get().getHandleTime());
 				triggerResponse.setHandleCost(TriggerContext.get().getHandleCost());
 				triggerResponse.setHandleMsg("client killed in queue");

@@ -8,7 +8,7 @@ import lombok.Getter;
  * @author xuxueli/shanhuiming
  */
 @Getter
-public enum RouteStrategyEnum implements EnumVal<Void> {
+public enum JobRouteStrategy implements EnumVal<Void> {
 
     /**
      * 第一个
@@ -60,7 +60,7 @@ public enum RouteStrategyEnum implements EnumVal<Void> {
      */
     SHARDING_BROADCAST(null);
 
-    RouteStrategyEnum(ClientRouter router) {
+    JobRouteStrategy(ClientRouter router) {
         this.router = router;
     }
 

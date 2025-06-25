@@ -92,6 +92,9 @@ DictData.install()
 import ElTreeSelect from 'el-tree-select';
 Vue.use(ElTreeSelect);
 
+import Contextmenu from "vue-contextmenujs"
+Vue.use(Contextmenu);
+
 Element.Dialog.props.closeOnClickModal.default = false
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium'

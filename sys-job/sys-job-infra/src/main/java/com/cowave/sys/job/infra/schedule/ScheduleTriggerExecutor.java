@@ -1,5 +1,6 @@
 package com.cowave.sys.job.infra.schedule;
 
+import com.cowave.sys.job.domain.enums.JobTriggerType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
@@ -43,7 +44,7 @@ public class ScheduleTriggerExecutor {
         slowTriggerPool.shutdownNow();
     }
 
-    public void addTrigger(int jobId, TriggerTypeEnum triggerType, String executorShardingParam, String executorParam) {
+    public void addTrigger(int jobId, JobTriggerType triggerType, String executorShardingParam, String executorParam) {
         // choose thread pool
         ThreadPoolExecutor executor = fastTriggerPool;
         AtomicInteger jobTimeoutCount = jobTimeoutCountMap.get(jobId);

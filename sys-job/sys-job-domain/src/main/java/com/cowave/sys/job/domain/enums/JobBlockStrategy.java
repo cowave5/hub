@@ -1,4 +1,4 @@
-package com.cowave.sys.job.domain.constant;
+package com.cowave.sys.job.domain.enums;
 
 import com.cowave.commons.tools.EnumVal;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Getter;
  * @author xuxueli/shanhuiming
  */
 @Getter
-public enum BlockStrategyEnum implements EnumVal<Void> {
+public enum JobBlockStrategy implements EnumVal<Void> {
 
     /**
      * 单机串行

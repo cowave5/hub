@@ -10,11 +10,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static com.cowave.sys.job.infra.schedule.MisfireStrategyEnum.FIRE_NOW;
-import static com.cowave.sys.job.infra.schedule.ScheduleTypeEnum.CRON;
-import static com.cowave.sys.job.infra.schedule.ScheduleTypeEnum.FIX_RATE;
-import static com.cowave.sys.job.infra.schedule.TriggerTypeEnum.MISFIRE;
-import static com.cowave.sys.job.infra.schedule.TriggerTypeEnum.SCHEDULE;
+import static com.cowave.sys.job.domain.enums.JobMisfireStrategy.FIRE_NOW;
+import static com.cowave.sys.job.domain.enums.JobScheduleType.CRON;
+import static com.cowave.sys.job.domain.enums.JobScheduleType.FIX_RATE;
+import static com.cowave.sys.job.domain.enums.JobTriggerType.MISFIRE;
+import static com.cowave.sys.job.domain.enums.JobTriggerType.SCHEDULE;
 
 /**
  * @author xuxueli/shanhuiming
