@@ -13,7 +13,8 @@ import com.cowave.commons.framework.access.security.AccessUserDetails;
 import lombok.Data;
 import java.util.Date;
 
-import static com.cowave.sys.admin.domain.auth.AccessType.LDAP;
+import static com.cowave.sys.admin.domain.auth.AuthType.GITLAB;
+import static com.cowave.sys.admin.domain.auth.AuthType.LDAP;
 
 /**
  * Ldap用户信息
@@ -98,7 +99,9 @@ public class LdapUser {
 
     public AccessUserDetails newUserDetails(){
         AccessUserDetails userDetails = AccessUserDetails.newUserDetails();
-        userDetails.setType(LDAP.val());
+        userDetails.setAuthType(LDAP.val());
+        userDetails.setUserType(LDAP.val());
+        userDetails.setTenantId("cowave");
         userDetails.setUserId(id);
         userDetails.setUserCode(userCode);
         userDetails.setUsername(userAccount);

@@ -14,6 +14,8 @@ spring:
       enable: true
       mode: access-refresh
       accessExpire: 60
+      accessStore: true
+      accessCheck: true
       ignoreUrls:
         - /api/v1/oauth/client/redirect/**
         - /api/v1/oauth/client/authorize/token
@@ -23,6 +25,8 @@ spring:
         - /favicon.ico
         - /actuator/**
         - /doc/**
+  cache:
+    l2-enable: true
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://127.0.0.1:5432/sys-admin
@@ -38,7 +42,7 @@ spring:
     rest:
       uris: 127.0.0.1:9200
   minio:
-    endpoint: http://10.64.4.74:39000
+    endpoint: http://127.0.0.1:9100
     accessKey: admin
     secretKey: admin123
   socket-io:

@@ -7,23 +7,28 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.sys.admin.domain.base.vo;
+package com.cowave.sys.admin.domain.rabc.vo;
 
 import lombok.Data;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author shanhuiming
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class CacheInfo {
+public class UserDiagramNode extends DiagramNode {
 
-    private Properties info;
+    /**
+     * 用户职级
+     */
+    private String userRank;
 
-    private Object dbSize;
-
-    private List<Map<String, String>> commandStats;
+    public static UserDiagramNode newRootNode(String nodeName){
+        UserDiagramNode rootNode = new UserDiagramNode();
+		rootNode.setPid(-1);
+		rootNode.setId(0);
+		rootNode.setLabel(nodeName);
+        return rootNode;
+    }
 }

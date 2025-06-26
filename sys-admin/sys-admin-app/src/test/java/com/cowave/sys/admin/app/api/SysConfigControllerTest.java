@@ -49,7 +49,7 @@ public class SysConfigControllerTest extends SpringTest {
      */
     @Test
     public void getValue() throws Exception {
-        mockGet("/api/v1/config/value/sys.user.initPassword");
+        mockGet("/api/v1/config/value/sys.initPassword");
     }
 
     /**

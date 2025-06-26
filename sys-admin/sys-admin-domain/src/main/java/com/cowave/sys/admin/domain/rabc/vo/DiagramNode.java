@@ -7,33 +7,40 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.sys.admin.domain.base.vo;
+package com.cowave.sys.admin.domain.rabc.vo;
 
+import cn.hutool.core.lang.tree.TreeNodeConfig;
 import lombok.Data;
 
 /**
  * @author shanhuiming
  */
 @Data
-public class TreeNode {
+public class DiagramNode {
+
+    public static final TreeNodeConfig DIAGRAM_CONFIG = new TreeNodeConfig()
+            .setIdKey("id").setParentIdKey("pid").setNameKey("label").setChildrenKey("children");
 
     /**
      * id
      */
-    private String id;
+    private Integer id;
 
     /**
      * 上级id
      */
-    private String pid;
+    private Integer pid;
 
     /**
-     * 名称
+     * 节点名称
      */
     private String label;
 
-    /**
-     * 内容
-     */
-    private String content;
+    public static DiagramNode newRootNode(String nodeName){
+        DiagramNode rootNode = new DiagramNode();
+		rootNode.setPid(-1);
+		rootNode.setId(0);
+		rootNode.setLabel(nodeName);
+        return rootNode;
+    }
 }

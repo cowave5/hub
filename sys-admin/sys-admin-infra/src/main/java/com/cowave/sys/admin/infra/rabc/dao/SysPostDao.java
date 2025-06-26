@@ -26,10 +26,32 @@ import java.util.List;
 public class SysPostDao extends ServiceImpl<SysPostMapper, SysPost> {
 
     /**
+     * 列表查询（岗位id）
+     */
+    public List<SysPost> listByIds(String tenantId, List<Integer> postIds) {
+        return lambdaQuery()
+                .eq(SysPost::getTenantId, tenantId)
+                .in(SysPost::getPostId, postIds)
+                .list();
+    }
+
+    /**
+     * 岗位名称查询
+     */
+    public String getNameById(String tenantId, Integer postId){
+        return lambdaQuery()
+                .eq(SysPost::getTenantId, tenantId)
+                .eq(SysPost::getPostId, postId)
+                .select(SysPost::getPostName)
+                .oneOpt().map(SysPost::getPostName).orElse(null);
+    }
+
+    /**
      * 修改岗位信息
      */
     public void updatePost(SysPost sysPost){
-        lambdaUpdate().eq(SysPost::getPostId, sysPost.getPostId())
+        lambdaUpdate()
+                .eq(SysPost::getPostId, sysPost.getPostId())
                 .set(SysPost::getUpdateBy, Access.userCode())
                 .set(SysPost::getUpdateTime, new Date())
                 .set(SysPost::getPostCode, sysPost.getPostCode())
@@ -39,12 +61,5 @@ public class SysPostDao extends ServiceImpl<SysPostMapper, SysPost> {
                 .set(SysPost::getPostStatus, sysPost.getPostStatus())
                 .set(SysPost::getRemark, sysPost.getRemark())
                 .update();
-    }
-
-    public String getNameById(Integer postId){
-        return lambdaQuery()
-                .eq(SysPost::getPostId, postId)
-                .select(SysPost::getPostName)
-                .oneOpt().map(SysPost::getPostName).orElse(null);
     }
 }

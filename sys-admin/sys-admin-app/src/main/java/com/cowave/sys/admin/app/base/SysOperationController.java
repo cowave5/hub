@@ -9,7 +9,10 @@
  */
 package com.cowave.sys.admin.app.base;
 
+import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.response.Response;
+import com.cowave.commons.framework.access.Access;
+import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
 import com.cowave.sys.admin.domain.base.SysOperation;
 import com.cowave.sys.admin.domain.base.request.OperationQuery;
 import com.cowave.sys.admin.service.base.SysOperationService;
@@ -21,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -41,7 +45,7 @@ public class SysOperationController {
 	 */
 	@GetMapping
     public Response<Response.Page<SysOperation>> list(OperationQuery query) {
-        return Response.success(sysOperationService.list(query));
+        return Response.success(sysOperationService.list(Access.tenantId(), query, true));
     }
 
 	/**
@@ -59,7 +63,7 @@ public class SysOperationController {
 	 */
 	@DeleteMapping("/clean")
 	public Response<Void> clean() throws Exception {
-		return Response.success(sysOperationService::clean);
+		return Response.success(() -> sysOperationService.clean(Access.tenantId()));
 	}
 
 	/**
@@ -71,7 +75,9 @@ public class SysOperationController {
 		response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-//		EasyExcel.write(response.getOutputStream(), SysLogDto.class)
-//		.sheet("操作日志").registerWriteHandler(new CellWidthHandler()).doWrite(sysLogService.list(sysLog).getRecords());
+		Collection<SysOperation> operationList =
+				sysOperationService.list(Access.tenantId(), query, false).getList();
+		EasyExcel.write(response.getOutputStream(), SysOperation.class)
+		.sheet("操作日志").registerWriteHandler(new ExcelIgnoreStyle()).doWrite(operationList);
 	}
 }

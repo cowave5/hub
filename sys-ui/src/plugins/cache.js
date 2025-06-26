@@ -1,10 +1,11 @@
 import  jwt  from  'jsonwebtoken'
 
-const UserId = 'user_id'
-const UserCode = 'user_code'
-const UserName = 'user_name'
-const AccessKey = 'access_token'
-const RefreshKey = 'refresh_token'
+const TenantId = 'tenant_id';
+const UserId = 'user_id';
+const UserCode = 'user_code';
+const UserName = 'user_name';
+const AccessKey = 'access_token';
+const RefreshKey = 'refresh_token';
 
 // 会话缓存
 const sessionCache = {
@@ -68,6 +69,7 @@ const localCache = {
 
   setToken(token){
     let accessInfo = jwt.decode(token.accessToken);
+    this.set(TenantId, accessInfo['Tenant.id']);
     this.set(UserId, accessInfo['User.id']);
     this.set(UserCode, accessInfo['User.code']);
     this.set(UserName, accessInfo['User.name']);

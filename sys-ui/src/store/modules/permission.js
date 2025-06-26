@@ -3,7 +3,7 @@ import router, { constantRoutes, dynamicRoutes } from '@/router'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
-import {getAuthRouters} from "@/api/auth";
+import {getAuthMenus} from "@/api/auth";
 
 const permission = {
   state: {
@@ -33,7 +33,7 @@ const permission = {
     GenerateRoutes({ commit }) {
       return new Promise(resolve => {
         // 向后端请求路由数据
-        getAuthRouters().then(res => {
+        getAuthMenus().then(res => {
           const sdata = JSON.parse(JSON.stringify(res.data))
           const rdata = JSON.parse(JSON.stringify(res.data))
           const sidebarRoutes = filterAsyncRouter(sdata)

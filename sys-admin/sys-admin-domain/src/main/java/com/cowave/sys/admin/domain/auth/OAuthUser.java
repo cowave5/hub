@@ -18,7 +18,7 @@ import lombok.Data;
 
 import java.util.Date;
 
-import static com.cowave.sys.admin.domain.auth.AccessType.GITLAB;
+import static com.cowave.sys.admin.domain.auth.AuthType.GITLAB;
 
 /**
  * 授权用户
@@ -87,7 +87,9 @@ public class OAuthUser {
 
     public AccessUserDetails newUserDetails(){
         AccessUserDetails userDetails = AccessUserDetails.newUserDetails();
-        userDetails.setType(GITLAB.val());
+        userDetails.setAuthType(GITLAB.val());
+        userDetails.setUserType(GITLAB.val());
+        userDetails.setTenantId("cowave");
         userDetails.setUserId(id);
         userDetails.setUserCode(userCode);
         userDetails.setUsername(userAccount);

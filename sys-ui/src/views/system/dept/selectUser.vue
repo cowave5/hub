@@ -31,7 +31,7 @@
         </el-table-column>
         <el-table-column :label="$t('user.label.post')" prop="postId" align="center">
           <template slot-scope="scope">
-            <el-select v-model="scope.row.postId">
+            <el-select v-model="scope.row.postId" @change="(val)=>handlePostChange(val, scope.row)">
               <el-option v-for="item in posts" :key="item.postId" :value="item.postId" :label="item.postName"/>
             </el-select>
           </template>
@@ -52,7 +52,7 @@
       <pagination v-show="total>0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.pageSize" @pagination="getList"/>
     </el-row>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="handleSubmit" :disabled="!checkPermit(['sys:dept:members'])">
+      <el-button type="primary" @click="handleSubmit" :disabled="!checkPermit(['sys:dept:members:add'])">
         {{$t('commons.button.confirm')}}
       </el-button>
       <el-button @click="visible = false">{{$t('commons.button.cancel')}}</el-button>
@@ -137,14 +137,21 @@ export default {
       this.$refs.queryForm.resetFields();
       this.handleQuery();
     },
-    /** 修改用户默认岗位 */
+    /** 修改用户岗位 */
+    handlePostChange(val, row) {
+      const index = this.users.findIndex(v=>v.userId === row.userId)
+      if(index !== -1) {
+        this.users[index].postId = val
+      }
+    },
+    /** 设置成用户默认岗位 */
     handleDefaultPost(val, row) {
       const index = this.users.findIndex(v=>v.userId === row.userId)
       if(index !== -1) {
         this.users[index].isDefault = val
       }
     },
-    /** 修改部门负责人 */
+    /** 设置成部门负责人 */
     handleDeptLeader(val, row) {
       const index = this.users.findIndex(v=>v.userId === row.userId)
       if(index !== -1) {

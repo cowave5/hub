@@ -17,9 +17,18 @@ import lombok.Data;
 @Data
 public class AttachQuery {
 
-    private Long masterId;
+    /**
+     * 宿主id
+     */
+    private String ownerId;
 
-    private String attachGroup;
+    /**
+     * 宿主类型
+     */
+    private String ownerType;
 
+    /**
+     * 附件类型
+     */
     private String attachType;
 }

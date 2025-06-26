@@ -20,7 +20,7 @@ public class UserQuery {
     /**
      * 部门id
      */
-    private Integer deptId;
+    private int deptId;
 
     /**
      * 用户名称

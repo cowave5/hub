@@ -64,16 +64,6 @@ export function getPostDiagram() {
 }
 
 /**
- * 刷新岗位组织
- */
-export function refreshDiagram() {
-  return request({
-    url: '/admin/api/v1/post/diagram/refresh',
-    method: 'get'
-  })
-}
-
-/**
  * 岗位流程候选人
  */
 export function getPostCandidatesByCode(postCode) {

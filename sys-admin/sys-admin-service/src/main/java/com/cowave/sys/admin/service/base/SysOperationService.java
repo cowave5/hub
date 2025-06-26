@@ -23,7 +23,7 @@ public interface SysOperationService {
 	/**
 	 * 列表
 	 */
-	Response.Page<SysOperation> list(OperationQuery query);
+	Response.Page<SysOperation> list(String tenantId, OperationQuery query, boolean isPage);
 
 	/**
 	 * 删除
@@ -33,5 +33,5 @@ public interface SysOperationService {
 	/**
 	 * 清空
 	 */
-	void clean();
+	void clean(String tenantId);
 }

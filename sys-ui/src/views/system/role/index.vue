@@ -69,18 +69,20 @@
       </el-table-column>
       <el-table-column :label="$t('commons.label.options')" align="center" class-name="small-padding fixed-width" width="350">
         <template slot-scope="scope">
-          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                     :disabled="scope.row.tenantId === '#'">
             {{$t('commons.button.edit')}}
           </el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-                     :disabled="scope.row.roleCode === 'sysAdmin' || !checkPermit(['sys:role:delete'])">
+                     :disabled="scope.row.tenantId === '#' || !checkPermit(['sys:role:delete'])">
             {{$t('commons.button.delete')}}
           </el-button>
-          <el-button size="mini" type="text" @click="handleMenuScope(scope.row)">
+          <el-button size="mini" type="text" @click="handleMenuScope(scope.row)"
+                     :disabled="scope.row.tenantId === '#'">
             <svg-icon icon-class="pscope"/>{{$t('role.button.menus')}}
           </el-button>
           <el-button size="mini" type="text" @click="handleDataScope(scope.row)"
-                     :disabled="!checkPermit(['sys:role:scope'])">
+                     :disabled="scope.row.tenantId === '#' || !checkPermit(['sys:role:scope'])">
             <svg-icon icon-class="vscope"/> {{$t('role.button.scope')}}
           </el-button>
           <el-button size="mini" type="text" @click="handleAuthUser(scope.row)">
@@ -275,7 +277,7 @@ export default {
   methods: {
     checkPermit,
     selectable(row){
-      return row.roleCode !== 'sysAdmin';
+      return row.tenantId !== '#';
     },
     /** 搜索 */
     handleQuery() {
@@ -338,7 +340,7 @@ export default {
     },
     /** 导出 */
     handleExport() {
-      this.download('/admin/api/v1/role/export', {}, `role_${new Date().getTime()}.xlsx`)
+      this.download('/admin/api/v1/role/export', {}, this.$t('role.text.data') +`_${new Date().getTime()}.xlsx`)
     },
     /** 新增修改取消 */
     cancel() {

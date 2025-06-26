@@ -10,7 +10,6 @@
 package com.cowave.sys.admin.service.rabc.impl;
 
 import cn.hutool.core.lang.tree.Tree;
-import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import com.cowave.commons.client.http.asserts.HttpAsserts;
 import com.cowave.commons.framework.access.Access;
@@ -23,9 +22,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.cowave.commons.client.http.constants.HttpCode.*;
+import static com.cowave.sys.admin.domain.rabc.vo.DiagramNode.DIAGRAM_CONFIG;
 
 /**
  * 菜单
@@ -36,45 +37,56 @@ import static com.cowave.commons.client.http.constants.HttpCode.*;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class SysMenuServiceImpl implements SysMenuService {
-	private final TreeNodeConfig treeConfig = new TreeNodeConfig()
-			.setIdKey("id").setParentIdKey("pid").setNameKey("label").setChildrenKey("children");
 	private final SysMenuDao sysMenuDao;
 	private final SysMenuDtoMapper sysMenuDtoMapper;
 
 	@Override
-	public List<Tree<Integer>> tree() {
-		List<SysMenu> list = list(null, 1, null);
-		return TreeUtil.build(list, 0, treeConfig, (menu, node) -> {
+	public List<SysMenu> listMenusByAdmin(String tenantId) {
+		return sysMenuDao.listMenusByAdmin(tenantId);
+	}
+
+	@Override
+	public List<SysMenu> listMenusByRoles(String tenantId, List<String> roleList) {
+		return sysMenuDtoMapper.listMenusByRoles(tenantId, roleList);
+	}
+
+	@Override
+	public List<Tree<Integer>> tree(String tenantId) {
+		List<SysMenu> list = sysMenuDao.listTree(tenantId);
+		List<Tree<Integer>> treeList = TreeUtil.build(list, 0, DIAGRAM_CONFIG, (menu, node) -> {
 			node.setId(menu.getMenuId());
 			node.setParentId(menu.getParentId());
 			node.setName(menu.getMenuName());
 			node.put("menuType", menu.getMenuType());
+			node.put("order", menu.getMenuOrder());
 		});
+		treeList.sort(Comparator.comparingInt(node -> (Integer) node.get("order")));
+		return treeList;
 	}
 
 	@Override
-	public List<Tree<Integer>> getApiTreeByUser() {
+	public List<SysMenu> list(String menuName, Integer menuStatus) {
+		return sysMenuDao.list(menuName, menuStatus);
+	}
+
+	@Override
+	public List<Tree<Integer>> getApiPermitsByUser(String tenantId) {
 		List<SysMenu> list = new ArrayList<>();
 		// 系统管理员
 		if (Access.isAdminUser()) {
-			list = sysMenuDao.queryApiList();
+			list = sysMenuDao.listApiPermitsByAdmin(tenantId);
 		} else {
 			List<String> roleList = Access.userRoles();
 			if (!roleList.isEmpty()) {
-				list = sysMenuDtoMapper.getApiMenusByRole(roleList);
+				list = sysMenuDtoMapper.listApiPermitsByRoles(roleList);
 			}
 		}
-		return TreeUtil.build(list, 0, treeConfig, (menu, node) -> {
+		return TreeUtil.build(list, 0, DIAGRAM_CONFIG, (menu, node) -> {
 			node.setId(menu.getMenuId());
 			node.setParentId(menu.getParentId());
 			node.setName(menu.getMenuName());
 			node.put("menuType", menu.getMenuType());
 		});
-	}
-
-	@Override
-	public List<SysMenu> list(String menuName, Integer menuStatus, Integer visible) {
-		return sysMenuDao.queryList(visible, menuStatus, menuName);
 	}
 
 	@Override
@@ -110,10 +122,5 @@ public class SysMenuServiceImpl implements SysMenuService {
 			sysMenu.setComponent(null);
 		}
 		sysMenuDao.updateMenu(sysMenu);
-	}
-
-	@Override
-	public List<SysMenu> getMenusByRole(List<String> roleList) {
-		return sysMenuDtoMapper.getMenusByRole(roleList);
 	}
 }

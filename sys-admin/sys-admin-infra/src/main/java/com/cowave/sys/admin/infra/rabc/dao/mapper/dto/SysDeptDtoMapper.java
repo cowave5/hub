@@ -11,7 +11,6 @@ package com.cowave.sys.admin.infra.rabc.dao.mapper.dto;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.sys.admin.domain.base.vo.TreeChildren;
-import com.cowave.sys.admin.domain.base.vo.TreeNode;
 import com.cowave.sys.admin.domain.rabc.SysDept;
 import com.cowave.sys.admin.domain.rabc.SysDeptPost;
 import com.cowave.sys.admin.domain.rabc.SysUserDept;
@@ -19,6 +18,7 @@ import com.cowave.sys.admin.domain.rabc.dto.*;
 import com.cowave.sys.admin.domain.rabc.request.DeptPostQuery;
 import com.cowave.sys.admin.domain.rabc.request.DeptQuery;
 import com.cowave.sys.admin.domain.rabc.request.DeptUserQuery;
+import com.cowave.sys.admin.domain.rabc.vo.DiagramNode;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -31,34 +31,39 @@ import java.util.List;
 public interface SysDeptDtoMapper {
 
     /**
+     * 获取用户默认部门
+     */
+    SysDept getPrimaryDeptByUserId(Integer userId);
+
+    /**
      * 列表
      */
-    List<DeptListDto> list(DeptQuery query);
+    List<DeptListDto> list(@Param("tenantId") String tenantId, @Param("query") DeptQuery query);
 
     /**
      * 详情
      */
-    DeptInfoDto info(Integer deptId);
+    DeptInfoDto info(@Param("tenantId") String tenantId, @Param("deptId") Integer deptId);
 
     /**
      * 部门岗位列表（已设置）
      */
-    Page<DeptPostDto> getConfiguredPosts(Page<DeptPostDto> page, @Param("query") DeptPostQuery query);
+    Page<DeptPostDto> getConfiguredPosts(@Param("tenantId") String tenantId, @Param("query") DeptPostQuery query, Page<DeptPostDto> page);
 
     /**
      * 获取部门岗位（未设置）
      */
-    Page<DeptPostDto> getUnConfiguredPosts(Page<DeptPostDto> page, @Param("query") DeptPostQuery query);
+    Page<DeptPostDto> getUnConfiguredPosts(@Param("tenantId") String tenantId, @Param("query") DeptPostQuery query, Page<DeptPostDto> page);
 
     /**
      * 获取部门成员（已加入）
      */
-    Page<DeptUserDto> getJoinedMembers(Page<RoleUserDto> page, @Param("query") DeptUserQuery query);
+    Page<DeptUserDto> getJoinedMembers(@Param("tenantId") String tenantId, @Param("query") DeptUserQuery query, Page<RoleUserDto> page);
 
     /**
      * 获取部门成员（未加入）
      */
-    Page<DeptUserDto> getUnJoinedMembers(Page<RoleUserDto> page, @Param("query") DeptUserQuery query);
+    Page<DeptUserDto> getUnJoinedMembers(@Param("tenantId") String tenantId, @Param("query") DeptUserQuery query, Page<RoleUserDto> page);
 
     /**
      * 下级部门id列表
@@ -68,40 +73,35 @@ public interface SysDeptDtoMapper {
     /**
      * 树
      */
-    List<TreeNode> getTreeNodes();
+    List<DiagramNode> listDiagramNodes(String tenantId);
 
     /**
      * 插入部门岗位
      */
-    void insertDeptPosts(List<SysDeptPost> list);
+    List<SysDeptPost> insertDeptPosts(@Param("tenantId") String tenantId, @Param("list") List<SysDeptPost> list);
 
     /**
      * 插入部门人员
      */
-    void insertDeptUsers(List<SysUserDept> list);
+    void insertDeptUsers(@Param("tenantId") String tenantId, @Param("list") List<SysUserDept> list);
 
     /**
-     * 存在多个默认岗位的部门
+     * 默认岗位只允许一个
      */
     List<Integer> deptWithMultiDefaultPost();
 
     /**
-     * 获取用户默认部门
-     */
-    SysDept getDefaultDeptOfUser(Integer userId);
-
-    /**
      * 部门流程候选人
      */
-    List<UserNameDto> getCandidatesByCode(String deptCode);
+    List<UserNameDto> getCandidatesByCode(@Param("tenantId") String tenantId, String deptCode);
 
     /**
      * 部门岗位选项
      */
-    List<TreeChildren> deptPostOptions();
+    List<TreeChildren> listPostDiagramNode(String tenantId);
 
     /**
      * 部门用户树
      */
-    List<TreeChildren> deptUserOptions();
+    List<TreeChildren> listUserDiagramNode(String tenantId);
 }

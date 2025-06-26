@@ -27,70 +27,65 @@ public interface SysUserService {
     /**
      * 列表
      */
-    Response.Page<UserListDto> list(UserQuery query);
+    Response.Page<UserListDto> list(String tenantId, UserQuery query);
 
     /**
      * 详情
      */
-    UserInfoDto info(Integer userId);
+    UserInfoDto info(String tenantId, Integer userId);
 
     /**
      * 新增
      */
-    void create(UserCreate user);
+    void create(String tenantId, UserCreate user);
 
     /**
      * 删除
      */
-    void delete(List<Integer> userIds);
+    void delete(String tenantId, List<Integer> userIds);
 
     /**
      * 修改
      */
-    void edit(UserCreate user);
+    void edit(String tenantId, UserCreate user);
 
     /**
      * 修改角色
      */
-    void changeRoles(UserRoleUpdate user);
+    void changeRoles(String tenantId, UserRoleUpdate user);
 
     /**
      * 修改状态
      */
-    void changeStatus(UserStatusUpdate user);
+    void changeStatus(String tenantId, UserStatusUpdate user);
 
     /**
      * 修改密码
      */
-    void changePasswd(UserPasswdUpdate user);
+    void changePasswd(String tenantId, UserPasswdUpdate user);
 
     /**
      * 导入用户
      */
-    void importUsers(List<SysUser> list, boolean overwrite);
+    void importUsers(String tenantId, List<SysUser> list, boolean overwrite);
 
     /**
      * 导出用户
      */
-    List<SysUser> listForExport(UserExportQuery userExport);
+    List<SysUser> listForExport(String tenantId, UserExportQuery userExport);
 
     /**
      * 用户组织架构
      */
-    Tree<String> getDiagram();
-
-    /**
-     * 刷新用户组织
-     */
-    void refreshDiagram();
+    Tree<Integer> getDiagram(String tenantId);
 
     /**
      * 用户流程候选人
      */
-    List<UserNameDto> getUserCandidates(Integer userId);
+    List<UserNameDto> getUserCandidates(String tenantId, Integer userId);
 
     /**
      * 用户名称查询
      */
-    List<String> getNamesById(List<Integer> userIds);
+    List<String> getNamesById(String tenantId, List<Integer> userIds);
 }

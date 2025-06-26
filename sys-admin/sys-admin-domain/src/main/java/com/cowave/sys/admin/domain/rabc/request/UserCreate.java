@@ -9,6 +9,7 @@
  */
 package com.cowave.sys.admin.domain.rabc.request;
 
+import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.access.security.AccessInfoSetter;
 import com.cowave.commons.tools.Collections;
 import com.cowave.sys.admin.domain.rabc.SysUser;
@@ -17,6 +18,7 @@ import com.cowave.sys.admin.domain.rabc.SysUserRole;
 import com.cowave.sys.admin.domain.rabc.SysUserTree;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 
@@ -43,11 +45,15 @@ public class UserCreate extends SysUser implements AccessInfoSetter {
 	private List<String> deptPostIds;
 
     public List<SysUserRole> getUserRoles(){
-        return Collections.copyToList(roleIds, v -> new SysUserRole(getUserId(), v));
+        return Collections.copyToList(roleIds, roleId -> new SysUserRole(getUserId(), roleId));
     }
 
     public List<SysUserTree> getUserParents(){
-        return Collections.copyToList(parentIds, v -> new SysUserTree(getUserId(), v));
+        if(CollectionUtils.isNotEmpty(parentIds)){
+            return Collections.copyToList(parentIds, parentId -> new SysUserTree(getUserId(), parentId, Access.tenantId()));
+        }else{
+            return List.of(new SysUserTree(getUserId(), 0, Access.tenantId()));
+        }
     }
 
     public List<SysUserDept> getUserDeptPosts(){

@@ -26,8 +26,12 @@ import java.util.Date;
 @Repository
 public class SysNoticeDao extends ServiceImpl<SysNoticeMapper, SysNotice> {
 
-    public Page<SysNotice> queryPageOfUser(NoticeQuery query){
+    /**
+     * 分页查询（用户）
+     */
+    public Page<SysNotice> pageOfUser(String tenantId, NoticeQuery query) {
         return lambdaQuery()
+                .eq(SysNotice::getTenantId, tenantId)
                 .eq(!Access.isAdminUser(), SysNotice::getCreateBy, Access.userCode())
                 .eq(query.getNoticeType() != null, SysNotice::getNoticeType, query.getNoticeType())
                 .eq(query.getNoticeStatus() != null, SysNotice::getNoticeStatus, query.getNoticeStatus())
@@ -36,11 +40,27 @@ public class SysNoticeDao extends ServiceImpl<SysNoticeMapper, SysNotice> {
                 .page(Access.page());
     }
 
-    public void updateStatus(Long noticeId, Integer noticeStatus){
+    /**
+     * 查询（id）
+     */
+    public SysNotice getById(String tenantId, Long noticeId) {
+        return lambdaQuery()
+                .eq(SysNotice::getTenantId, tenantId)
+                .eq(SysNotice::getNoticeId, noticeId)
+                .one();
+    }
+
+    /**
+     * 更新状态
+     */
+    public void updateStatus(Long noticeId, Integer noticeStatus) {
         lambdaUpdate().eq(SysNotice::getNoticeId, noticeId).set(SysNotice::getNoticeStatus, noticeStatus).update();
     }
 
-    public void updateNotice(SysNotice sysNotice){
+    /**
+     * 更新信息
+     */
+    public void updateNotice(SysNotice sysNotice) {
         lambdaUpdate().eq(SysNotice::getNoticeId, sysNotice.getNoticeId())
                 .set(SysNotice::getUpdateBy, Access.userCode())
                 .set(SysNotice::getUpdateTime, new Date())

@@ -46,7 +46,7 @@
       <el-col :span="1.5">
         <el-button type="danger" plain icon="el-icon-refresh" size="mini" @click="handleRefreshCache"
                    :disabled="!checkPermit(['sys:dict:cache'])">
-          {{$t('commons.button.cache')}}
+          {{$t('dict.button.reset')}}
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :cols="cols"/>
@@ -377,7 +377,7 @@ export default {
     /** 刷新缓存 */
     handleRefreshCache() {
       refreshDict().then(() => {
-        this.$modal.msgSuccess(this.$t('commons.msg.success.refresh'));
+        this.$modal.msgSuccess(this.$t('commons.msg.success.reset'));
       });
     },
     /** 取消 */

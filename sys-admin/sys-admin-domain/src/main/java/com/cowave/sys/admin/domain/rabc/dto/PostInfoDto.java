@@ -24,5 +24,5 @@ public class PostInfoDto extends SysPost implements AccessInfoSetter {
     /**
      * 上级岗位id
      */
-    private Integer parentId;
+    private int parentId;
 }

@@ -14,7 +14,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.tools.Collections;
 import com.cowave.sys.admin.domain.rabc.SysRole;
-import com.cowave.sys.admin.domain.rabc.SysUser;
 import com.cowave.sys.admin.domain.rabc.request.RoleQuery;
 import com.cowave.sys.admin.infra.rabc.dao.mapper.SysRoleMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -29,37 +28,64 @@ import java.util.List;
 @Repository
 public class SysRoleDao extends ServiceImpl<SysRoleMapper, SysRole> {
 
-    public String queryCodeById(Integer roleId) {
-        return lambdaQuery().select(SysRole::getRoleCode)
-                .eq(SysRole::getRoleId, roleId)
-                .one().getRoleCode();
-    }
-
-    public Integer queryIdByCode(String roleCode){
-        return lambdaQuery().select(SysRole::getRoleId)
-                .eq(SysRole::getRoleCode, roleCode)
-                .one().getRoleId();
-    }
-
-    public Page<SysRole> queryPage(RoleQuery query) {
+    /**
+     * 角色查询（角色id）
+     */
+    public SysRole getById(String tenantId, Integer roleId) {
         return lambdaQuery()
+                .eq(SysRole::getTenantId, tenantId)
+                .eq(SysRole::getRoleId, roleId)
+                .one();
+    }
+
+    /**
+     * 列表查询（角色id）
+     */
+    public List<SysRole> listByIds(String tenantId, List<Integer> roleIds) {
+        return lambdaQuery()
+                .eq(SysRole::getTenantId, tenantId)
+                .in(SysRole::getRoleId, roleIds)
+                .list();
+    }
+
+    /**
+     * 分页查询
+     */
+    public Page<SysRole> queryPage(String tenantId, RoleQuery query) {
+        return lambdaQuery()
+                .in(SysRole::getTenantId, List.of("#", tenantId))
                 .eq(StringUtils.isNotBlank(query.getRoleCode()), SysRole::getRoleCode, query.getRoleCode())
                 .eq(StringUtils.isNotBlank(query.getRoleName()), SysRole::getRoleName, query.getRoleName())
                 .page(Access.page());
     }
 
-    public long countRoleCode(String roleCode, Integer roleId) {
-        return lambdaQuery().eq(SysRole::getRoleCode, roleCode)
-                .ne(roleId != null, SysRole::getRoleId, roleId).count();
+    /**
+     * 查询角色id（角色编码）
+     */
+    public Integer queryIdByCode(String roleCode){
+        return lambdaQuery()
+                .select(SysRole::getRoleId)
+                .eq(SysRole::getRoleCode, roleCode)
+                .one().getRoleId();
     }
 
-    public long countRoleName(String roleName, Integer roleId) {
-        return lambdaQuery().eq(SysRole::getRoleName, roleName)
-                .ne(roleId != null, SysRole::getRoleId, roleId).count();
+    /**
+     * 冲突检测（角色编码）
+     */
+    public long countRoleCode(String tenantId, String roleCode, Integer roleId) {
+        return lambdaQuery()
+                .in(SysRole::getTenantId, List.of("#", tenantId))
+                .eq(SysRole::getRoleCode, roleCode)
+                .ne(roleId != null, SysRole::getRoleId, roleId)
+                .count();
     }
 
+    /**
+     * 更新角色
+     */
     public void updateRole(SysRole sysRole){
-        lambdaUpdate().eq(SysRole::getRoleId, sysRole.getRoleId())
+        lambdaUpdate()
+                .eq(SysRole::getRoleId, sysRole.getRoleId())
                 .set(SysRole::getUpdateBy, Access.userCode())
                 .set(SysRole::getUpdateTime, new Date())
                 .set(SysRole::getRoleName, sysRole.getRoleName())
@@ -69,11 +95,15 @@ public class SysRoleDao extends ServiceImpl<SysRoleMapper, SysRole> {
                 .update();
     }
 
-    public List<String> queryNameByIds(List<Integer> roleIds){
+    /**
+     * 角色名称查询（角色id）
+     */
+    public List<String> queryNameByIds(String tenantId, List<Integer> roleIds){
         if(roleIds.isEmpty()){
             return List.of();
         }
         List<SysRole> list = lambdaQuery()
+                .eq(SysRole::getTenantId, tenantId)
                 .in(SysRole::getRoleId, roleIds)
                 .select(SysRole::getRoleName)
                 .list();

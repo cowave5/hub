@@ -24,6 +24,9 @@ import java.util.Date;
 @Repository
 public class SysDictDao extends ServiceImpl<SysDictMapper, SysDict> {
 
+    /**
+     * 更新字典
+     */
     public void updateDict(DictInfoDto sysDict){
         lambdaUpdate().eq(SysDict::getId, sysDict.getId())
                 .set(SysDict::getUpdateBy, Access.userCode())
@@ -41,11 +44,20 @@ public class SysDictDao extends ServiceImpl<SysDictMapper, SysDict> {
                 .update();
     }
 
+    /**
+     * 更新上级字典码
+     */
     public void updateParentCode(String newParent, String oldParent){
-        lambdaUpdate().eq(SysDict::getParentCode, oldParent).set(SysDict::getParentCode, newParent).update();
+        lambdaUpdate()
+                .eq(SysDict::getParentCode, oldParent)
+                .set(SysDict::getParentCode, newParent)
+                .update();
     }
 
-    public void deleteByParentCode(String parentCode){
+    /**
+     * 删除子字典
+     */
+    public void removeChildrenByCode(String parentCode){
         lambdaUpdate().eq(SysDict::getParentCode, parentCode).remove();
     }
 }

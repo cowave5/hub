@@ -12,7 +12,8 @@ package com.cowave.sys.admin.app.rabc;
 import cn.hutool.core.lang.tree.Tree;
 import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.response.Response;
-import com.cowave.commons.framework.support.excel.CellWidthHandler;
+import com.cowave.commons.framework.access.Access;
+import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
 import com.cowave.sys.admin.domain.rabc.SysMenu;
 import com.cowave.sys.admin.service.rabc.SysMenuService;
 import lombok.RequiredArgsConstructor;
@@ -42,10 +43,9 @@ public class SysMenuController{
 	/**
 	 * 菜单树
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:menu:query')")
 	@GetMapping("/tree")
 	public Response<List<Tree<Integer>>> tree(){
-		return Response.success(sysMenuService.tree());
+		return Response.success(sysMenuService.tree(Access.tenantId()));
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class SysMenuController{
 	@PreAuthorize("@permit.hasPermit('sys:menu:query')")
 	@GetMapping
 	public Response<Response.Page<SysMenu>> list(String menuName, Integer menuStatus){
-		return Response.page(sysMenuService.list(menuName, menuStatus, null));
+		return Response.page(sysMenuService.list(menuName, menuStatus));
 	}
 
 	/**
@@ -107,7 +107,8 @@ public class SysMenuController{
 		response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		List<SysMenu> menuList = sysMenuService.list(null, null);
 		EasyExcel.write(response.getOutputStream(), SysMenu.class)
-		.sheet("菜单").registerWriteHandler(new CellWidthHandler()).doWrite(sysMenuService.list(null, null, null));
+		.sheet("菜单").registerWriteHandler(new ExcelIgnoreStyle()).doWrite(menuList);
 	}
 }

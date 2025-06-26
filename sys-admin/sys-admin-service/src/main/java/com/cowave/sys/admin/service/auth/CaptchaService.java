@@ -17,7 +17,7 @@ import com.cowave.sys.admin.domain.auth.vo.CaptchaInfo;
 import com.cowave.sys.admin.domain.auth.request.LoginRequest;
 import com.cowave.sys.admin.domain.auth.request.RegisterRequest;
 import com.cowave.sys.admin.domain.auth.OAuthServer;
-import com.cowave.sys.admin.infra.base.redis.SysConfigRedis;
+import com.cowave.sys.admin.infra.base.dao.SysConfigDao;
 import com.google.code.kaptcha.Producer;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -74,14 +74,10 @@ public class CaptchaService {
     @Resource(name = "captchaProducerMath")
     private Producer captchaProducerMath;
 
-    private final SysConfigRedis sysConfigRedis;
-
+    private final SysConfigDao sysConfigDao;
     private final RedisHelper redisHelper;
-
-    private final JavaMailSender mailSender;
-
     private final OAuthService oAuthService;
-
+    private final JavaMailSender mailSender;
     private final SecureRandom random = new SecureRandom();
 
     public CaptchaInfo captcha() throws IOException {
@@ -91,8 +87,8 @@ public class CaptchaService {
             // 目前只有Gitlab一个授权服务
             oauthUrl = oAuthServers.get(0).gitlabAuthorizeUrl();
         }
-        boolean registerOnOff = sysConfigRedis.getConfigValue("sys.account.registerOnOff");
-        boolean captchaOnOff = sysConfigRedis.getConfigValue("sys.account.captchaOnOff");
+        boolean registerOnOff = sysConfigDao.getConfigValue("cowave", "sys.registerOnOff");
+        boolean captchaOnOff = sysConfigDao.getConfigValue("cowave", "sys.captchaOnOff");
         if (!captchaOnOff) {
             return new CaptchaInfo(registerOnOff, oauthUrl);
         }
@@ -101,7 +97,7 @@ public class CaptchaService {
         String capStr, code = null;
         BufferedImage image = null;
         // 生成验证码
-        String captchaType = sysConfigRedis.getConfigValue("sys.account.captchaType");
+        String captchaType = sysConfigDao.getConfigValue("cowave", "sys.captchaType");
         if ("math".equals(captchaType)) {
             String capText = captchaProducerMath.createText();
             capStr = capText.substring(0, capText.lastIndexOf("@"));
@@ -120,7 +116,7 @@ public class CaptchaService {
     }
 
     public void validCaptcha(LoginRequest request){
-        boolean captchaOnOff = sysConfigRedis.getConfigValue("sys.account.captchaOnOff");
+        boolean captchaOnOff = sysConfigDao.getConfigValue("cowave", "sys.captchaOnOff");
         if(captchaOnOff){
             String captcha = redisHelper.getValue(AUTH_CAPTCHA.formatted(request.getCaptchaId()));
             HttpAsserts.notNull(captcha, BAD_REQUEST, "{admin.captcha.expired}");
@@ -140,7 +136,7 @@ public class CaptchaService {
     }
 
     public void validEmail(RegisterRequest request){
-        boolean registerOnOff = sysConfigRedis.getConfigValue("sys.account.registerOnOff");
+        boolean registerOnOff = sysConfigDao.getConfigValue("cowave", "sys.registerOnOff");
         HttpAsserts.isTrue(registerOnOff, FORBIDDEN, "{admin.register.disable}");
 
         String email = redisHelper.getValue(AUTH_CAPTCHA.formatted(request.getCaptcha()));

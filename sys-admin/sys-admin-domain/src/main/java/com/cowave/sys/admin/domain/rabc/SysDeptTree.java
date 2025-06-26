@@ -9,14 +9,14 @@
  */
 package com.cowave.sys.admin.domain.rabc;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
  * @author shanhuiming
  */
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class SysDeptTree {
@@ -24,7 +24,6 @@ public class SysDeptTree {
     /**
      * 部门id
      */
-    @TableId(type = IdType.AUTO)
     private Integer deptId;
 
     /**
@@ -33,12 +32,7 @@ public class SysDeptTree {
     private Integer parentId;
 
     /**
-     * 关系类型
+     * 租户id
      */
-    private Integer treeType;
-
-    public SysDeptTree(Integer deptId, Integer parentId){
-        this.deptId = deptId;
-        this.parentId = parentId;
-    }
+    private String tenantId;
 }

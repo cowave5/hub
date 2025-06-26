@@ -57,12 +57,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join sys_dept_tree t on d.dept_id = t.dept_id
         left join sys_user_dept ud on d.dept_id = ud.dept_id and ud.is_leader = 1
         left join sys_user u on u.user_id = ud.user_id
-        where 1 = 1
-        <if test="deptName != null and deptName != ''">
-            and dept_name like concat('%', #{deptName}, '%')
+        where d.tenant_id = #{tenantId}
+        <if test="query.deptName != null and query.deptName != ''">
+            and dept_name like concat('%', #{query.deptName}, '%')
         </if>
-        <if test="deptPhone != null and deptPhone != ''">
-            and dept_phone like concat('%', #{deptPhone}, '%')
+        <if test="query.deptPhone != null and query.deptPhone != ''">
+            and dept_phone like concat('%', #{query.deptPhone}, '%')
         </if>
         order by t.parent_id, t.dept_id
     </select>
@@ -82,15 +82,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from sys_dept d
         left join sys_dept_tree t on d.dept_id = t.dept_id
         left join sys_user_dept u on d.dept_id = u.dept_id and u.is_leader = 1
-        where d.dept_id = #{deptId}
+        where t.tenant_id = #{tenantId} and d.dept_id = #{deptId}
     </select>
 
-    <select id="getTreeNodes" resultType="com.cowave.sys.admin.domain.base.vo.TreeNode">
+    <select id="listDiagramNodes" resultType="com.cowave.sys.admin.domain.rabc.vo.DiagramNode">
         select t.dept_id   id,
                t.parent_id pid,
                d.dept_name as label
         from sys_dept_tree t
         left join sys_dept d ON t.dept_id = d.dept_id
+        where t.tenant_id = #{tenantId}
         order by t.parent_id, t.dept_id
     </select>
 
@@ -108,7 +109,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                d.is_default isDefault
         from sys_dept_post d
         join sys_post p on d.post_id = p.post_id
-        where dept_id = #{query.deptId}
+        where dept_id = #{query.deptId} and p.tenant_id = #{tenantId}
         <if test="query.postName != null and query.postName != ''">
             and p.post_name like concat('%', #{query.postName}, '%')
         </if>
@@ -125,7 +126,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                p.post_type postType
         from pids
         join sys_post p on pids.post_id = p.post_id
-        where 1 = 1
+        where p.tenant_id = #{tenantId}
         <if test="query.postName != null and query.postName != ''">
             and p.post_name like concat('%', #{query.postName}, '%')
         </if>
@@ -135,20 +136,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by p.post_type
     </select>
 
-    <insert id="insertDeptPosts">
-        insert into sys_dept_post(dept_id, post_id, is_default)values
+    <select id="insertDeptPosts" resultType="com.cowave.sys.admin.domain.rabc.SysDeptPost">
+        with data(dept_id, post_id, is_default) as (
+        values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.deptId}, #{item.postId}, #{item.isDefault})
         </foreach>
+        )
+
+        insert into sys_dept_post(dept_id, post_id, is_default)
+        select data.dept_id, data.post_id, data.is_default
+        from data
+        where exists (select 1 from sys_dept where sys_dept.dept_id = data.dept_id and sys_dept.tenant_id = #{tenantId})
+
         on conflict(dept_id, post_id)
         do update set is_default = excluded.is_default
-    </insert>
+        returning dept_id, post_id, is_default
+    </select>
 
     <insert id="insertDeptUsers">
-        insert into sys_user_dept(user_id, dept_id, post_id, is_default, is_leader) values
+        with data(user_id, dept_id, post_id, is_default, is_leader) as (
+        values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.userId}, #{item.deptId}, #{item.postId}, #{item.isDefault}, #{item.isLeader})
         </foreach>
+        )
+
+        insert into sys_user_dept(user_id, dept_id, post_id, is_default, is_leader)
+        select data.user_id, data.dept_id, data.post_id, data.is_default, data.is_leader
+        from data
+        where exists (select 1 from sys_user where sys_user.user_id = data.user_id and sys_user.tenant_id = #{tenantId})
+
         on conflict(user_id, dept_id, post_id)
         do update set
         is_default = excluded.is_default,
@@ -165,9 +183,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ud.is_leader isLeader,
         p.post_name postName
         from sys_user_dept ud
-        left join sys_user u on ud.user_id = u.user_id
+        join sys_user u on ud.user_id = u.user_id
         left join sys_post p on ud.post_id = p.post_id
-        where ud.dept_id = #{query.deptId}
+        where ud.dept_id = #{query.deptId} and u.tenant_id = #{tenantId}
         <if test="query.userName != null and query.userName != ''">
             and u.user_name like concat('%', #{query.userName}, '%')
         </if>
@@ -187,7 +205,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         0 as isLeader
         from uids
         join sys_user u on uids.user_id = u.user_id
-        where 1 = 1
+        where u.tenant_id = #{tenantId}
         <if test="query.userName != null and query.userName != ''">
             and u.user_name like concat('%', #{query.userName}, '%')
         </if>
@@ -196,7 +214,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
     </select>
 
-    <select id="getDefaultDeptOfUser" resultType="com.cowave.sys.admin.domain.rabc.SysDept">
+    <select id="getPrimaryDeptByUserId" resultType="com.cowave.sys.admin.domain.rabc.SysDept">
         select
         <include refid="deptColumns"/>
         from sys_user_dept ud, sys_dept d
@@ -209,12 +227,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="getCandidatesByCode" resultType="com.cowave.sys.admin.domain.rabc.dto.UserNameDto">
-        select u.user_id userId, u.user_name userName
+        select u.user_id userId,
+               u.user_name userName
         from sys_user u, sys_dept d, sys_user_dept ud
-        where d.dept_code = #{deptCode} and d.dept_id = ud.dept_id and ud.user_id = u.user_id
+        where d.tenant_id = #{tenantId} and d.dept_code = #{deptCode}
+          and d.dept_id = ud.dept_id and ud.user_id = u.user_id
     </select>
 
-    <resultMap id="optionsMap" type="com.cowave.sys.admin.domain.base.vo.TreeChildren">
+    <resultMap id="postDiagramMap" type="com.cowave.sys.admin.domain.base.vo.TreeChildren">
         <result column="dept_id"     property="pid"/>
         <collection property="children" javaType="list" ofType="cn.hutool.core.lang.tree.Tree">
             <result column="child_id"     property="id"/>
@@ -223,28 +243,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </collection>
     </resultMap>
 
-    <select id="deptPostOptions" resultMap="optionsMap">
-        select d.dept_id,
-               d.dept_id || '-' || p.post_id child_id,
-               p.post_name,
-               d.dept_name || '/' || p.post_name as content
-        from sys_dept d
-        left join sys_dept_post dp on d.dept_id = dp.dept_id
-        left join sys_post p on dp.post_id = p.post_id
+    <select id="listPostDiagramNode" resultMap="postDiagramMap">
+        select p.post_name,
+               COALESCE(dp.dept_id, 0)                                                                    as dept_id,
+               case WHEN dp.dept_id is null then '0-' || p.post_id else d.dept_id || '-' || p.post_id end as child_id,
+               case WHEN dp.dept_id is null then p.post_name else d.dept_name || '/' || p.post_name end   as content
+        from sys_post p
+        left join sys_dept_post dp on dp.post_id = p.post_id
+        left join sys_dept d on d.dept_id = dp.dept_id
+        where p.tenant_id = #{tenantId}
     </select>
 
-    <resultMap id="deptUsersMap" type="com.cowave.sys.admin.domain.base.vo.TreeChildren">
+    <resultMap id="userDiagramMap" type="com.cowave.sys.admin.domain.base.vo.TreeChildren">
         <result column="dept_id"     property="pid"/>
         <collection property="children" javaType="list" ofType="cn.hutool.core.lang.tree.Tree">
-            <result column="user_id"     property="id"/>
+            <result column="user_id"    property="id"/>
             <result column="user_name"   property="label"/>
         </collection>
     </resultMap>
 
-    <select id="deptUserOptions" resultMap="deptUsersMap">
-        select d.dept_id, u.user_id, u.user_name
-        from sys_dept d
-        left join sys_user_dept ud on d.dept_id = ud.dept_id
-        left join sys_user u on ud.user_id = u.user_id
+    <select id="listUserDiagramNode" resultMap="userDiagramMap">
+        select distinct on(u.user_id)
+            u.user_id,
+            u.user_name,
+            COALESCE (ud.dept_id, 0) AS dept_id
+        from sys_user u
+        left join sys_user_dept ud on u.user_id = ud.user_id
+        where u.tenant_id = #{tenantId}
     </select>
 </mapper>

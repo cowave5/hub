@@ -23,6 +23,16 @@ import java.util.List;
 public class UserProfile {
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
+     * 租户名称
+     */
+    private String tenantName;
+
+    /**
      * 用户id
      */
     private Integer userId;
@@ -35,7 +45,7 @@ public class UserProfile {
     /**
      * 用户类型
      */
-    private Integer userType;
+    private String userType;
 
     /**
      * 用户名称

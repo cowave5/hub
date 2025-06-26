@@ -75,7 +75,7 @@ public class FlowInstanceService {
                 instance.setBusinessKey(process.getBusinessKey());
                 instance.setBeginTime(process.getStartTime());
                 instance.setStartUser(process.getStartUserId());
-                instance.setStartUserName(sysUserDao.queryNameById(Integer.valueOf(process.getStartUserId())));
+                instance.setStartUserName(sysUserDao.queryNameByUserId(Integer.valueOf(process.getStartUserId())));
                 instance.setSuspended(process.isSuspended());
                 instance.setEnded(process.isEnded());
                 // 当前任务
@@ -86,7 +86,7 @@ public class FlowInstanceService {
                     FlowTask flowTask = new FlowTask();
                     flowTask.setTaskName(task.getName());
                     flowTask.setAssignee(task.getAssignee());
-                    flowTask.setAssigneeName(sysUserDao.queryNameById(Integer.valueOf(task.getAssignee())));
+                    flowTask.setAssigneeName(sysUserDao.queryNameByUserId(Integer.valueOf(task.getAssignee())));
                     flowTaskList.add(flowTask);
                 }
                 instance.setTaskList(flowTaskList);
@@ -105,7 +105,7 @@ public class FlowInstanceService {
                 instance.setBusinessKey(history.getBusinessKey());
                 instance.setBeginTime(history.getStartTime());
                 instance.setStartUser(history.getStartUserId());
-                instance.setStartUserName(sysUserDao.queryNameById(Integer.valueOf(history.getStartUserId())));
+                instance.setStartUserName(sysUserDao.queryNameByUserId(Integer.valueOf(history.getStartUserId())));
                 if (history.getEndTime() == null) {
                     List<Task> taskList =
                             taskService.createTaskQuery().processInstanceId(history.getId()).active().list();
@@ -114,7 +114,7 @@ public class FlowInstanceService {
                         FlowTask flowTask = new FlowTask();
                         flowTask.setTaskName(task.getName());
                         flowTask.setAssignee(task.getAssignee());
-                        flowTask.setAssigneeName(sysUserDao.queryNameById(Integer.valueOf(task.getAssignee())));
+                        flowTask.setAssigneeName(sysUserDao.queryNameByUserId(Integer.valueOf(task.getAssignee())));
                         flowTaskList.add(flowTask);
                     }
                     instance.setTaskList(flowTaskList);
@@ -172,7 +172,7 @@ public class FlowInstanceService {
             task.setEndTime(history.getEndTime());
             task.setProcessInstanceId(history.getProcessInstanceId());
             task.setAssignee(history.getAssignee());
-            task.setAssigneeName(sysUserDao.queryNameById(Integer.valueOf(history.getAssignee())));
+            task.setAssigneeName(sysUserDao.queryNameByUserId(Integer.valueOf(history.getAssignee())));
             List<Comment> comments = taskService.getTaskComments(history.getTaskId());
             if (comments.size() > 0) {
                 task.setComment(comments.get(0).getFullMessage());

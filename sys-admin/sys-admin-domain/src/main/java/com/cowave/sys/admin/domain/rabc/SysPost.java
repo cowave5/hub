@@ -43,6 +43,11 @@ public class SysPost {
     private Integer postId;
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
      * 岗位编码
      */
     @ColumnWidth(50)

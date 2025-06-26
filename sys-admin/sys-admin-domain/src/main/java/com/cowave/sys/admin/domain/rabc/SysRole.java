@@ -43,6 +43,11 @@ public class SysRole implements AccessInfoSetter {
     private Integer roleId;
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
      * 角色编码
      */
     @NotBlank(message = "{admin.role.code.notnull}")

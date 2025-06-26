@@ -37,6 +37,12 @@ public class SysNotice {
     private Long noticeId;
 
     /**
+     * 租户id
+     */
+    @NotBlank(message = "{admin.tenant.id.notnull}")
+    private String tenantId;
+
+    /**
      * 公告标题
      */
     @NotBlank(message = "{admin.notice.title.notnull}")

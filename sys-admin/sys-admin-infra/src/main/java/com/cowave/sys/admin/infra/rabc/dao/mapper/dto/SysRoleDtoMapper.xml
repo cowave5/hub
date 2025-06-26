@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    <include refid="roleField"/>
 	    from sys_role r
 	    left join sys_role_menu m on r.role_id = m.role_id
-	    where r.role_id = #{roleId}
+	    where r.role_id = #{roleId} and r.tenant_id in ('#', #{tenantId})
 	</select>
 
 	<select id="getAuthedUser" resultType="com.cowave.sys.admin.domain.rabc.dto.RoleUserDto">
@@ -59,11 +59,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         u.user_phone   userPhone,
         u.user_rank    userRank
         from sys_user_role r
-        left join sys_user u on r.user_id = u.user_id
+        join sys_user u on r.user_id = u.user_id
         left join sys_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
         left join sys_dept d on ud.dept_id = d.dept_id
         left join sys_post p on ud.post_id = p.post_id
-        where r.role_id = #{query.roleId}
+        where u.tenant_id = #{tenantId} and r.role_id = #{query.roleId}
         <if test="query.userName != null and query.userName != ''">
             and u.user_name like concat('%', #{query.userName}, '%')
         </if>
@@ -82,11 +82,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         u.user_phone   userPhone,
         u.user_rank    userRank
         from uids
-        left join sys_user u on uids.user_id = u.user_id
+        join sys_user u on uids.user_id = u.user_id
         left join sys_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
         left join sys_dept d on ud.dept_id = d.dept_id
         left join sys_post p on ud.post_id = p.post_id
-        where 1 = 1
+        where u.tenant_id = #{tenantId}
         <if test="query.userName != null and query.userName != ''">
             and u.user_name like concat('%', #{query.userName}, '%')
         </if>
@@ -96,14 +96,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
     <insert id="addRoleUser">
-        insert into sys_user_role(role_id, user_id) values
-        <foreach  collection="userIds" item="userId" index="index" separator=",">
-            (#{roleId}, #{userId})
+        with data(role_id, user_id) as (
+        values
+        <foreach collection="role.userIds" item="userId" index="index" separator=",">
+            (#{role.roleId}, #{userId})
         </foreach>
+        )
+        insert into sys_user_role(role_id, user_id)
+        select data.role_id, data.user_id
+        from data
+        where exists (select 1 from sys_user where sys_user.user_id = data.user_id and sys_user.tenant_id = #{tenantId})
         on conflict do nothing
     </insert>
 
-    <select id="getUserRoles" resultType="java.lang.String">
+    <select id="getRoleCodesByUserId" resultType="java.lang.String">
         select r.role_code
         from sys_role r, sys_user_role ur
         where r.role_id = ur.role_id and ur.user_id = #{userId}

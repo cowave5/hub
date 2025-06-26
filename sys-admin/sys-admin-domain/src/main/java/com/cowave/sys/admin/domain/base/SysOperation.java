@@ -9,9 +9,18 @@
  */
 package com.cowave.sys.admin.domain.base;
 
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.alibaba.excel.annotation.write.style.ContentStyle;
+import com.alibaba.excel.annotation.write.style.HeadFontStyle;
+import com.alibaba.excel.annotation.write.style.HeadRowHeight;
+import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.cowave.commons.framework.access.operation.OperationInfo;
 import com.cowave.commons.framework.access.security.AccessInfo;
 import com.cowave.commons.framework.helper.es.HitEntity;
+import com.cowave.commons.framework.support.excel.DateConverter;
+import com.cowave.commons.framework.support.excel.StatusConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +30,11 @@ import java.util.Date;
 /**
  * @author shanhuiming
  */
+@ExcelIgnoreUnannotated
+@HeadRowHeight(20)
+@ColumnWidth(20)
+@HeadFontStyle(fontHeightInPoints = 10)
+@ContentStyle(horizontalAlignment = HorizontalAlignmentEnum.LEFT)
 @NoArgsConstructor
 @Data
 public class SysOperation implements HitEntity {
@@ -35,37 +49,44 @@ public class SysOperation implements HitEntity {
     /**
      * 操作模块
      */
+    @ExcelProperty("操作模块")
     private String opModule;
 
     /**
      * 操作类型
      */
+    @ExcelProperty("操作类型")
     private String opType;
 
     /**
      * 操作动作
      */
+    @ExcelProperty("操作动作")
     private String opAction;
 
     /**
      * 操作时间
      */
+    @ExcelProperty(value = "操作时间", converter = DateConverter.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date opTime;
 
     /**
      * 操作状态
      */
+    @ExcelProperty(value = "操作状态", converter = StatusConverter.class)
     private Integer opStatus;
 
     /**
      * 访问ip
      */
+    @ExcelProperty("访问ip")
     private String ip;
 
     /**
      * 访问url
      */
+    @ExcelProperty("访问url")
     private String url;
 
     /**
@@ -76,6 +97,7 @@ public class SysOperation implements HitEntity {
     /**
      * 操作描述
      */
+    @ExcelProperty("操作描述")
     private String opDesc;
 
     /**

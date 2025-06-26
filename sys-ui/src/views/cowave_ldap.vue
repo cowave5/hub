@@ -1,39 +1,24 @@
 <template>
   <div class="register">
-    <el-form ref="form" :model="form" :rules="registerRules" class="register-form">
+    <el-form ref="form" :model="ldap" :rules="ldapRules" class="register-form">
       <h3 class="title">Cowave管理系统</h3>
-      <el-form-item prop="userAccount">
-        <el-input v-model="form.userAccount" type="text" autocomplete="new-password" placeholder="账号">
-          <svg-icon slot="prefix" icon-class="guide" class="el-input__icon input-icon" />
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="userName">
-        <el-input v-model="form.userName" type="text" autocomplete="new-password" placeholder="昵称">
+      <el-form-item prop="username">
+        <el-input v-model="ldap.username" type="text" autocomplete="new-password" placeholder="域账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
-      <el-form-item prop="userEmail">
-        <el-input v-model="form.userEmail" type="text" autocomplete="new-password" placeholder="邮箱">
-          <svg-icon slot="prefix" icon-class="email" class="el-input__icon input-icon" />
+      <el-form-item prop="password">
+        <el-input v-model="ldap.password" type="password" autocomplete="new-password" placeholder="密码" @keyup.enter.native="handleLogin">
+          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
-      </el-form-item>
-      <el-form-item prop="captcha">
-        <el-input v-model="form.captcha" autocomplete="new-password" placeholder="验证码"
-                  style="width: 63%" @keyup.enter.native="handleRegister">
-          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
-        </el-input>
-        <div class="confirm-code">
-          <confirmCode @getConfirmCodeClick="getConfirmCodeClick" @timeKeepingDone="timeKeepingDone"
-                       :timeKeeping="timeKeeping" :seconds="30"/>
-        </div>
       </el-form-item>
       <el-form-item style="width:100%;">
-        <el-button :loading="loading" size="medium" type="primary" style="width:100%;" @click.native.prevent="handleRegister">
-          <span v-if="!loading">注 册</span>
-          <span v-else>注 册 中...</span>
+        <el-button :loading="loading" size="medium" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
+          <span v-if="!loading">登 录</span>
+          <span v-else>登 录 中...</span>
         </el-button>
         <div style="float: right;">
-          <router-link class="link-type" :to="'/login'">系统账号登录</router-link>
+          <router-link class="link-type" :to="'/cowave/login'">系统账号登录</router-link>
         </div>
       </el-form-item>
     </el-form>
@@ -42,38 +27,25 @@
     </div>
   </div>
 </template>
-
 <script>
-import {getEmailCode, register} from "@/api/auth";
-import confirmCode from "@/views/confirmCode.vue";
 
 export default {
-  name: "Register",
-  components: { confirmCode },
+  name: "Ldap",
   data() {
     return {
       version: "",
       year: new Date().getFullYear(),
-      codeUrl: "",
-      form: {
-        userAccount: "",
-        userName: "",
-        userEmail: "",
-        captcha: "",
+      ldap: {
+        username: "",
+        password: "",
       },
-      registerRules: {
-        userAccount: [
-          { required: true, trigger: "blur", message: "请输入账号" },
-          { min: 3, max: 20, message: '账号长度必须介于 3 和 20 之间', trigger: 'blur' }
+      ldapRules: {
+        username: [
+          { required: true, trigger: "blur", message: "请输入您的域账号" }
         ],
-        userName: [
-          { required: true, trigger: "blur", message: "请输入昵称" }
+        password: [
+          { required: true, trigger: "blur", message: "请输入您的密码" }
         ],
-        userEmail: [
-          { required: true, trigger: "blur", message: "请输入邮箱" },
-          {type: "email", message: this.$t('user.rules.email'), trigger: ["blur", "change"]}
-        ],
-        code: [{ required: true, trigger: "blur", message: "请输入验证码" }]
       },
       loading: false,
       captchaOnOff: true,
@@ -84,29 +56,16 @@ export default {
     this.version = process.env.VUE_APP_VERSION;
   },
   methods: {
-    getConfirmCodeClick() {
-      this.timeKeeping = true;
-      getEmailCode(this.form.userEmail).then(res => {
-        this.$modal.msgSuccess("验证码已发送至邮箱");
-      });
-    },
-    timeKeepingDone(){
-      this.timeKeeping = false;
-    },
-    handleRegister() {
+    handleLogin() {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.loading = true;
-          register(this.form).then(res => {
-            this.loading = false;
-            this.$modal.msgSuccess("注册成功, 初始密码为: " + res.data);
-            setInterval(() => {
-              this.$router.push("/login");
-            }, 2000 );
+          this.$store.dispatch("Ldap", this.ldap).then(async () => {
+            this.$router.push({path: this.redirect || "/"}).catch(() => {});
+            await this.$store.dispatch('OpenNoticeSocket');
           }).catch(() => {
-            this.form.captcha = "";
             this.loading = false;
-          })
+          });
         }
       });
     }
@@ -120,7 +79,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
+  background-image: url("../assets/images/login-cowave.jpg");
   background-size: cover;
 }
 .title {

@@ -11,6 +11,7 @@ package com.cowave.sys.admin.service.base.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.cowave.commons.client.http.asserts.HttpAsserts;
+import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.helper.minio.MinioHelper;
 import com.cowave.commons.framework.helper.minio.MinioProperties;
 import com.cowave.commons.tools.DateUtils;
@@ -20,13 +21,13 @@ import com.cowave.sys.admin.domain.base.request.AttachUpload;
 import com.cowave.sys.admin.infra.base.dao.SysAttachDao;
 import com.cowave.sys.admin.service.base.SysAttachService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 import static com.cowave.commons.client.http.constants.HttpCode.NOT_FOUND;
@@ -43,29 +44,36 @@ public class SysAttachServiceImpl implements SysAttachService {
     private final SysAttachDao sysAttachDao;
 
     @Override
-    public List<SysAttach> list(AttachQuery query) {
-        return sysAttachDao.queryList(query.getMasterId(), query.getAttachGroup(), query.getAttachType());
+    public List<SysAttach> list(String tenantId, AttachQuery query) {
+        return sysAttachDao.queryList(query.getOwnerId(), query.getOwnerType(), query.getAttachType());
     }
 
     @Override
     public SysAttach upload(MultipartFile file, AttachUpload upload) throws Exception {
         String fileName = file.getOriginalFilename();
-
-        SysAttach sysAttach = new SysAttach();
-        sysAttach.setAttachName(fileName);
-        sysAttach.setAttachSize(file.getSize());
-        sysAttach.setCreateTime(new Date());
-        sysAttach.setMasterId(upload.getMasterId());
-        sysAttach.setIsPublic(upload.getIsPublic());
-        sysAttach.setAttachType(upload.getAttachType());
-        sysAttach.setAttachGroup(upload.getAttachGroup());
-
-        String filePath = upload.getAttachType() + File.pathSeparator
-                + DateUtils.format("yyyy-MM") + File.pathSeparator + IdUtil.randomUUID() + "." + fileName;
+        SysAttach sysAttach = SysAttach.builder()
+                .attachName(fileName)
+                .attachSize(file.getSize())
+                .ownerId(upload.getOwnerId())
+                .ownerType(upload.getOwnerType())
+                .attachType(upload.getAttachType())
+                .isPrivate(upload.getIsPrivate())
+                .createBy(Access.userCode())
+                .updateBy(Access.userCode())
+                .createTime(Access.accessTime())
+                .updateTime(Access.accessTime())
+                .build();
+        sysAttach.setTenantId(upload.getTenantId());
+        if (StringUtils.isBlank(upload.getTenantId())) {
+            sysAttach.setTenantId(Access.tenantId());
+        }
+        String filePath = upload.getAttachType() + File.separator
+                + DateUtils.format("yyyy-MM") + File.separator + IdUtil.randomUUID() + "." + fileName;
         sysAttach.setAttachPath(filePath);
-
         sysAttachDao.save(sysAttach);
-        minioHelper.upload(file, upload.getAttachGroup(), filePath, upload.getIsPublic() == 1);
+
+        minioHelper.upload(file, sysAttach.getTenantId(), filePath, upload.getIsPrivate() == 1);
+        sysAttach.setViewUrl(preview(sysAttach));
         return sysAttach;
     }
 
@@ -73,7 +81,7 @@ public class SysAttachServiceImpl implements SysAttachService {
     public void download(HttpServletResponse response, Long attachId) throws Exception {
         SysAttach sysAttach = sysAttachDao.getById(attachId);
         HttpAsserts.notNull(sysAttach, NOT_FOUND, "{admin.attach.notexist}");
-        minioHelper.download(response, sysAttach.getAttachGroup(), sysAttach.getAttachPath(), sysAttach.getAttachName());
+        minioHelper.download(response, sysAttach.getOwnerType(), sysAttach.getAttachPath(), sysAttach.getAttachName());
     }
 
     @Override
@@ -85,16 +93,16 @@ public class SysAttachServiceImpl implements SysAttachService {
 
     @Override
     public String preview(SysAttach sysAttach) throws Exception {
-        if(sysAttach.getIsPublic() == 1){
-            return minioProperties.getEndpoint() + "/" + sysAttach.getAttachGroup() + "/" + sysAttach.getAttachPath();
-        }else{
-            return minioHelper.preview(sysAttach.getAttachGroup(), sysAttach.getAttachPath());
+        if (sysAttach.getIsPrivate() == 1) {
+            return minioHelper.preview(sysAttach.getTenantId(), sysAttach.getAttachPath());
+        } else {
+            return minioProperties.getEndpoint() + File.separator + sysAttach.getTenantId() + File.separator + sysAttach.getAttachPath();
         }
     }
 
     @Override
     public void delete(Long attachId) throws Exception {
-        if(attachId == null){
+        if (attachId == null) {
             return;
         }
         delete(sysAttachDao.getById(attachId));
@@ -102,34 +110,29 @@ public class SysAttachServiceImpl implements SysAttachService {
 
     @Override
     public void delete(SysAttach sysAttach) throws Exception {
-        if(sysAttach == null){
+        if (sysAttach == null) {
             return;
         }
         sysAttachDao.removeById(sysAttach.getAttachId());
-        minioHelper.delete(sysAttach.getAttachGroup(), sysAttach.getAttachPath());
+        minioHelper.delete(sysAttach.getOwnerType(), sysAttach.getAttachPath());
     }
 
     @Override
-    public void updateMasterById(Long masterId, Long attachId) {
-        sysAttachDao.updateMasterById(masterId, attachId);
-    }
-
-    @Override
-    public SysAttach latestOfMaster(Long masterId, String attachGroup) throws Exception {
-        SysAttach attach = sysAttachDao.latestOfMaster(masterId, attachGroup);
-        if(attach != null){
+    public SysAttach latestOfOwner(String ownerId, String ownerType, String attachType) throws Exception {
+        SysAttach attach = sysAttachDao.latestOfOwner(ownerId, ownerType, attachType);
+        if (attach != null) {
             attach.setViewUrl(preview(attach));
         }
         return attach;
     }
 
     @Override
-    public void masterReserve(Long masterId, String attachGroup, String attachType, int reserve) throws Exception {
-        List<SysAttach> list = sysAttachDao.queryList(masterId, attachGroup, attachType);
-        for(int i = reserve; i < list.size(); i++){
+    public void masterReserve(String ownerId, String ownerType, String attachType, int reserve) throws Exception {
+        List<SysAttach> list = sysAttachDao.queryList(ownerId, ownerType, attachType);
+        for (int i = reserve; i < list.size(); i++) {
             SysAttach attach = list.get(i);
             sysAttachDao.removeById(attach.getAttachId());
-            minioHelper.delete(attachGroup, attach.getAttachPath());
+            minioHelper.delete(ownerType, attach.getAttachPath());
         }
     }
 }

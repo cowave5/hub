@@ -46,8 +46,8 @@
       </el-col>
       <el-col :span="1.5">
         <el-button type="danger" plain icon="el-icon-refresh" size="mini" @click="handleRefreshCache"
-                   :disabled="!checkPermit(['sys:config:cache'])">
-          {{$t('commons.button.cache')}}
+                   :disabled="!checkPermit(['sys:config:reset'])">
+          {{$t('config.button.reset')}}
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :cols="cols"/>
@@ -62,8 +62,8 @@
           <span>{{(queryParams.page - 1) * queryParams.pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="cols[0].show" :label="$t('config.label.name')" align="left" prop="configName" :show-overflow-tooltip="true" />
-      <el-table-column v-if="cols[1].show" :label="$t('config.label.key')" align="left" prop="configKey" :show-overflow-tooltip="true" />
+      <el-table-column v-if="cols[0].show" :label="$t('config.label.name')" align="center" prop="configName" :show-overflow-tooltip="true" />
+      <el-table-column v-if="cols[1].show" :label="$t('config.label.key')" align="center" prop="configKey" :show-overflow-tooltip="true" />
       <el-table-column v-if="cols[2].show" :label="$t('config.label.value')" align="center" prop="configValue" />
       <el-table-column v-if="cols[3].show" :label="$t('dict.label.valueType')" align="center" prop="valueType" />
       <el-table-column v-if="cols[4].show" :label="$t('config.label.remark')" align="left" prop="remark" :show-overflow-tooltip="true" />
@@ -292,10 +292,11 @@ export default {
         ...this.queryParams
       }, this.$t('config.text.data') + `_${new Date().getTime()}.xlsx`)
     },
-    /** 刷新缓存 */
+    /** 重置配置 */
     handleRefreshCache() {
       refreshConfig().then(() => {
-        this.$modal.msgSuccess(this.$t('commons.msg.success.refresh'));
+        this.$modal.msgSuccess(this.$t('commons.msg.success.reset'));
+        this.getList();
       });
     },
     /** 取消 */

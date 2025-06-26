@@ -10,6 +10,7 @@
 package com.cowave.sys.admin.domain.base.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,26 +19,32 @@ import lombok.NoArgsConstructor;
  */
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Data
 public class AttachUpload {
 
     /**
-     * 是否公开
+     * 租户id
      */
-    private int isPublic;
+    private String tenantId;
 
     /**
      * 宿主id
      */
-    private Long masterId;
+    private String ownerId;
 
     /**
-     * 附件分组
+     * 宿主类型
      */
-    private String attachGroup;
+    private String ownerType;
 
     /**
      * 附件类型
      */
     private String attachType;
+
+    /**
+     * 是否私有的
+     */
+    private int isPrivate;
 }

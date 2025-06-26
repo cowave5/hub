@@ -11,6 +11,7 @@ package com.cowave.sys.admin.infra.rabc.dao.mapper.dto;
 
 import com.cowave.sys.admin.domain.rabc.SysMenu;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -23,6 +24,21 @@ import java.util.List;
 public interface SysMenuDtoMapper {
 
     /**
+     * 操作权限（用户id）
+     */
+    List<String> listPermitsByUserId(@Param("tenantId") String tenantId, @Param("userId") Integer userId);
+
+    /**
+     * 菜单权限（指定角色）
+     */
+    List<SysMenu> listMenusByRoles(@Param("tenantId") String tenantId, @Param("list") List<String> roleList);
+
+    /**
+     * Api令牌权限
+     */
+    List<SysMenu> listApiPermitsByRoles(List<String> roleList);
+
+    /**
      * 删除当前以及子菜单的角色关联
      */
     void loopDeleteMenuRoles(Integer menuId);
@@ -31,19 +47,4 @@ public interface SysMenuDtoMapper {
      * 删除当前以及子菜单
      */
     void loopDeleteMenus(Integer menuId);
-
-    /**
-     * 用户权限
-     */
-    List<String> getPermitsByUserId(Integer userId);
-
-    /**
-     * 角色菜单
-     */
-    List<SysMenu> getMenusByRole(List<String> roleList);
-
-    /**
-     * 角色Api菜单
-     */
-    List<SysMenu> getApiMenusByRole(List<String> roleList);
 }

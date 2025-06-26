@@ -9,12 +9,14 @@
  */
 package com.cowave.sys.admin.domain.rabc.request;
 
+import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.access.security.AccessInfoSetter;
 import com.cowave.commons.tools.Collections;
 import com.cowave.sys.admin.domain.rabc.SysDept;
 import com.cowave.sys.admin.domain.rabc.SysDeptTree;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -33,6 +35,10 @@ public class DeptCreate extends SysDept implements AccessInfoSetter {
 	private List<Integer> parentIds;
 
     public List<SysDeptTree> getDeptParents(){
-        return Collections.copyToList(parentIds, v -> new SysDeptTree(getDeptId(), v));
+        if(CollectionUtils.isNotEmpty(parentIds)){
+            return Collections.copyToList(parentIds, parentId -> new SysDeptTree(getDeptId(), parentId, Access.tenantId()));
+        }else{
+            return List.of(new SysDeptTree(getDeptId(), 0, Access.tenantId()));
+        }
     }
 }

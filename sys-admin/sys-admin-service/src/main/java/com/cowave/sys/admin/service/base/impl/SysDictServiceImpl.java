@@ -73,7 +73,7 @@ public class SysDictServiceImpl implements SysDictService {
 			}
 			// 类型字典
 			if ("group".equals(dict.getGroupCode())) {
-				sysDictDao.deleteByParentCode(dict.getDictCode());
+				sysDictDao.removeChildrenByCode(dict.getDictCode());
 				sysDictHelper.removeType(dict.getDictCode());
 			}
 		}

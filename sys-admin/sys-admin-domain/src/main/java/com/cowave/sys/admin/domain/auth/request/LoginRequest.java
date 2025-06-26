@@ -20,6 +20,11 @@ import javax.validation.constraints.NotBlank;
 public class LoginRequest {
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
      * 用户名
      */
 	@NotBlank(message = "{admin.user.account.notnull}")

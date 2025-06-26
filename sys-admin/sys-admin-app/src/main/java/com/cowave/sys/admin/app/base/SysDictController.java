@@ -11,7 +11,7 @@ package com.cowave.sys.admin.app.base;
 
 import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.response.Response;
-import com.cowave.commons.framework.support.excel.CellWidthHandler;
+import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
 import com.cowave.sys.admin.domain.base.dto.DictInfoDto;
 import com.cowave.sys.admin.domain.base.request.DictQuery;
 import com.cowave.sys.admin.domain.base.vo.SelectOption;
@@ -99,17 +99,16 @@ public class SysDictController {
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		EasyExcel.write(response.getOutputStream(), DictInfoDto.class)
-		.sheet("字典数据").registerWriteHandler(new CellWidthHandler()).doWrite(sysDictService.queryList(new DictQuery()));
+		.sheet("字典数据").registerWriteHandler(new ExcelIgnoreStyle()).doWrite(sysDictService.queryList(new DictQuery()));
 	}
 
 	/**
-	 * 刷新字典
+	 * 重置缓存
 	 */
 	@PreAuthorize("@permit.hasPermit('sys:dict:cache')")
-	@GetMapping("/refresh")
-	public Response<Void> refresh() throws Exception {
-		sysDictHelper.refresh();
-		return Response.success();
+	@GetMapping("/reset")
+	public Response<Void> resetCache() throws Exception {
+		return Response.success(sysDictHelper::resetCache);
 	}
 
 	/**

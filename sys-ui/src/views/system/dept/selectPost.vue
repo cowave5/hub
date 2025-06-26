@@ -47,7 +47,7 @@
     </el-row>
 
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="handleSubmit" :disabled="!checkPermit(['sys:dept:positions'])">
+      <el-button type="primary" @click="handleSubmit" :disabled="!checkPermit(['sys:dept:positions:add'])">
         {{$t('commons.button.confirm')}}
       </el-button>
       <el-button @click="visible = false">{{$t('commons.button.cancel')}}</el-button>

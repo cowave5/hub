@@ -102,9 +102,11 @@ service.interceptors.response.use(response => {
       }
     } else if (code === '401') {
       cache.local.removeAccessToken()
-      if (router.currentRoute.path !== '/login' && router.currentRoute.path !== '/ldap') {
+      if (router.currentRoute.path !== '/cowave/login'
+          && router.currentRoute.path !== '/cowave/ldap'
+          && router.currentRoute.path !== '/login' ) {
         MessageBox.alert(msg, { type: 'warning' }).then(() => {
-          router.push('/login')
+          router.push('/cowave/login')
         })
       } else {
         Notification.error({

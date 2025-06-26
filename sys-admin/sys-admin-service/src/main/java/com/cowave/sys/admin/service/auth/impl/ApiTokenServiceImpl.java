@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 import static com.cowave.commons.framework.access.security.BearerTokenService.*;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_API;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_API_CURRENT;
-import static com.cowave.sys.admin.domain.auth.AccessType.API;
+import static com.cowave.sys.admin.domain.auth.AuthType.API;
 
 /**
  * @author shanhuiming

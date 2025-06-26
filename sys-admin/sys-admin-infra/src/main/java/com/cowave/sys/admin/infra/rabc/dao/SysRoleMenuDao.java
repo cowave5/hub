@@ -26,6 +26,9 @@ public class SysRoleMenuDao extends ServiceImpl<SysRoleMenuMapper, SysRoleMenu> 
         lambdaUpdate().in(SysRoleMenu::getRoleId, roleIds).remove();
     }
 
+    /**
+     * 删除角色菜单
+     */
     public void deleteByRoleId(Integer roleId){
         lambdaUpdate().eq(SysRoleMenu::getRoleId, roleId).remove();
     }

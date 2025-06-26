@@ -11,7 +11,7 @@ package com.cowave.sys.admin.app.base;
 
 import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.response.Response;
-import com.cowave.commons.framework.support.excel.CellWidthHandler;
+import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
 import com.cowave.sys.admin.domain.base.dto.SysAlarmDto;
 import com.cowave.sys.admin.domain.base.dto.SysAlarmTypeDto;
 import com.cowave.sys.admin.domain.base.vo.AlarmHandles;
@@ -113,7 +113,7 @@ public class SysAlarmController {
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 		EasyExcel.write(response.getOutputStream(), SysAlarmDto.class)
-		.sheet("系统告警").registerWriteHandler(new CellWidthHandler()).doWrite(sysAlarmService.list(sysAlarm).getRecords());
+		.sheet("系统告警").registerWriteHandler(new ExcelIgnoreStyle()).doWrite(sysAlarmService.list(sysAlarm).getRecords());
 	}
 
 	/**

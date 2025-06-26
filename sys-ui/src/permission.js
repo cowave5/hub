@@ -6,16 +6,18 @@ import cache from "@/plugins/cache";
 
 NProgress.configure({ showSpinner: false })
 
-const whiteList = ['/login', '/register', '/ldap', '/oauth/gitlab', '/bind']
+const whiteList = ['/login', '/cowave/login', '/cowave/register', '/cowave/ldap', '/oauth/gitlab', '/bind']
 
 // 路由跳转
 router.beforeEach((to, from, next) => {
   NProgress.start()
   // 检查AccessToken（本地持久化）
   if (cache.local.getAccessToken()) {
-    to.meta.title && store.dispatch('settings/setTitle', to.meta.title)
     // 如果登录Url，直接将next置为首页
-    if (to.path === '/login' || to.path === '/ldap' || to.path === '/oauth/gitlab') {
+    if (to.path === '/login'
+        || to.path === '/cowave/login'
+        || to.path === '/cowave/ldap'
+        || to.path === '/oauth/gitlab') {
       next({ path: '/' })
       NProgress.done()
     } else {
@@ -29,7 +31,7 @@ router.beforeEach((to, from, next) => {
           })
         }).catch(err => {
           cache.local.removeAccessToken()
-          next({ path: '/login' })
+          next({ path: '/cowave/login' })
         })
       } else {
         next()
@@ -40,7 +42,7 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       const redirect = encodeURIComponent(to.fullPath);
-      next(`/login?redirect=${redirect}`) // 否则全部重定向到登录页
+      next(`/cowave/login?redirect=${redirect}`) // 否则全部重定向到登录页
       NProgress.done()
     }
   }

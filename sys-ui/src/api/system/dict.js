@@ -54,11 +54,11 @@ export function updateDict(data) {
 }
 
 /**
- * 刷新字典
+ * 重置缓存
  */
 export function refreshDict() {
   return request({
-    url: '/admin/api/v1/dict/refresh',
+    url: '/admin/api/v1/dict/reset',
     method: 'get'
   })
 }

@@ -12,16 +12,23 @@ package com.cowave.sys.admin.domain.base;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.cowave.commons.framework.access.security.AccessInfoSetter;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
  * @author shanhuiming
  */
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Data
-public class SysAttach {
+public class SysAttach implements AccessInfoSetter {
 
     /**
      * 附件id
@@ -30,14 +37,19 @@ public class SysAttach {
     private Long attachId;
 
     /**
-     * 宿主id
+     * 租户id
      */
-    private Long masterId;
+    private String tenantId;
 
     /**
-     * 附件分组
+     * 宿主id
      */
-    private String attachGroup;
+    private String ownerId;
+
+    /**
+     * 宿主类型
+     */
+    private String ownerType;
 
     /**
      * 附件类型
@@ -60,25 +72,9 @@ public class SysAttach {
     private String attachPath;
 
     /**
-     * 附件状态
+     * 是否私有的
      */
-    private Integer attachStatus = 1;
-
-    /**
-     * 是否公开的
-     */
-    private Integer isPublic = 0;
-
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-
-    /**
-     * 是否设置过期
-     */
-    private Integer expireSet = 0;
+    private int isPrivate;
 
     /**
      * 过期时间
@@ -91,4 +87,26 @@ public class SysAttach {
      */
     @TableField(exist = false)
     private String viewUrl;
+
+    /**
+     * 创建人
+     */
+    private String createBy;
+
+    /**
+     * 创建时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
+
+    /**
+     * 更新人
+     */
+    private String updateBy;
+
+    /**
+     * 更新时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 }

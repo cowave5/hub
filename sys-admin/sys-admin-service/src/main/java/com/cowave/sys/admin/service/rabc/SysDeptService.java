@@ -27,100 +27,95 @@ public interface SysDeptService{
 	/**
 	 * 列表
 	 */
-	List<DeptListDto> list(DeptQuery query);
+	List<DeptListDto> list(String tenantId, DeptQuery query);
 
 	/**
 	 * 详情
 	 */
-	DeptInfoDto info(Integer deptId);
+	DeptInfoDto info(String tenantId, Integer deptId);
 
 	/**
 	 * 新增
 	 */
-	void create(DeptCreate dept);
+	void create(String tenantId, DeptCreate dept);
 
 	/**
 	 * 删除
 	 */
-	void delete(List<Integer> deptIds);
+	void delete(String tenantId, List<Integer> deptIds);
 
 	/**
 	 * 修改
 	 */
-	void edit(DeptCreate dept);
+	void edit(String tenantId, DeptCreate dept);
 
 	/**
 	 * 导出列表
 	 */
-	List<SysDept> listForExport();
+	List<SysDept> listForExport(String tenantId);
 
 	/**
 	 * 部门组织架构
 	 */
-	List<Tree<String>> getDiagram(String deptId);
-
-	/**
-     * 刷新部门组织
-     */
-    void refreshDiagram();
+	List<Tree<Integer>> getDiagram(String tenantId, Integer deptId);
 
 	/**
 	 * 部门岗位树
 	 */
-	Tree<String> getPostDiagram();
+	Tree<String> getPostDiagram(String tenantId);
 
 	/**
 	 * 部门用户树
 	 */
-	Tree<String> getUserDiagram();
+	Tree<String> getUserDiagram(String tenantId);
 
 	/**
 	 * 添加部门岗位
 	 */
-	void addPosts(List<SysDeptPost> list);
+	void addPosts(String tenantId, List<SysDeptPost> list);
 
 	/**
      * 移除部门岗位
      */
-	void removePosts(Integer deptId, List<Integer> postIds);
+	void removePosts(String tenantId, Integer deptId, List<Integer> postIds);
 
 	/**
 	 * 获取部门岗位（已设置）
 	 */
-	Page<DeptPostDto> getConfiguredPosts(DeptPostQuery query);
+	Page<DeptPostDto> getConfiguredPosts(String tenantId, DeptPostQuery query);
 
 	/**
      * 获取部门岗位（未设置）
      */
-    Page<DeptPostDto> getUnConfiguredPosts(DeptPostQuery query);
+    Page<DeptPostDto> getUnConfiguredPosts(String tenantId, DeptPostQuery query);
 
 	/**
 	 * 添加部门成员
 	 */
-	void addMembers(List<SysUserDept> list);
+	void addMembers(String tenantId, List<SysUserDept> list);
 
 	/**
      * 移除部门成员
      */
-	void removeMembers(Integer deptId, List<Integer> userIds);
+	void removeMembers(String tenantId, Integer deptId, List<Integer> userIds);
 
 	/**
 	 * 获取部门成员（已加入）
 	 */
-	Page<DeptUserDto> getJoinedMembers(DeptUserQuery query);
+	Page<DeptUserDto> getJoinedMembers(String tenantId, DeptUserQuery query);
 
 	/**
 	 * 获取部门成员（未加入）
 	 */
-	Page<DeptUserDto> getUnJoinedMembers(DeptUserQuery query);
+	Page<DeptUserDto> getUnJoinedMembers(String tenantId, DeptUserQuery query);
 
 	/**
 	 * 部门流程候选人
 	 */
-	List<UserNameDto> getCandidatesByCode(String deptCode);
+	List<UserNameDto> getCandidatesByCode(String tenantId, String deptCode);
 
 	/**
      * 部门名称查询
      */
-    List<String> getNamesById(List<Integer> deptIds);
+    List<String> getNamesById(String tenantId, List<Integer> deptIds);
 }

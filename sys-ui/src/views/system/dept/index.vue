@@ -43,12 +43,6 @@
           <svg-icon icon-class="tree"/> {{$t('commons.button.diagram')}}
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button type="danger" plain size="mini" icon="el-icon-refresh" @click="handleRefreshCache"
-                   :disabled="!checkPermit(['sys:dept:cache'])">
-          {{$t('commons.button.cache')}}
-        </el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :cols="cols"/>
     </el-row>
 
@@ -149,28 +143,39 @@
     </el-dialog>
 
     <el-dialog v-drag :title="$t('dept.dialog.diagram')" :visible.sync="diagramOpen" width="80%" append-to-body>
-      <div class="dialog-content">
-        <organization-chart :datasource="diagramData">
-          <template slot-scope="{ nodeData }">
-            <div class="title">{{nodeData.label}}</div>
-          </template>
-        </organization-chart>
+      <div style="margin-left:30px;">
+        <el-row :gutter="20">
+          <el-col :span="3">
+            <el-switch v-model="diagramHorizontal" :width="50" active-text="竖排" inactive-text="横排"
+                       style="margin-top:8px;"/>
+          </el-col>
+          <el-col :span="3">
+            <el-switch v-model="diagramExpandAll" :width="50" active-text="展开"
+                       inactive-text="折叠" style="margin:8px;" @change="diagramExpand"/>
+          </el-col>
+        </el-row>
+      </div>
+      <div style="font-size:12px; margin-top:30px; display: flex; justify-content: center;">
+        <el-scrollbar style="width: fit-content;" class="el-org-tree">
+          <vue2-org-tree
+              :data="diagramData"
+              :collapsable="true"
+              :horizontal="!diagramHorizontal"
+              :default-expand-level=2
+              :render-content="diagramRender"
+              @on-expand="onExpand"/>
+        </el-scrollbar>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import {getDeptList, getDeptInfo, delDept, addDept, updateDept, getDeptDiagramById, refreshDeptDiagram} from "@/api/system/dept";
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import OrganizationChart from 'vue-organization-chart'
-import 'vue-organization-chart/dist/orgchart.css'
+import {getDeptList, getDeptInfo, delDept, addDept, updateDept, getDeptDiagramById} from "@/api/system/dept";
 import {checkPermit} from "@/utils/permission";
 
 export default {
   name: "Dept",
   dicts: [],
-  components: { Treeselect, OrganizationChart },
   data() {
     return {
       // 遮罩层
@@ -232,6 +237,8 @@ export default {
         {key: 4, label: 'commons.label.createTime', show: false},
         {key: 5, label: 'commons.label.updateTime', show: false},
       ],
+      diagramHorizontal: true,
+      diagramExpandAll: true,
     };
   },
   created() {
@@ -299,7 +306,7 @@ export default {
         status: "0",
       };
       this.title = this.$t('dept.dialog.new')
-      getDeptDiagramById(1).then(response => {
+      getDeptDiagramById(0).then(response => {
         this.deptTreeParams.data = response.data
         this.form.parentIds = row.deptId !== undefined ? [row.deptId] : []
         this.parentDisable = row.deptId !== undefined;
@@ -333,15 +340,10 @@ export default {
     },
     /** 组织架构 */
     showDiagram() {
-      getDeptDiagramById(1).then(response => {
+      getDeptDiagramById(0).then(response => {
         this.diagramData = response.data[0];
         this.diagramOpen = true;
-      });
-    },
-    /** 刷新缓存 */
-    handleRefreshCache(){
-      refreshDeptDiagram().then(() => {
-        this.$modal.msgSuccess(this.$t('commons.msg.success.refresh'));
+        this.diagramExpand();
       });
     },
     /** 岗位设置 */
@@ -377,114 +379,53 @@ export default {
           }
         }
       });
-    }
+    },
+    diagramExpand() {
+      this.toggleExpand(this.diagramData, this.diagramExpandAll)
+    },
+    toggleExpand(data, val) {
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          this.$set(item, "expand", val);
+          if (item.children) {
+            this.toggleExpand(item.children, val);
+          }
+        });
+      } else {
+        this.$set(data, "expand", val);
+        if (data.children) {
+          this.toggleExpand(data.children, val);
+        }
+      }
+    },
+    onExpand(e, data) {
+      if ("expand" in data) {
+        data.expand = !data.expand;
+        if (!data.expand && data.children) {
+          this.collapse(data.children);
+        }
+      } else {
+        this.$set(data, "expand", true);
+      }
+    },
+    collapse(list) {
+      list.forEach(child => {
+        if (child.expand) {
+          child.expand = false;
+        }
+        child.children && this.collapse(child.children);
+      });
+    },
+    diagramRender(h, data) {
+      return (
+          <div>
+            <div>
+              {data.id > 0 && <svg-icon icon-class="dept"/>}
+              <span style="margin-left: 2px;">{data.label}</span>
+            </div>
+          </div>
+      );
+    },
   }
 };
 </script>
-
-<style rel="stylesheet/scss" lang="scss">
-.vue-treeselect__multi-value {
-  height: 24px;
-  padding: 0 4px;
-  line-height: 22px;
-}
-
-.vue-treeselect__multi-value-item-container {
-  display: inline-block;
-  padding-top: 0px;
-  padding-right: 0px;
-  vertical-align: top;
-}
-
-.vue-treeselect__multi-value-item {
-  background-color: #f4f4f5;
-  border-color: #e9e9eb;
-  color: #909399;
-}
-
-.vue-treeselect__multi-value-item-container {
-  display: inline-block;
-  padding-right: 3px;
-  vertical-align: top;
-}
-
-.vue-treeselect__value-remove {
-  color: #606266;
-  padding-left: 3px;
-  border-left: 1px solid #fff;
-  line-height: 0;
-}
-
-.dialog-content {
-  height: 700px;
-  overflow-x: scroll;
-}
-
-.orgchart-container {
-  position: relative;
-  display: inline-block;
-  height: 680px;
-  width: calc(100% - 24px);
-  overflow: auto;
-  text-align: center;
-}
-
-.orgchart {
-  display: inline-block;
-  height: 100%;
-  width: 100%;
-  overflow: scroll;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  background: #fff;
-  background-size: 10px 10px;
-}
-
-.orgchart .node {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  display: inline-block;
-  position: relative;
-  margin: 0;
-  padding: 3px;
-  border: 2px dashed transparent;
-  text-align: center;
-  width: auto;
-}
-
-.orgchart .node .title {
-  font-size: 15px;
-  font-family: Arial;
-  padding: 12px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  line-height: 0;
-  flex-direction: row-reverse;
-  background: #0e5e59;
-}
-
-.orgchart .node .content {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  width: 100%;
-  height: 20px;
-  font-size: 11px;
-  line-height: 18px;
-  border: 1px solid rgba(217,83,79,.8);
-  border-radius: 0 0 4px 4px;
-  text-align: center;
-  background-color: #fff;
-  color: #333;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-</style>

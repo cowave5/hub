@@ -1,3 +1,17 @@
+-- 场景测试
+drop table if exists meter_scenario;
+create table meter_scenario(
+    id           bigserial primary key,
+    scenario_name     character varying(255)
+);
+
+drop table if exists meter_scenario_canvas;
+create table meter_scenario_canvas
+(
+    scenario_id int8 primary key,
+    scenario_canvas text
+);
+
 -- 1.应用信息
 drop table if exists app_info;
 create table app_info(

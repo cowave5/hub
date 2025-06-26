@@ -29,12 +29,12 @@ public interface SysNoticeService {
     /**
      * 列表
      */
-    Response.Page<NoticeDto> list(NoticeQuery query);
+    Response.Page<NoticeDto> list(String tenantId, NoticeQuery query);
 
     /**
      * 详情
      */
-    NoticeDto info(Long noticeId);
+    NoticeDto info(String tenantId, Long noticeId);
 
     /**
      * 新增
@@ -44,27 +44,27 @@ public interface SysNoticeService {
     /**
      * 删除
      */
-    void delete(List<Long> noticeIds) throws Exception;
+    void delete(String tenantId, List<Long> noticeIds) throws Exception;
 
     /**
      * 修改
      */
-    void edit(NoticeCreate sysNotice) throws Exception;
+    void edit(String tenantId, NoticeCreate sysNotice) throws Exception;
 
     /**
      * 发布
      */
-    void publish(Long noticeId);
+    void publish(String tenantId, Long noticeId);
 
     /**
      * 上传图片
      */
-    SysAttach imageUpload(MultipartFile file) throws Exception;
+    SysAttach imageUpload(String tenantId, MultipartFile file) throws Exception;
 
     /**
      * 已读列表
      */
-    Response.Page<NoticeUserDto> getNoticeReaders(Long noticeId);
+    Response.Page<NoticeUserDto> getNoticeReaders(String tenantId, Long noticeId);
 
     /**
      * 消息列表

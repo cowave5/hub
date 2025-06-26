@@ -67,7 +67,6 @@ ElementLocale.i18n((key, value) => i18n.t(key, value));
 Vue.prototype.$eventEmitter = EventEmitter
 
 // 全局方法挂载
-Vue.prototype.getConfigValue = getConfigValue
 Vue.prototype.parseTime = parseTime
 Vue.prototype.resetForm = resetForm
 Vue.prototype.addDateRange = addDateRange
@@ -94,6 +93,10 @@ Vue.use(ElTreeSelect);
 
 import Contextmenu from "vue-contextmenujs"
 Vue.use(Contextmenu);
+
+import 'vue2-org-tree/dist/style.css';
+import Vue2OrgTree from 'vue2-org-tree'
+Vue.use(Vue2OrgTree);
 
 Element.Dialog.props.closeOnClickModal.default = false
 Vue.use(Element, {

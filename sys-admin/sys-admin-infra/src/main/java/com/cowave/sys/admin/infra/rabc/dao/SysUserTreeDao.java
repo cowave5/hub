@@ -20,11 +20,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class SysUserTreeDao extends ServiceImpl<SysUserTreeMapper, SysUserTree> {
 
-    public void deleteParentsByUserId(Integer userId){
+    /**
+     * 删除上级用户关系
+     */
+    public void removeParentsByUserId(Integer userId){
         lambdaUpdate().eq(SysUserTree::getUserId, userId).remove();
     }
 
-    public void deleteChildrenByUserId(Integer userId){
+    /**
+     * 删除下级用户关系
+     */
+    public void removeChildrenByUserId(Integer userId){
         lambdaUpdate().eq(SysUserTree::getParentId, userId).remove();
     }
 }

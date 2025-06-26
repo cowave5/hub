@@ -13,9 +13,10 @@ import cn.hutool.core.lang.tree.Tree;
 import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.asserts.I18Messages;
 import com.cowave.commons.client.http.response.Response;
+import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.access.operation.Operation;
-import com.cowave.commons.framework.support.excel.CellWidthHandler;
 import com.cowave.commons.framework.support.excel.write.DropdownWriteHandler;
+import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
 import com.cowave.sys.admin.domain.rabc.SysUser;
 import com.cowave.sys.admin.domain.rabc.dto.UserInfoDto;
 import com.cowave.sys.admin.domain.rabc.dto.UserListDto;
@@ -55,7 +56,7 @@ public class SysUserController {
     @PreAuthorize("@permit.hasPermit('sys:user:query')")
     @GetMapping
     public Response<Response.Page<UserListDto>> list(UserQuery query) {
-        return Response.success(sysUserService.list(query));
+        return Response.success(sysUserService.list(Access.tenantId(), query));
     }
 
     /**
@@ -66,7 +67,7 @@ public class SysUserController {
     @PreAuthorize("@permit.hasPermit('sys:user:query')")
     @GetMapping("/{userId}")
     public Response<UserInfoDto> info(@PathVariable Integer userId) {
-        return Response.success(sysUserService.info(userId));
+        return Response.success(sysUserService.info(Access.tenantId(), userId));
     }
 
     /**
@@ -76,7 +77,7 @@ public class SysUserController {
     @PreAuthorize("@permit.hasPermit('sys:user:create')")
     @PostMapping
     public Response<Void> create(@Validated @RequestBody UserCreate user) throws Exception {
-        return Response.success(() -> sysUserService.create(user));
+        return Response.success(() -> sysUserService.create(Access.tenantId(), user));
     }
 
     /**
@@ -88,7 +89,7 @@ public class SysUserController {
     @PreAuthorize("@permit.hasPermit('sys:user:delete')")
     @DeleteMapping("/{userIds}")
     public Response<Void> delete(@PathVariable List<Integer> userIds) throws Exception {
-        return Response.success(() -> sysUserService.delete(userIds));
+        return Response.success(() -> sysUserService.delete(Access.tenantId(), userIds));
     }
 
     /**
@@ -98,7 +99,7 @@ public class SysUserController {
     @PreAuthorize("@permit.hasPermit('sys:user:edit')")
     @PatchMapping
     public Response<Void> edit(@Validated @RequestBody UserCreate user) throws Exception {
-        return Response.success(() -> sysUserService.edit(user));
+        return Response.success(() -> sysUserService.edit(Access.tenantId(), user));
     }
 
     /**
@@ -108,7 +109,7 @@ public class SysUserController {
     @PreAuthorize("@permit.hasPermit('sys:user:grant')")
     @PatchMapping("/roles")
     public Response<Void> changeRoles(@Validated @RequestBody UserRoleUpdate user) throws Exception {
-        return Response.success(() -> sysUserService.changeRoles(user));
+        return Response.success(() -> sysUserService.changeRoles(Access.tenantId(), user));
     }
 
     /**
@@ -118,7 +119,7 @@ public class SysUserController {
     @PreAuthorize("@permit.hasPermit('sys:user:status')")
     @PatchMapping("/status")
     public Response<Void> changeStatus(@Validated @RequestBody UserStatusUpdate user) throws Exception {
-        return Response.success(() -> sysUserService.changeStatus(user));
+        return Response.success(() -> sysUserService.changeStatus(Access.tenantId(), user));
     }
 
     /**
@@ -128,7 +129,7 @@ public class SysUserController {
     @PreAuthorize("@permit.hasPermit('sys:user:passwd')")
     @PatchMapping("/passwd")
     public Response<Void> changePasswd(@Validated @RequestBody UserPasswdUpdate user) throws Exception {
-        return Response.success(() -> sysUserService.changePasswd(user));
+        return Response.success(() -> sysUserService.changePasswd(Access.tenantId(), user));
     }
 
     /**
@@ -139,7 +140,7 @@ public class SysUserController {
     public Response<Void> importUser(MultipartFile file, boolean updateSupport) throws Exception {
         try (InputStream inputStream = file.getInputStream()) {
             List<SysUser> list = EasyExcel.read(inputStream).head(SysUser.class).sheet().doReadSync();
-            sysUserService.importUsers(list, updateSupport);
+            sysUserService.importUsers(Access.tenantId(), list, updateSupport);
         }
         return Response.success(null, I18Messages.msg("admin.import.success"));
     }
@@ -154,8 +155,9 @@ public class SysUserController {
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        List<SysUser> userList = sysUserService.listForExport(Access.tenantId(), query);
         EasyExcel.write(response.getOutputStream(), SysUser.class).sheet("用户")
-                .registerWriteHandler(new CellWidthHandler()).doWrite(sysUserService.listForExport(query));
+                .registerWriteHandler(new ExcelIgnoreStyle()).doWrite(userList);
     }
 
     /**
@@ -184,17 +186,8 @@ public class SysUserController {
      */
     @PreAuthorize("@permit.hasPermit('sys:user:diagram')")
     @GetMapping("/diagram")
-    public Response<Tree<String>> getDiagram() {
-        return Response.success(sysUserService.getDiagram());
-    }
-
-    /**
-     * 刷新用户组织
-     */
-    @PreAuthorize("@permit.hasPermit('sys:user:cache')")
-    @GetMapping("/diagram/refresh")
-    public Response<Void> refreshDiagram() throws Exception {
-        return Response.success(sysUserService::refreshDiagram);
+    public Response<Tree<Integer>> getDiagram() {
+        return Response.success(sysUserService.getDiagram(Access.tenantId()));
     }
 
     /**
@@ -204,7 +197,7 @@ public class SysUserController {
      */
     @GetMapping("/candidates")
     public Response<List<UserNameDto>> getUserCandidates(Integer userId) {
-        return Response.success(sysUserService.getUserCandidates(userId));
+        return Response.success(sysUserService.getUserCandidates(Access.tenantId(), userId));
     }
 
     /**
@@ -212,6 +205,6 @@ public class SysUserController {
      */
     @GetMapping("/name/{userIds}")
     public Response<List<String>> getNamesById(@PathVariable List<Integer> userIds) {
-        return Response.success(sysUserService.getNamesById(userIds));
+        return Response.success(sysUserService.getNamesById(Access.tenantId(), userIds));
     }
 }

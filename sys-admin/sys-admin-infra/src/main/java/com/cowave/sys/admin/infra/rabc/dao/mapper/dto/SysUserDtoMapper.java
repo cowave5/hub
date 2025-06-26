@@ -9,13 +9,16 @@
  */
 package com.cowave.sys.admin.infra.rabc.dao.mapper.dto;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.sys.admin.domain.auth.dto.UserProfile;
-import com.cowave.sys.admin.domain.base.vo.TreeNode;
 import com.cowave.sys.admin.domain.rabc.SysUser;
+import com.cowave.sys.admin.domain.rabc.dto.TenantManager;
 import com.cowave.sys.admin.domain.rabc.dto.UserInfoDto;
 import com.cowave.sys.admin.domain.rabc.dto.UserListDto;
 import com.cowave.sys.admin.domain.rabc.dto.UserNameDto;
+import com.cowave.sys.admin.domain.rabc.request.TenantManagerRemove;
 import com.cowave.sys.admin.domain.rabc.request.UserQuery;
+import com.cowave.sys.admin.domain.rabc.vo.UserDiagramNode;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,37 +35,32 @@ public interface SysUserDtoMapper {
     /**
      * 列表
      */
-    List<UserListDto> list(UserQuery query);
+    List<UserListDto> list(@Param("tenantId") String tenantId, @Param("query") UserQuery query);
 
     /**
      * 计数
      */
-    int count(UserQuery query);
+    int count(@Param("tenantId") String tenantId, @Param("query") UserQuery query);
 
     /**
      * 单位用户列表
      */
-    List<UserListDto> listOfDept(UserQuery query);
+    List<UserListDto> listOfDept(@Param("tenantId") String tenantId, @Param("query") UserQuery query);
 
     /**
      * 单位用户计数
      */
-    int countOfDept(UserQuery query);
+    int countOfDept(@Param("tenantId") String tenantId, @Param("query") UserQuery query);
 
     /**
      * 详情
      */
-    UserInfoDto getById(Integer userId);
+    UserInfoDto getById(@Param("tenantId") String tenantId, @Param("userId") Integer userId);
 
     /**
-     * 下级用户id列表
+     * 下级用户id
      */
     List<Integer> childIds(Integer userId);
-
-    /**
-     * 用户权限集
-     */
-    List<String> getUserPermits(Integer userId);
 
     /**
      * 导入用户
@@ -72,12 +70,22 @@ public interface SysUserDtoMapper {
     /**
      * 人员关系
      */
-    List<TreeNode> getTreeNodes();
+    List<UserDiagramNode> listDiagramNodes(String tenantId);
 
     /**
      * 用户流程候选人
      */
-    List<UserNameDto> getUserCandidates(Integer userId);
+    List<UserNameDto> getUserCandidates(@Param("tenantId") String tenantId, @Param("userId") Integer userId);
+
+    /**
+     * 租户管理员列表
+     */
+    Page<TenantManager> listTenantManager(@Param("tenantId") String tenantId, Page<TenantManager> page);
+
+    /**
+     * 移除租户管理员
+     */
+    void removeTenantManager(TenantManagerRemove managerRemove);
 
     /**
      * 用户个人信息

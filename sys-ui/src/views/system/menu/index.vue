@@ -68,6 +68,13 @@
       <el-table-column v-if="cols[5].show" prop="menuPath" :label="$t('menu.label.path')" align="center" :show-overflow-tooltip="true"/>
       <el-table-column v-if="cols[6].show" prop="menuPermit" :label="$t('menu.label.permission')" align="center" :show-overflow-tooltip="true"/>
       <el-table-column v-if="cols[7].show" prop="component" :label="$t('menu.label.component')" align="center" :show-overflow-tooltip="true"/>
+      <el-table-column prop="tenantId" :label="$t('menu.label.tenant')" align="center" :show-overflow-tooltip="true">
+        <template slot-scope="{row: {tenantId}}">
+          <template v-for="item in tenantOptions">
+            <span v-if="tenantId === item.key">{{ $t(item.label) }}</span>
+          </template>
+        </template>
+      </el-table-column>
       <el-table-column v-if="cols[8].show" prop="menuStatus" :label="$t('menu.label.status')" align="center" width="100">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.enable_disable" :value="scope.row.menuStatus"/>
@@ -112,11 +119,18 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="24">
+          <el-col :span="12">
             <el-form-item :label="$t('menu.label.type')" prop="menuType">
               <el-radio-group v-model="form.menuType">
                 <el-radio v-for="dict in dict.type.menu_type" :key="dict.value" :label="dict.value">{{$t(dict.name)}}</el-radio>
               </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="$t('menu.label.tenant')" prop="status">
+              <el-select v-model="form.tenantId" style="width: 100%">
+                <el-option v-for="item in tenantOptions" :key="item.key" :value="item.key" :label="item.label"/>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -309,6 +323,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import IconSelect from "@/components/IconSelect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import {checkPermit} from "@/utils/permission";
+import {listTenantOptions} from "@/api/system/tenant";
 
 export default {
   name: "Menu",
@@ -324,6 +339,8 @@ export default {
       menuList: [],
       // 菜单树选项
       menuOptions: [],
+      // 租户选项
+      tenantOptions: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -356,6 +373,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getTenantOptions();
   },
   computed: {
     rules() {
@@ -392,6 +410,13 @@ export default {
         const menu = { menuId: 0, menuName: this.$t('menu.label.root'), children: [] };
         menu.children = this.handleTree(response.data.list, "menuId");
         this.menuOptions.push(menu);
+      });
+    },
+    /** 获取租户选项 */
+    getTenantOptions() {
+      listTenantOptions().then(response => {
+        this.tenantOptions = response.data;
+        this.tenantOptions.push({"key": "#", "label": this.$t('menu.label.shared')});
       });
     },
     /** 选择图标 */
@@ -434,6 +459,7 @@ export default {
         parentId: 0,
         menuOrder: 1,
         menuStatus: undefined,
+        tenantId: "#",
         isFrame: 1,
         isCache: 1,
         isVisible: 1,

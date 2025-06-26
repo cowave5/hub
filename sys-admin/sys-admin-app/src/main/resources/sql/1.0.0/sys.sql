@@ -1,7 +1,9 @@
--- 1.系统配置
+-- 系统配置
 drop table if exists sys_config;
-CREATE TABLE sys_config(
+CREATE TABLE sys_config
+(
     config_id    serial primary key,
+    tenant_id    character varying(64),
     config_name  varchar(100) DEFAULT '',
     config_key   varchar(100) DEFAULT '',
     config_value varchar(500) DEFAULT '',
@@ -14,7 +16,7 @@ CREATE TABLE sys_config(
     update_by    varchar(64),
     update_time  timestamp
 );
-create unique index sys_config_config_key on sys_config(config_key);
+create unique index sys_config_config_key on sys_config(tenant_id, config_key);
 comment on table sys_config is '系统配置';
 comment on column sys_config.config_id is '参数id';
 comment on column sys_config.config_name is '参数名称';
@@ -29,7 +31,7 @@ comment on column sys_config.create_time is '创建时间';
 comment on column sys_config.update_by is '更新人';
 comment on column sys_config.update_time is '更新时间';
 
--- 2. 字典数据
+-- 字典数据
 drop table if exists sys_dict;
 create table sys_dict(
     id bigserial primary key,
@@ -68,11 +70,12 @@ comment on column sys_dict.create_time is '创建时间';
 comment on column sys_dict.update_by is '更新人';
 comment on column sys_dict.update_time is '更新时间';
 
--- 3.系统公告
+-- 系统公告
 drop table if exists sys_notice;
 create table sys_notice
 (
     notice_id     bigserial primary key,
+    tenant_id     character varying(64),
     notice_title  character varying(255),
     notice_status int2 default 0,
     notice_type   int2 default 0,
@@ -106,7 +109,7 @@ comment on column sys_notice.goals_dept is '目标单位';
 comment on column sys_notice.goals_role is '目标角色';
 comment on column sys_notice.goals_user is '目标用户';
 
--- 4.公告已读
+-- 公告已读
 drop table if exists sys_notice_user;
 create table sys_notice_user
 (
@@ -126,38 +129,39 @@ comment on column sys_notice_user.read_status is '已读状态';
 comment on column sys_notice_user.read_back is '读反馈';
 comment on column sys_notice_user.read_time is '读时间';
 
--- 5.附件信息
+-- 附件信息
 drop table if exists sys_attach;
-create table sys_attach(
+create table sys_attach
+(
     attach_id     bigserial primary key,
-    master_id     int8,
-    attach_group  character varying(64),
+    tenant_id     character varying(64),
+    owner_id      varchar(64),
+    owner_type    character varying(64),
     attach_type   character varying(64),
     attach_name   character varying(1024),
     attach_size   int8,
     attach_path   character varying(1024),
-    attach_status int2 default 0,
-    is_public     int2 default 0,
+    is_private    int2 default 0,
+    expire_time   timestamp,
+    create_by     varchar(64),
     create_time   timestamp,
-    expire_set    int2 default 0,
-    expire_time   timestamp
+    update_by     varchar(64),
+    update_time   timestamp
 );
-create index sys_attach_master on sys_attach(master_id, attach_type, attach_group);
+create index sys_attach_master on sys_attach(owner_id, owner_type, attach_type);
 comment on table sys_attach is '附件信息';
 comment on column sys_attach.attach_id is '附件id';
-comment on column sys_attach.master_id is '宿主id';
-comment on column sys_attach.attach_group is '附件分组';
+comment on column sys_attach.tenant_id is '租户id';
+comment on column sys_attach.owner_id is '宿主id';
+comment on column sys_attach.owner_type is '宿主类型';
 comment on column sys_attach.attach_type is '附件类型';
 comment on column sys_attach.attach_name is '附件名称';
 comment on column sys_attach.attach_size is '附件大小';
 comment on column sys_attach.attach_path is '附件路径';
-comment on column sys_attach.attach_status is '附件状态 0未生效 1已生效';
-comment on column sys_attach.is_public is '是否公开的 0否 1是';
-comment on column sys_attach.create_time is '创建时间';
-comment on column sys_attach.expire_set is '是否设置过期时间 0未设置 1设置';
+comment on column sys_attach.is_private is '是否私有的 0否 1是';
 comment on column sys_attach.expire_time is '过期时间';
 
--- 6.数据权限
+-- 数据权限
 drop table if exists sys_scope;
 CREATE TABLE sys_scope(
     scope_id     serial primary key,
@@ -175,7 +179,7 @@ comment on column sys_scope.scope_status is '权限状态';
 comment on column sys_scope.content is '权限规则';
 comment on column sys_scope.remark is '备注';
 
--- 7.角色菜单数据权限
+-- 角色菜单数据权限
 drop table if exists sys_role_scope;
 CREATE TABLE sys_role_scope(
     scope_id    int4 not null,
@@ -190,7 +194,7 @@ comment on column sys_role_scope.role_id is '角色id';
 comment on column sys_role_scope.menu_permit is '菜单权限符';
 comment on column sys_role_scope.priority is '优先级';
 
--- 8.系统告警
+-- 系统告警
 drop table if exists sys_alarm;
 create table sys_alarm(
     id            bigserial primary key,
@@ -232,7 +236,7 @@ comment on column sys_alarm.resolve_time is '处理时间';
 comment on column sys_alarm.resolve_msg is '处理意见';
 comment on column sys_alarm.resolve_type is '处理方式：1:手动 2:自动';
 
--- 9.告警类型
+-- 告警类型
 drop table if exists sys_alarm_type;
 create table sys_alarm_type(
     id          bigserial primary key,
@@ -246,7 +250,7 @@ comment on column sys_alarm_type.type_name is '类型名称';
 comment on column sys_alarm_type.type_view is '类型表单';
 comment on column sys_alarm_type.description is '类型描述';
 
--- 10.告警级别
+-- 告警级别
 drop table if exists sys_alarm_level;
 create table sys_alarm_level(
     id          bigserial primary key,

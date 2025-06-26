@@ -25,55 +25,55 @@ public interface SysRoleService {
     /**
      * 列表
      */
-    Page<SysRole> list(RoleQuery query);
+    Page<SysRole> list(String tenantId, RoleQuery query);
 
     /**
      * 详情
      */
-    RoleInfoDto info(Integer roleId);
+    RoleInfoDto info(String tenantId, Integer roleId);
 
     /**
      * 新增
      */
-    void add(SysRole sysRole);
+    void add(String tenantId, SysRole sysRole);
 
     /**
      * 删除
      */
-    void delete(List<Integer> roleIds);
+    void delete(String tenantId, List<Integer> roleIds);
 
     /**
      * 修改
      */
-    void edit(SysRole sysRole);
+    void edit(String tenantId, SysRole sysRole);
 
     /**
      * 修改角色菜单
      */
-    void updateMenus(RoleMenuUpdate roleUpdate);
+    void updateMenus(String tenantId, RoleMenuUpdate roleUpdate);
 
     /**
      * 授权用户
      */
-    void grantUser(RoleUserUpdate roleUpdate);
+    void grantUser(String tenantId, RoleUserUpdate roleUpdate);
 
     /**
      * 取消用户
      */
-    void cancelUser(RoleUserUpdate roleUpdate);
+    void cancelUser(String tenantId, RoleUserUpdate roleUpdate);
 
     /**
      * 用户列表（已授权）
      */
-    Page<RoleUserDto> getAuthedUser(RoleUserQuery query);
+    Page<RoleUserDto> getAuthedUser(String tenantId, RoleUserQuery query);
 
     /**
      * 用户列表（未授权）
      */
-    Page<RoleUserDto> getUnAuthedUser(RoleUserQuery query);
+    Page<RoleUserDto> getUnAuthedUser(String tenantId, RoleUserQuery query);
 
     /**
      * 角色名称查询
      */
-    List<String> getNames(List<Integer> userIds);
+    List<String> getNames(String tenantId, List<Integer> userIds);
 }

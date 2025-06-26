@@ -10,6 +10,7 @@
 package com.cowave.sys.admin.infra.rabc.dao;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cowave.sys.admin.domain.rabc.SysDeptPost;
 import com.cowave.sys.admin.domain.rabc.SysUserDept;
 import com.cowave.sys.admin.infra.rabc.dao.mapper.SysUserDeptMapper;
 import org.springframework.stereotype.Repository;
@@ -23,10 +24,17 @@ import java.util.List;
 public class SysUserDeptDao extends ServiceImpl<SysUserDeptMapper, SysUserDept> {
 
     /**
-     * 清除用户部门
+     * 删除用户部门（用户id）
      */
-    public void clearByUserId(Integer userId){
+    public void removeByUserId(Integer userId){
         lambdaUpdate().eq(SysUserDept::getUserId, userId).remove();
+    }
+
+    /**
+     * 统计岗位用户数
+     */
+    public long countUserByPostIds(List<Integer> postIds){
+        return lambdaQuery().in(SysUserDept::getPostId, postIds).count();
     }
 
     /**
@@ -44,9 +52,23 @@ public class SysUserDeptDao extends ServiceImpl<SysUserDeptMapper, SysUserDept> 
     }
 
     /**
-     * 统计岗位用户数
+     * 删除部门岗位-关联删除
      */
-    public long countUserByPostIds(List<Integer> postIds){
-        return lambdaQuery().in(SysUserDept::getPostId, postIds).count();
+    public void removeByDeptPosts(Integer deptId, List<Integer> postIds) {
+        lambdaUpdate().eq(SysUserDept::getDeptId, deptId).in(SysUserDept::getPostId, postIds).remove();
+    }
+
+    /**
+     * 删除岗位-关联删除
+     */
+    public void removeByPostIds(List<Integer> postIds) {
+        lambdaUpdate().in(SysUserDept::getPostId, postIds).remove();
+    }
+
+    /**
+     * 删除部门-关联删除
+     */
+    public void removeByDeptIds(List<Integer> deptIds) {
+        lambdaUpdate().in(SysUserDept::getDeptId, deptIds).remove();
     }
 }

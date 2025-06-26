@@ -77,18 +77,12 @@
               <svg-icon icon-class="tree"/> {{$t('commons.button.diagram')}}
             </el-button>
           </el-col>
-          <el-col :span="1.5">
-            <el-button type="danger" plain size="mini" icon="el-icon-refresh" @click="handleRefreshCache"
-                       :disabled="!checkPermit(['sys:user:cache'])">
-              {{$t('commons.button.cache')}}
-            </el-button>
-          </el-col>
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :cols="cols"/>
         </el-row>
 
         <!-- 表格数据 -->
         <el-table :data="list" @selection-change="selectRow" v-loading="loading" :header-cell-style="{'text-align':'center'}">
-          <el-table-column type="selection" width="50"/>
+          <el-table-column :selectable='selectable' type="selection" width="50"/>
           <el-table-column :label="$t('commons.label.index')" type="index" width="55">
             <template slot-scope="scope">
               <span>{{(queryParams.page - 1) * queryParams.pageSize + scope.$index + 1}}</span>
@@ -108,13 +102,18 @@
           <el-table-column v-if="cols[5].show" :label="$t('user.label.dept')" align="center" :show-overflow-tooltip="true">
             <template slot-scope="scope">
               <template v-if="scope.row.deptPosts.length>0" >
-                <template v-for="item in scope.row.deptPosts">
+                <template v-for="(item, index) in scope.row.deptPosts">
                   <template v-if="item.isDefault === 1">
-                    <div style="color: #004d8c">{{ item.deptName + '/' + (item.postName == null ? '' : item.postName) }}</div>
+                    <span style="color: #004d8c" v-if="item.deptName">{{ item.deptName }}</span>
+                    <span style="color: #004d8c" v-if="item.deptName && item.postName">/</span>
+                    <span style="color: #004d8c" v-if="item.postName">{{ item.postName }}</span>
                   </template>
                   <template v-else>
-                    <div>{{ item.deptName + '/' + (item.postName == null ? '' : item.postName) }}</div>
+                    <span v-if="item.deptName">{{ item.deptName }}</span>
+                    <span v-if="item.deptName && item.postName">/</span>
+                    <span v-if="item.postName">{{ item.postName }}</span>
                   </template>
+                  <br v-if="index < scope.row.deptPosts.length - 1">
                 </template>
               </template>
             </template>
@@ -129,7 +128,7 @@
           <el-table-column v-if="cols[7].show" :label="$t('user.label.status')" prop="userStatus" align="center" width="60">
             <template slot-scope="scope">
               <el-switch v-model="scope.row.userStatus" @change="handleStatusChange(scope.row)"
-                         :active-value=1 :inactive-value=0 :disabled="!checkPermit(['sys:user:status'])"/>
+                         :active-value=1 :inactive-value=0 :disabled="scope.row.userId === 1 || !checkPermit(['sys:user:status'])"/>
             </template>
           </el-table-column>
           <el-table-column v-if="cols[8].show" :label="$t('commons.label.createTime')" prop="createTime">
@@ -144,11 +143,12 @@
           </el-table-column>
           <el-table-column :label="$t('commons.label.options')" align="center" width="180" class-name="small-padding fixed-width">
             <template slot-scope="scope">
-              <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">
+              <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                         :disabled="scope.row.userId === 1">
                 {{$t('commons.button.edit')}}
               </el-button>
               <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-                         :disabled="!checkPermit(['sys:user:delete'])">
+                         :disabled="scope.row.userId === 1 || !checkPermit(['sys:user:delete'])">
                 {{$t('commons.button.delete')}}
               </el-button>
               <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)">
@@ -157,11 +157,11 @@
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
-                                    :disabled="!checkPermit(['sys:user:passwd'])">
+                                    :disabled="scope.row.userId === 1 || !checkPermit(['sys:user:passwd'])">
                     {{$t('user.button.passwd')}}
                   </el-dropdown-item>
                   <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
-                                    :disabled="!checkPermit(['sys:user:grant'])">
+                                    :disabled="scope.row.userId === 1 || !checkPermit(['sys:user:grant'])">
                     {{$t('user.button.grant')}}
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -254,8 +254,9 @@
             <el-row>
               <el-col :span="24">
                 <el-form-item :label="$t('user.label.report')">
-                  <treeselect v-model="form.parentIds" :options="userOptions" :multiple="true"
-                              :disable-branch-nodes="true" :placeholder="$t('user.placeholder.report')" />
+                  <el-tree-select v-model="form.parentIds" :selectParams="userSelectParams" :treeParams="userTreeParams"
+                                  :treeRenderFun="treeRender" @searchFun="userTreeSearch"
+                                  :styles="treeStyles" ref="userTreeSelect"/>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -308,13 +309,28 @@
 
     <!-- 组织关系 -->
     <el-dialog v-drag :title="$t('user.dialog.diagram')" :visible.sync="diagramOpen" width="80%" append-to-body>
-      <div class="dialog-content">
-        <organization-chart :datasource="diagramData">
-          <template slot-scope="{ nodeData }">
-            <div class="title">{{nodeData.label}}</div>
-            <div class="content">{{nodeData.content}}</div>
-          </template>
-        </organization-chart>
+      <div style="margin-left:30px;">
+        <el-row :gutter="20">
+          <el-col :span="3">
+            <el-switch v-model="diagramHorizontal" :width="50" active-text="竖排" inactive-text="横排"
+                       style="margin-top:8px;"/>
+          </el-col>
+          <el-col :span="3">
+            <el-switch v-model="diagramExpandAll" :width="50" active-text="展开"
+                       inactive-text="折叠" style="margin:8px;" @change="diagramExpand"/>
+          </el-col>
+        </el-row>
+      </div>
+      <div style="font-size:12px; margin-top:30px; display: flex; justify-content: center;">
+        <el-scrollbar style="width: fit-content;" class="el-org-tree">
+          <vue2-org-tree
+              :data="diagramData"
+              :collapsable="true"
+              :horizontal="!diagramHorizontal"
+              :default-expand-level=2
+              :render-content="diagramRender"
+              @on-expand="onExpand"/>
+        </el-scrollbar>
       </div>
     </el-dialog>
   </div>
@@ -329,21 +345,19 @@ import {
   updateUserPasswd,
   updateUser,
   getUserDiagram,
-  refreshUserDiagram,
 } from "@/api/system/user";
 import { getDeptDiagram, getDeptPostDiagram, getDeptUserDiagram } from '@/api/system/dept'
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import OrganizationChart from 'vue-organization-chart'
-import 'vue-organization-chart/dist/orgchart.css'
 import {checkPermit} from "@/utils/permission";
 import cache from "@/plugins/cache";
 import { getRoleList } from '@/api/system/role'
+import {getConfigValue} from "@/api/system/config";
 
 export default {
   name: "User",
   dicts: ['enable_disable', 'sex', 'post_level'],
-  components: { Treeselect, OrganizationChart },
+  components: { Treeselect },
   data() {
     return {
       activeTab: 'basic',
@@ -371,8 +385,6 @@ export default {
       roleOptions: [],
       // 岗位选项
       postOptions: [],
-      // 用户选项
-      userOptions: [],
       // 部门名称
       deptName: undefined,
       // 表单参数
@@ -417,7 +429,32 @@ export default {
         {key: 7, label: 'user.label.status', show: true},
         {key: 8, label: 'commons.label.createTime', show: false},
         {key: 9, label: 'commons.label.updateTime', show: false},
-      ]
+      ],
+      diagramHorizontal: true,
+      diagramExpandAll: true,
+      treeStyles: {
+        width: '100%'
+      },
+      userTreeParams: {
+        clickParent: false,
+        filterable: true,
+        'check-strictly': true,
+        'default-expand-all': false,
+        'expand-on-click-node': false,
+        data: [],
+        props: {
+          value: 'id',
+          label: 'label',
+          disabled: 'isDept',
+          children: 'children',
+        }
+      },
+      // 部门Tree
+      userSelectParams: {
+        multiple: true,
+        clearable: true,
+        placeholder: this.$t('user.placeholder.report')
+      },
     };
   },
   watch: {
@@ -429,10 +466,8 @@ export default {
   created() {
     this.getList();
     this.getDeptOptions();
-    this.getRoleOptions();
-    this.getPostOptions();
     this.getUserOptions();
-    this.getConfigValue("sys.user.initPassword").then(resp => {
+    this.getConfigValue("sys.initPassword").then(resp => {
       this.initPasswd = resp.data;
     });
   },
@@ -464,10 +499,21 @@ export default {
   },
   methods: {
     checkPermit,
+    selectable(row){
+      return row.userId > 1;
+    },
     /** 筛选节点 */
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
+    },
+    userTreeSearch(value) {
+      this.$refs.userTreeSelect.$refs.tree.filter(value);
+    },
+    treeRender(h, { node, data, store }) {
+      return (
+        <span class='custom-tree-node'><span>{node.label}</span></span>
+      );
     },
     /** 点击部门树 */
     handleNodeClick(data) {
@@ -509,6 +555,7 @@ export default {
     },
     /** 新增 */
     handleAdd() {
+      this.title = this.$t('user.dialog.new');
       this.form = {
         userId: undefined,
         deptId: undefined,
@@ -525,15 +572,27 @@ export default {
         parentIds: [],
         deptPostIds: []
       };
-      this.title = this.$t('user.dialog.new');
-      this.open = true;
+      Promise.all([
+        getRoleList(),
+        getDeptPostDiagram()
+      ]).then(([roleResp, postResp]) => {
+        this.roleOptions = roleResp.data.list
+        this.postOptions = postResp.data;
+        this.open = true;
+      });
     },
     /** 修改 */
     handleUpdate(row) {
+      this.title = this.$t('user.dialog.edit');
       const userId = row.userId || this.ids;
-      getUserInfo(userId).then(resp => {
-        this.form = resp.data;
-        this.title = this.$t('user.dialog.edit');
+      Promise.all([
+        getRoleList(),
+        getDeptPostDiagram(),
+        getUserInfo(userId)
+      ]).then(([roleResp, postResp, infoResp]) => {
+        this.roleOptions = roleResp.data.list
+        this.postOptions = postResp.data;
+        this.form = infoResp.data;
         this.open = true;
       });
     },
@@ -555,30 +614,13 @@ export default {
       getUserDiagram().then(response => {
         this.diagramData = response.data;
         this.diagramOpen = true;
-      });
-    },
-    /** 刷新缓存 */
-    handleRefreshCache(){
-      refreshUserDiagram().then(() => {
-        this.$modal.msgSuccess(this.$t('commons.msg.success.refresh'));
-      });
-    },
-    /** 获取部门岗位树 */
-    getPostOptions(){
-      getDeptPostDiagram().then(resp => {
-        this.postOptions = resp.data
+        this.diagramExpand();
       });
     },
     /** 获取部门人员树 */
     getUserOptions(){
       getDeptUserDiagram().then(resp => {
-        this.userOptions = resp.data
-      });
-    },
-    /** 获取角色选项 */
-    getRoleOptions(){
-      getRoleList().then(resp => {
-        this.roleOptions = resp.data.list
+        this.userTreeParams.data = resp.data
       });
     },
     /** 更多操作 */
@@ -639,7 +681,7 @@ export default {
               this.getList();
             });
           } else {
-            addUser(this.form).then(response => {
+            addUser(this.form).then(() => {
               this.$modal.msgSuccess(this.$t('commons.msg.success.create'));
               this.open = false;
               this.getList();
@@ -682,7 +724,63 @@ export default {
     /** 提交上传文件 */
     submitFileForm() {
       this.$refs.upload.submit();
-    }
+    },
+    diagramExpand() {
+      this.toggleExpand(this.diagramData, this.diagramExpandAll)
+    },
+    toggleExpand(data, val) {
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          this.$set(item, "expand", val);
+          if (item.children) {
+            this.toggleExpand(item.children, val);
+          }
+        });
+      } else {
+        this.$set(data, "expand", val);
+        if (data.children) {
+          this.toggleExpand(data.children, val);
+        }
+      }
+    },
+    onExpand(e, data) {
+      console.log(1)
+      if ("expand" in data) {
+        data.expand = !data.expand;
+        if (!data.expand && data.children) {
+          this.collapse(data.children);
+        }
+      } else {
+        this.$set(data, "expand", true);
+      }
+    },
+    collapse(list) {
+      console.log(2)
+      list.forEach(child => {
+        if (child.expand) {
+          child.expand = false;
+        }
+        child.children && this.collapse(child.children);
+      });
+    },
+    diagramRender(h, data) {
+      return (
+          <div>
+            <div>
+              {data.id > 0 && <i class="el-icon-user-solid" style="margin-right: 2px;"></i>}
+              <span>{data.label}</span>
+            </div>
+            <div style="font-size:12px; line-height:20px;">
+              {data.rank}
+              {this.dict.type.post_level
+                  .filter(item => data.rank === item.code)
+                  .map(item => (
+                      <span>/{this.$t(item.name)}</span>
+                  ))}
+            </div>
+          </div>
+      );
+    },
   }
 };
 </script>
@@ -718,78 +816,5 @@ export default {
   padding-left: 3px;
   border-left: 1px solid #fff;
   line-height: 0;
-}
-
-.dialog-content {
-  height: 700px;
-  overflow-x: scroll;
-}
-
-.orgchart-container {
-  position: relative;
-  display: inline-block;
-  height: 680px;
-  width: calc(100% - 24px);
-  overflow: auto;
-  text-align: center;
-}
-
-.orgchart {
-  display: inline-block;
-  height: 100%;
-  width: 100%;
-  overflow: scroll;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  background: #fff;
-  background-size: 10px 10px;
-}
-
-.orgchart .node {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  display: inline-block;
-  position: relative;
-  margin: 0;
-  padding: 3px;
-  border: 2px dashed transparent;
-  text-align: center;
-  width: auto;
-}
-
-.orgchart .node .title {
-  font-size: 15px;
-  font-family: Arial;
-  padding: 12px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  line-height: 0;
-  flex-direction: row-reverse;
-  background: #0e5e59;
-}
-
-.orgchart .node .content {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  width: 100%;
-  height: 20px;
-  font-size: 11px;
-  line-height: 18px;
-  border: 1px solid rgba(217,83,79,.8);
-  border-radius: 0 0 4px 4px;
-  text-align: center;
-  background-color: #fff;
-  color: #333;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-left: 5px;
-  padding-right: 5px;
 }
 </style>

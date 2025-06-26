@@ -11,7 +11,8 @@ package com.cowave.sys.admin.app.base;
 
 import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.response.Response;
-import com.cowave.commons.framework.support.excel.CellWidthHandler;
+import com.cowave.commons.framework.access.Access;
+import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
 import com.cowave.sys.admin.domain.base.SysConfig;
 import com.cowave.sys.admin.domain.base.request.ConfigQuery;
 import com.cowave.sys.admin.service.base.SysConfigService;
@@ -45,7 +46,7 @@ public class SysConfigController {
     @PreAuthorize("@permit.hasPermit('sys:config:query')")
     @GetMapping
     public Response<Response.Page<SysConfig>> list(ConfigQuery query) {
-        return Response.page(sysConfigService.queryPage(query));
+        return Response.page(sysConfigService.page(Access.tenantId(), query));
     }
 
     /**
@@ -54,7 +55,7 @@ public class SysConfigController {
     @PreAuthorize("@permit.hasPermit('sys:config:query')")
     @GetMapping("/{configId}")
     public Response<SysConfig> info(@PathVariable Integer configId) {
-        return Response.success(sysConfigService.info(configId));
+        return Response.success(sysConfigService.info(Access.tenantId(), configId));
     }
 
     /**
@@ -72,7 +73,7 @@ public class SysConfigController {
     @PreAuthorize("@permit.hasPermit('sys:config:delete')")
     @DeleteMapping("/{configIds}")
     public Response<Void> delete(@PathVariable List<Integer> configIds) throws Exception {
-        return Response.success(() -> sysConfigService.delete(configIds));
+        return Response.success(() -> sysConfigService.delete(Access.tenantId(), configIds));
     }
 
     /**
@@ -94,24 +95,25 @@ public class SysConfigController {
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        List<SysConfig> configList = sysConfigService.list(Access.tenantId(), query);
         EasyExcel.write(response.getOutputStream(), SysConfig.class)
-                .sheet("系统参数").registerWriteHandler(new CellWidthHandler()).doWrite(sysConfigService.queryList(query));
+                .sheet("系统参数").registerWriteHandler(new ExcelIgnoreStyle()).doWrite(configList);
     }
 
     /**
-     * 刷新配置
+     * 重置恢复
      */
-    @PreAuthorize("@permit.hasPermit('sys:config:cache')")
-    @GetMapping("/refresh")
-    public Response<Void> refreshConfig() throws Exception {
-        return Response.success(sysConfigService::refreshConfig);
+    @PreAuthorize("@permit.hasPermit('sys:config:reset')")
+    @GetMapping("/reset")
+    public Response<Void> resetConfig() throws Exception {
+        return Response.success(() -> sysConfigService.resetConfig(Access.tenantId()));
     }
 
     /**
-     * 获取配置值
+     * 获取配置
      */
     @GetMapping("/value/{configKey}")
-    public Response<String> getConfigValue(@PathVariable String configKey) {
-        return Response.success(sysConfigService.getConfigValue(configKey));
+    public Response<Object> getConfigValue(@PathVariable String configKey) throws Exception {
+        return Response.success(sysConfigService.getConfigValue(Access.tenantId(), configKey));
     }
 }

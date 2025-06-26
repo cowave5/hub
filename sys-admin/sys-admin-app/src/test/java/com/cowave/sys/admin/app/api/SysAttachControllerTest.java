@@ -46,8 +46,8 @@ public class SysAttachControllerTest extends SpringTest {
     @Test
     public void upload() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.set("masterId", "2");
-        params.set("attachGroup", "sys-user");
+        params.set("ownerId", "2");
+        params.set("ownerType", "sys-user");
         params.set("attachType", "avatar");
         mockImport("/api/v1/attach/upload", params, "source/cw.jpg");
     }
@@ -58,8 +58,8 @@ public class SysAttachControllerTest extends SpringTest {
     @Test
     public void download() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.set("masterId", "2");
-        params.set("attachGroup", "sys-user");
+        params.set("ownerId", "2");
+        params.set("ownerType", "sys-user");
         params.set("attachType", "avatar");
         mockImport("/api/v1/attach/upload", params, "source/cw.jpg");
         this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/attach/download?attachId=1")
@@ -76,8 +76,8 @@ public class SysAttachControllerTest extends SpringTest {
     @Test
     public void preview() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.set("masterId", "2");
-        params.set("attachGroup", "sys-user");
+        params.set("ownerId", "2");
+        params.set("ownerType", "sys-user");
         params.set("attachType", "avatar");
         mockImport("/api/v1/attach/upload", params, "source/cw.jpg");
         mockGet("/api/v1/attach/preview?attachId=1");
@@ -88,7 +88,7 @@ public class SysAttachControllerTest extends SpringTest {
      */
     @Test
     public void list() throws Exception {
-        mockGet("/api/v1/attach/list?masterId=6&attachGroup=sys-user&attachType=avatar");
+        mockGet("/api/v1/attach/list?ownerId=6&ownerType=sys-user&attachType=avatar");
     }
 
     /**

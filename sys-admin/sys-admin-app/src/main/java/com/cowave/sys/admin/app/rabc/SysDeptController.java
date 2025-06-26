@@ -12,8 +12,9 @@ package com.cowave.sys.admin.app.rabc;
 import cn.hutool.core.lang.tree.Tree;
 import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.response.Response;
+import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.access.operation.Operation;
-import com.cowave.commons.framework.support.excel.CellWidthHandler;
+import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
 import com.cowave.sys.admin.domain.rabc.SysDept;
 import com.cowave.sys.admin.domain.rabc.SysDeptPost;
 import com.cowave.sys.admin.domain.rabc.SysUserDept;
@@ -53,7 +54,7 @@ public class SysDeptController {
     @PreAuthorize("@permit.hasPermit('sys:dept:query')")
     @GetMapping
     public Response<Response.Page<DeptListDto>> list(DeptQuery query) {
-        return Response.page(sysDeptService.list(query));
+        return Response.page(sysDeptService.list(Access.tenantId(), query));
     }
 
     /**
@@ -64,7 +65,7 @@ public class SysDeptController {
     @PreAuthorize("@permit.hasPermit('sys:dept:query')")
     @GetMapping("/{deptId}")
     public Response<DeptInfoDto> info(@PathVariable Integer deptId) {
-        return Response.success(sysDeptService.info(deptId));
+        return Response.success(sysDeptService.info(Access.tenantId(), deptId));
     }
 
     /**
@@ -74,7 +75,7 @@ public class SysDeptController {
     @PreAuthorize("@permit.hasPermit('sys:dept:create')")
     @PostMapping
     public Response<Void> create(@Validated @RequestBody DeptCreate dept) throws Exception {
-        return Response.success(() -> sysDeptService.create(dept));
+        return Response.success(() -> sysDeptService.create(Access.tenantId(), dept));
     }
 
     /**
@@ -86,7 +87,7 @@ public class SysDeptController {
     @PreAuthorize("@permit.hasPermit('sys:dept:delete')")
     @DeleteMapping("/{deptIds}")
     public Response<Void> delete(@PathVariable List<Integer> deptIds) throws Exception {
-        return Response.success(() -> sysDeptService.delete(deptIds));
+        return Response.success(() -> sysDeptService.delete(Access.tenantId(), deptIds));
     }
 
     /**
@@ -96,7 +97,7 @@ public class SysDeptController {
     @PreAuthorize("@permit.hasPermit('sys:dept:edit')")
     @PatchMapping
     public Response<Void> edit(@RequestBody DeptCreate dept) throws Exception {
-        return Response.success(() -> sysDeptService.edit(dept));
+        return Response.success(() -> sysDeptService.edit(Access.tenantId(), dept));
     }
 
     /**
@@ -107,7 +108,7 @@ public class SysDeptController {
     public void export(HttpServletResponse response) throws IOException {
         String sheet = "部门";
         String excel = "部门数据";
-        List<SysDept> list = sysDeptService.listForExport();
+        List<SysDept> list = sysDeptService.listForExport(Access.tenantId());
         if (CollectionUtils.isNotEmpty(list)) {
             sheet = list.get(0).getDeptName();
             excel = "部门-" + sheet;
@@ -117,25 +118,18 @@ public class SysDeptController {
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         EasyExcel.write(response.getOutputStream(), SysDept.class)
-                .sheet(sheet).registerWriteHandler(new CellWidthHandler()).doWrite(list);
+                .sheet(sheet).registerWriteHandler(new ExcelIgnoreStyle()).doWrite(list);
     }
 
     /**
      * 部门组织架构
+     *
+     * @param deptId 部门id
      */
     @PreAuthorize("@permit.hasPermit('sys:dept:diagram')")
     @GetMapping("/diagram")
-    public Response<List<Tree<String>>> getDiagram(String deptId) {
-        return Response.success(sysDeptService.getDiagram(deptId));
-    }
-
-    /**
-     * 刷新部门组织
-     */
-    @PreAuthorize("@permit.hasPermit('sys:dept:cache')")
-    @GetMapping("/diagram/refresh")
-    public Response<Void> refreshDiagram() throws Exception {
-        return Response.success(sysDeptService::refreshDiagram);
+    public Response<List<Tree<Integer>>> getDiagram(Integer deptId) {
+        return Response.success(sysDeptService.getDiagram(Access.tenantId(), deptId));
     }
 
     /**
@@ -143,7 +137,7 @@ public class SysDeptController {
 	 */
 	@GetMapping("/diagram/post")
 	public Response<List<Tree<String>>> getPostDiagram() {
-		return Response.success(List.of(sysDeptService.getPostDiagram()));
+		return Response.success(List.of(sysDeptService.getPostDiagram(Access.tenantId())));
 	}
 
     /**
@@ -151,16 +145,16 @@ public class SysDeptController {
      */
     @GetMapping("/diagram/user")
     public Response<List<Tree<String>>> getUserDiagram() {
-        return Response.success(List.of(sysDeptService.getUserDiagram()));
+        return Response.success(List.of(sysDeptService.getUserDiagram(Access.tenantId())));
     }
 
     /**
      * 添加部门岗位
      */
-    @PreAuthorize("@permit.hasPermit('sys:dept:positions')")
+    @PreAuthorize("@permit.hasPermit('sys:dept:positions:add')")
     @PostMapping("/posts")
     public Response<Void> addPosts(@Valid @RequestBody List<SysDeptPost> list) throws Exception {
-        return Response.success(() -> sysDeptService.addPosts(list));
+        return Response.success(() -> sysDeptService.addPosts(Access.tenantId(), list));
     }
 
     /**
@@ -169,37 +163,37 @@ public class SysDeptController {
      * @param deptId 部门id
      * @param postIds 岗位id列表
      */
-    @PreAuthorize("@permit.hasPermit('sys:dept:positions')")
+    @PreAuthorize("@permit.hasPermit('sys:dept:positions:remove')")
     @DeleteMapping("/posts/{deptId}/{postIds}")
     public Response<Void> removePosts(@PathVariable Integer deptId, @PathVariable List<Integer> postIds) throws Exception {
-        return Response.success(() -> sysDeptService.removePosts(deptId, postIds));
+        return Response.success(() -> sysDeptService.removePosts(Access.tenantId(), deptId, postIds));
     }
 
     /**
      * 获取部门岗位（已设置）
      */
-    @PreAuthorize("@permit.hasPermit('sys:dept:positions')")
+    @PreAuthorize("@permit.hasPermit('sys:dept:positions:query')")
     @GetMapping("/posts/configured")
     public Response<Response.Page<DeptPostDto>> getConfiguredPosts(@Valid DeptPostQuery query) {
-        return Response.page(sysDeptService.getConfiguredPosts(query));
+        return Response.page(sysDeptService.getConfiguredPosts(Access.tenantId(), query));
     }
 
     /**
      * 获取部门岗位（未设置）
      */
-    @PreAuthorize("@permit.hasPermit('sys:dept:positions')")
+    @PreAuthorize("@permit.hasPermit('sys:dept:positions:query')")
     @GetMapping("/posts/unConfigured")
     public Response<Response.Page<DeptPostDto>> getUnConfiguredPosts(@Valid DeptPostQuery query) {
-        return Response.page(sysDeptService.getUnConfiguredPosts(query));
+        return Response.page(sysDeptService.getUnConfiguredPosts(Access.tenantId(), query));
     }
 
     /**
      * 添加部门成员
      */
-    @PreAuthorize("@permit.hasPermit('sys:dept:members')")
+    @PreAuthorize("@permit.hasPermit('sys:dept:members:add')")
     @PostMapping("/members")
     public Response<Void> addMembers(@Valid @RequestBody List<SysUserDept> list) throws Exception {
-        return Response.success(() -> sysDeptService.addMembers(list));
+        return Response.success(() -> sysDeptService.addMembers(Access.tenantId(), list));
     }
 
     /**
@@ -208,28 +202,28 @@ public class SysDeptController {
      * @param deptId 部门id
      * @param userIds 用户id列表
      */
-    @PreAuthorize("@permit.hasPermit('sys:dept:members')")
+    @PreAuthorize("@permit.hasPermit('sys:dept:members:remove')")
     @DeleteMapping("/members/{deptId}/{userIds}")
     public Response<Void> removeMembers(@PathVariable Integer deptId, @PathVariable List<Integer> userIds) throws Exception {
-        return Response.success(() -> sysDeptService.removeMembers(deptId, userIds));
+        return Response.success(() -> sysDeptService.removeMembers(Access.tenantId(), deptId, userIds));
     }
 
     /**
      * 获取部门成员（已加入）
      */
-    @PreAuthorize("@permit.hasPermit('sys:dept:members')")
+    @PreAuthorize("@permit.hasPermit('sys:dept:members:query')")
     @GetMapping("/members/joined")
     public Response<Response.Page<DeptUserDto>> getJoinedMembers(@Valid DeptUserQuery query) {
-        return Response.page(sysDeptService.getJoinedMembers(query));
+        return Response.page(sysDeptService.getJoinedMembers(Access.tenantId(), query));
     }
 
     /**
      * 获取部门成员（未加入）
      */
-    @PreAuthorize("@permit.hasPermit('sys:dept:members')")
+    @PreAuthorize("@permit.hasPermit('sys:dept:members:query')")
     @GetMapping("/members/unJoined")
     public Response<Response.Page<DeptUserDto>> getUnJoinedMembers(@Valid DeptUserQuery query) {
-        return Response.page(sysDeptService.getUnJoinedMembers(query));
+        return Response.page(sysDeptService.getUnJoinedMembers(Access.tenantId(), query));
     }
 
     /**
@@ -239,7 +233,7 @@ public class SysDeptController {
      */
     @GetMapping("/candidates/{deptCode}")
     public Response<List<UserNameDto>> getCandidatesByCode(@PathVariable String deptCode) {
-        return Response.success(sysDeptService.getCandidatesByCode(deptCode));
+        return Response.success(sysDeptService.getCandidatesByCode(Access.tenantId(), deptCode));
     }
 
     /**
@@ -247,6 +241,6 @@ public class SysDeptController {
      */
     @GetMapping("/name/{userIds}")
     public Response<List<String>> getNamesById(@PathVariable List<Integer> userIds) {
-        return Response.success(sysDeptService.getNamesById(userIds));
+        return Response.success(sysDeptService.getNamesById(Access.tenantId(), userIds));
     }
 }

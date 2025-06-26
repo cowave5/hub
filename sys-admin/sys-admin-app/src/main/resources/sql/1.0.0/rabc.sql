@@ -1,20 +1,53 @@
--- 系统管理员
-drop table if exists sys_user_admin;
-create table sys_user_admin
+-- 租户信息
+drop table if exists sys_tenant;
+create table sys_tenant
 (
-    user_id      serial primary key,
-    user_type    int2 default -1,
-    user_code    character varying(64),
-    user_name    character varying(64)  not null,
-    user_account character varying(64)  not null,
-    user_passwd  character varying(256) not null
+    tenant_id    character varying(64) primary key,
+    tenant_name  character varying(128),
+    user_limit   int4 default 1000,
+    user_count   int4 default 0,
+    user_index   int4 default 0,
+    status       int2 default 1,
+    expire_time  timestamp,
+    title        character varying(64),
+    logo         text,
+    tenant_user  character varying(128),
+    tenant_addr  character varying(256),
+    tenant_phone character varying(64),
+    tenant_email character varying(128),
+    remark       character varying(200),
+    create_by    character varying(64),
+    create_time  timestamp,
+    update_by    character varying(64),
+    update_time  timestamp
 );
+comment on table sys_tenant is '租户信息';
+comment on column sys_tenant.tenant_id is '租户id';
+comment on column sys_tenant.tenant_name is '租户名称';
+comment on column sys_tenant.tenant_user is '租户联系人';
+comment on column sys_tenant.tenant_addr is '租户地址';
+comment on column sys_tenant.tenant_phone is '租户电话';
+comment on column sys_tenant.tenant_email is '租户邮箱';
+comment on column sys_tenant.user_index is '用户序号';
+comment on column sys_tenant.user_count is '用户统计';
+comment on column sys_tenant.user_limit is '用户上限';
+comment on column sys_tenant.title is '租户标题';
+comment on column sys_tenant.logo is '租户图标';
+comment on column sys_tenant.status is '租户状态';
+comment on column sys_tenant.expire_time is '到期时间';
+comment on column sys_tenant.remark is '备注';
+comment on column sys_tenant.create_by is '创建人';
+comment on column sys_tenant.create_time is '创建时间';
+comment on column sys_tenant.update_by is '更新人';
+comment on column sys_tenant.update_time is '更新时间';
 
--- 1.部门信息
+-- 部门信息
 drop table if exists sys_dept;
 create table sys_dept(
     dept_id     serial primary key,
+    tenant_id   character varying(64),
     dept_code   character varying(64),
+    dept_type   character varying(64),
     dept_name   character varying(128),
     dept_short  character varying(64),
     dept_addr   character varying(512),
@@ -26,10 +59,12 @@ create table sys_dept(
     update_time timestamp
 
 );
-create unique index sys_dept_dept_code on sys_dept(dept_code);
+create unique index sys_dept_dept_code on sys_dept(tenant_id, dept_code);
 comment on table sys_dept is '部门信息';
 comment on column sys_dept.dept_id is '部门id';
+comment on column sys_dept.tenant_id is '租户id';
 comment on column sys_dept.dept_code is '部门编码';
+comment on column sys_dept.dept_type is '部门类型';
 comment on column sys_dept.dept_name is '部门名称';
 comment on column sys_dept.dept_short is '部门简称';
 comment on column sys_dept.dept_addr is '部门地址';
@@ -40,23 +75,24 @@ comment on column sys_dept.create_time is '创建时间';
 comment on column sys_dept.update_by is '更新人';
 comment on column sys_dept.update_time is '更新时间';
 
--- 2.部门关系
+-- 部门关系
 drop table if exists sys_dept_tree;
 create table sys_dept_tree(
-    dept_id   int4 not null,
     parent_id int4 not null,
-    tree_type int2 default 1,
-    constraint sys_dept_tree_pkey primary key (dept_id, parent_id, tree_type)
+    dept_id   int4 not null,
+    tenant_id character varying(64),
+    constraint sys_dept_tree_pkey primary key (dept_id, parent_id)
 );
 comment on table sys_dept_tree is '部门关系';
-comment on column sys_dept_tree.dept_id is '部门id';
 comment on column sys_dept_tree.parent_id is '上级部门id';
-comment on column sys_dept_tree.tree_type is '关系类型';
+comment on column sys_dept_tree.dept_id is '部门id';
+comment on column sys_dept_tree.tenant_id is '租户id';
 
--- 3.岗位信息
+-- 岗位信息
 drop table if exists sys_post;
 create table sys_post(
     post_id     serial primary key,
+    tenant_id   character varying(64),
     post_code   varchar(64),
     post_name   varchar(64) not null,
     post_level  int2 default 1,
@@ -81,20 +117,20 @@ comment on column sys_post.create_time is '创建时间';
 comment on column sys_post.update_by is '更新人';
 comment on column sys_post.update_time is '更新时间';
 
--- 4.岗位关系
+-- 岗位关系
 drop table if exists sys_post_tree;
 create table sys_post_tree(
-    post_id   int4 not null,
     parent_id int4 not null,
-    tree_type int2 default 1,
-    constraint sys_post_tree_pkey primary key (post_id, parent_id, tree_type)
+    post_id   int4 not null,
+    tenant_id character varying(64),
+    constraint sys_post_tree_pkey primary key (post_id, parent_id)
 );
 comment on table sys_post_tree is '岗位关系';
-comment on column sys_post_tree.post_id is '岗位id';
 comment on column sys_post_tree.parent_id is '上级岗位id';
-comment on column sys_post_tree.tree_type is '关系类型';
+comment on column sys_post_tree.post_id is '岗位id';
+comment on column sys_post_tree.tenant_id is '租户id';
 
--- 5.部门岗位
+-- 部门岗位
 drop table if exists sys_dept_post;
 create table sys_dept_post(
     dept_id   int4 not null,
@@ -107,13 +143,14 @@ comment on column sys_dept_post.dept_id is '部门id';
 comment on column sys_dept_post.post_id is '岗位id';
 comment on column sys_dept_post.is_default is '是否部门默认岗位';
 
--- 6.用户信息
+-- 用户信息
 drop table if exists sys_user;
 create table sys_user
 (
     user_id      serial primary key,
+    tenant_id    character varying(64),
+    user_type    character varying(64),
     user_code    character varying(64),
-    user_type    int2 default 0,
     user_name    character varying(64)  not null,
     user_account character varying(64)  not null,
     user_passwd  character varying(256) not null,
@@ -128,11 +165,11 @@ create table sys_user
     update_by    character varying(64),
     update_time  timestamp
 );
-create unique index sys_user_user_code on sys_user(user_code);
-create unique index sys_user_user_account on sys_user(user_account);
+create unique index sys_user_user_account on sys_user(tenant_id, user_account);
 comment on table sys_user is '用户信息';
 comment on column sys_user.user_id is '用户id';
-comment on column sys_user.user_type is '用户类型 0:默认用户';
+comment on column sys_user.tenant_id is '租户id';
+comment on column sys_user.user_type is '用户类型';
 comment on column sys_user.user_code is '用户编码';
 comment on column sys_user.user_name is '用户名称';
 comment on column sys_user.user_account is '用户账号';
@@ -148,20 +185,21 @@ comment on column sys_user.create_time is '创建时间';
 comment on column sys_user.update_by is '更新人';
 comment on column sys_user.update_time is '更新时间';
 
--- 7.用户关系
+-- 用户关系
 drop table if exists sys_user_tree;
-create table sys_user_tree(
-    user_id   int4 not null,
+create table sys_user_tree
+(
     parent_id int4 not null,
-    tree_type int2 default 1,
-    constraint sys_user_tree_pkey primary key (user_id, parent_id, tree_type)
+    user_id   int4 not null,
+    tenant_id character varying(64),
+    constraint sys_user_tree_pkey primary key (user_id, parent_id)
 );
 comment on table sys_user_tree is '用户关系';
-comment on column sys_user_tree.user_id is '用户id';
 comment on column sys_user_tree.parent_id is '上级用户id';
-comment on column sys_user_tree.tree_type is '关系类型';
+comment on column sys_user_tree.user_id is '用户id';
+comment on column sys_user_tree.tenant_id is '租户id';
 
--- 8.用户部门
+-- 用户部门
 drop table if exists sys_user_dept;
 create table sys_user_dept(
     user_id    int4 not null,
@@ -178,10 +216,11 @@ comment on column sys_user_dept.post_id is '岗位id';
 comment on column sys_user_dept.is_default is '是否用户默认部门';
 comment on column sys_user_dept.is_leader is '是否部门负责人';
 
--- 9.角色信息
+-- 角色信息
 drop table if exists sys_role;
 create table sys_role(
     role_id     serial primary key,
+    tenant_id   character varying(64),
     role_code   character varying(100) not null,
     role_name   character varying(64)  not null,
     role_type   character varying(64),
@@ -191,7 +230,7 @@ create table sys_role(
     update_by   character varying(64),
     update_time timestamp
 );
-create unique index sys_role_role_code on sys_role(role_code);
+create unique index sys_role_role_code on sys_role(tenant_id, role_code);
 comment on table sys_role is '角色信息';
 comment on column sys_role.role_id is '角色id';
 comment on column sys_role.role_code is '角色编码';
@@ -203,7 +242,7 @@ comment on column sys_role.create_time is '创建时间';
 comment on column sys_role.update_by is '更新人';
 comment on column sys_role.update_time is '更新时间';
 
--- 10.用户角色
+-- 用户角色
 drop table if exists sys_user_role;
 create table sys_user_role(
     user_id int4 not null,
@@ -214,11 +253,12 @@ comment on table sys_user_role is '用户角色';
 comment on column sys_user_role.user_id is '用户id';
 comment on column sys_user_role.role_id is '角色id';
 
--- 11.菜单信息
+-- 菜单信息
 drop table if exists sys_menu;
 create table sys_menu(
     menu_id      serial primary key,
     parent_id    int4                   default 0,
+    tenant_id    character varying(64),
     menu_name    character varying(64) not null,
     menu_order   integer                default 0,
     menu_permit  character varying(255),
@@ -260,7 +300,7 @@ comment on column sys_menu.create_time is '创建时间';
 comment on column sys_menu.update_by is '更新人';
 comment on column sys_menu.update_time is '更新时间';
 
--- 12.角色菜单
+-- 角色菜单
 drop table if exists sys_role_menu;
 create table sys_role_menu(
     role_id int4 not null,
@@ -271,7 +311,7 @@ comment on table sys_role_menu is '角色菜单';
 comment on column sys_role_menu.role_id is '角色id';
 comment on column sys_role_menu.menu_id is '菜单id';
 
--- 13.用户ApiToken
+-- 用户ApiToken
 drop table if exists api_token;
 create table api_token(
     token_id    serial primary key,
@@ -291,7 +331,7 @@ comment on column api_token.ip_rule is 'ip限制';
 comment on column api_token.user_code is '用户编码';
 comment on column api_token.create_time is '创建时间';
 
--- 13.用户ApiToken权限
+-- 用户ApiToken权限
 drop table if exists api_token_menu;
 create table api_token_menu(
     token_id int4,

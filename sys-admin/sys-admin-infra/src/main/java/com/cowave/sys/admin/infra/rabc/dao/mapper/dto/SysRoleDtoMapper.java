@@ -28,29 +28,29 @@ import java.util.List;
 public interface SysRoleDtoMapper {
 
     /**
+     * 获取用户角色
+     */
+    List<String> getRoleCodesByUserId(Integer userId);
+
+    /**
      * 详情
      */
-    RoleInfoDto info(Integer roleId);
+    RoleInfoDto info(@Param("tenantId") String tenantId, @Param("roleId") Integer roleId);
 
     /**
      * 授权用户
      */
-    void addRoleUser(RoleUserUpdate roleUpdate);
+    void addRoleUser(@Param("tenantId") String tenantId, @Param("role") RoleUserUpdate roleUpdate);
 
     /**
      * 用户列表（已授权）
      */
-    Page<RoleUserDto> getAuthedUser(Page<RoleUserDto> page, @Param("query") RoleUserQuery query);
+    Page<RoleUserDto> getAuthedUser(@Param("tenantId") String tenantId, @Param("query") RoleUserQuery query, Page<RoleUserDto> page);
 
     /**
      * 用户列表（未授权）
      */
-    Page<RoleUserDto> getUnAuthedUser(Page<RoleUserDto> page, @Param("query") RoleUserQuery query);
-
-    /**
-     * 获取用户角色
-     */
-    List<String> getUserRoles(Integer userId);
+    Page<RoleUserDto> getUnAuthedUser(@Param("tenantId") String tenantId, @Param("query") RoleUserQuery query, Page<RoleUserDto> page);
 
     /**
      * 角色权限集

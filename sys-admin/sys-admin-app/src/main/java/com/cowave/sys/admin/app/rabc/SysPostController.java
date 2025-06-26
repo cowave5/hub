@@ -12,8 +12,9 @@ package com.cowave.sys.admin.app.rabc;
 import cn.hutool.core.lang.tree.Tree;
 import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.response.Response;
+import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.access.operation.Operation;
-import com.cowave.commons.framework.support.excel.CellWidthHandler;
+import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
 import com.cowave.sys.admin.domain.rabc.SysPost;
 import com.cowave.sys.admin.domain.rabc.dto.PostInfoDto;
 import com.cowave.sys.admin.domain.rabc.dto.UserNameDto;
@@ -49,7 +50,7 @@ public class SysPostController {
 	@PreAuthorize("@permit.hasPermit('sys:post:query')")
 	@GetMapping
 	public Response<Response.Page<SysPost>> list(DeptPostQuery query) {
-		return Response.page(sysPostService.pageList(query));
+		return Response.page(sysPostService.pageList(Access.tenantId(), query));
 	}
 
 	/**
@@ -60,7 +61,7 @@ public class SysPostController {
 	@PreAuthorize("@permit.hasPermit('sys:post:query')")
 	@GetMapping("/{postId}")
 	public Response<PostInfoDto> info(@PathVariable Integer postId) {
-		return Response.success(sysPostService.info(postId));
+		return Response.success(sysPostService.info(Access.tenantId(), postId));
 	}
 
 	/**
@@ -69,8 +70,8 @@ public class SysPostController {
 	@Operation(module = "op_admin", type = "op_post", action = "op_create", desc = "新增岗位：#{#sysPost.postName}")
 	@PreAuthorize("@permit.hasPermit('sys:post:create')")
 	@PostMapping
-	public Response<Void> add(@Validated @RequestBody PostInfoDto sysPost) throws Exception {
-		return Response.success(() -> sysPostService.add(sysPost));
+	public Response<Void> create(@Validated @RequestBody PostInfoDto sysPost) throws Exception {
+		return Response.success(() -> sysPostService.create(Access.tenantId(), sysPost));
 	}
 
 	/**
@@ -82,7 +83,7 @@ public class SysPostController {
 	@PreAuthorize("@permit.hasPermit('sys:post:delete')")
 	@DeleteMapping("/{postIds}")
 	public Response<Void> delete(@PathVariable List<Integer> postIds) throws Exception {
-		return Response.success(() -> sysPostService.delete(postIds));
+		return Response.success(() -> sysPostService.delete(Access.tenantId(), postIds));
 	}
 
 	/**
@@ -92,7 +93,7 @@ public class SysPostController {
 	@PreAuthorize("@permit.hasPermit('sys:post:edit')")
 	@PatchMapping
 	public Response<Void> edit(@Validated @RequestBody PostInfoDto sysPost) throws Exception {
-		return Response.success(() -> sysPostService.edit(sysPost));
+		return Response.success(() -> sysPostService.edit(Access.tenantId(), sysPost));
 	}
 
 	/**
@@ -105,8 +106,9 @@ public class SysPostController {
 		response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		List<SysPost> postList = sysPostService.list(Access.tenantId(), query);
 		EasyExcel.write(response.getOutputStream(), SysPost.class)
-		.sheet("岗位").registerWriteHandler(new CellWidthHandler()).doWrite(sysPostService.list(query));
+		.sheet("岗位").registerWriteHandler(new ExcelIgnoreStyle()).doWrite(postList);
 	}
 
 	/**
@@ -114,17 +116,8 @@ public class SysPostController {
 	 */
 	@PreAuthorize("@permit.hasPermit('sys:post:diagram')")
 	@GetMapping("/diagram")
-	public Response<Tree<String>> getDiagram() {
-		return Response.success(sysPostService.getDiagram());
-	}
-
-	/**
-	 * 刷新岗位组织
-	 */
-	@PreAuthorize("@permit.hasPermit('sys:post:cache')")
-	@GetMapping("/diagram/refresh")
-	public Response<Void> refreshDiagram() throws Exception {
-		return Response.success(sysPostService::refreshDiagram);
+	public Response<Tree<Integer>> getDiagram() {
+		return Response.success(sysPostService.getDiagram(Access.tenantId()));
 	}
 
 	/**
@@ -134,7 +127,7 @@ public class SysPostController {
 	 */
 	@GetMapping("/candidates/{postCode}")
 	public Response<List<UserNameDto>> getCandidatesByCode(@PathVariable String postCode) {
-		return Response.success(sysPostService.getCandidatesByCode(postCode));
+		return Response.success(sysPostService.getCandidatesByCode(Access.tenantId(), postCode));
 	}
 
 	/**
@@ -142,7 +135,7 @@ public class SysPostController {
      */
     @GetMapping("/name/{postId}")
     public Response<String> getNameById(@PathVariable Integer postId) {
-        return Response.success(sysPostService.getNameById(postId));
+        return Response.success(sysPostService.getNameById(Access.tenantId(), postId));
     }
 
 	/**
@@ -150,6 +143,6 @@ public class SysPostController {
      */
     @GetMapping("/dept/name/{deptPosts}")
     public Response<List<String>> getNameOfDeptPost(@PathVariable List<String> deptPosts) {
-        return Response.success(sysPostService.getNameOfDeptPost(deptPosts));
+        return Response.success(sysPostService.getNameOfDeptPost(Access.tenantId(), deptPosts));
     }
 }

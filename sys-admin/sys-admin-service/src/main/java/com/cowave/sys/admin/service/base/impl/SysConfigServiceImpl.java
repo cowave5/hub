@@ -11,13 +11,16 @@ package com.cowave.sys.admin.service.base.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.commons.client.http.asserts.HttpAsserts;
-import com.cowave.commons.client.http.constants.HttpCode;
+import com.cowave.commons.framework.helper.redis.RedisHelper;
+import com.cowave.commons.framework.helper.redis.StringRedisHelper;
+import com.cowave.commons.framework.helper.redis.dict.CustomValueParser;
 import com.cowave.sys.admin.domain.base.SysConfig;
 import com.cowave.sys.admin.domain.base.request.ConfigQuery;
 import com.cowave.sys.admin.infra.base.dao.SysConfigDao;
-import com.cowave.sys.admin.infra.base.redis.SysConfigRedis;
+import com.cowave.sys.admin.infra.base.dao.mapper.dto.SysConfigDtoMapper;
 import com.cowave.sys.admin.service.base.SysConfigService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,72 +28,72 @@ import java.util.List;
 
 import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
 import static com.cowave.commons.client.http.constants.HttpCode.NOT_FOUND;
+import static com.cowave.sys.admin.domain.AdminRedisKeys.*;
 
 /**
  * @author shanhuiming
  */
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class SysConfigServiceImpl implements SysConfigService {
-    private final SysConfigRedis sysConfigRedis;
+    private final SysConfigDtoMapper sysConfigDtoMapper;
     private final SysConfigDao sysConfigDao;
+    private final RedisHelper redisHelper;
+    private final StringRedisHelper stringRedisHelper;
 
     @Override
-    public Page<SysConfig> queryPage(ConfigQuery query) {
-        return sysConfigDao.queryPage(query);
+    public Page<SysConfig> page(String tenantId, ConfigQuery query) {
+        return sysConfigDao.page(tenantId, query);
     }
 
     @Override
-    public List<SysConfig> queryList(ConfigQuery query) {
-        return sysConfigDao.queryList(query);
+    public List<SysConfig> list(String tenantId, ConfigQuery query) {
+        return sysConfigDao.list(tenantId, query);
     }
 
     @Override
-    public SysConfig info(Integer configId) {
-        return sysConfigDao.getById(configId);
+    public SysConfig info(String tenantId, Integer configId) {
+        return sysConfigDao.getById(tenantId, configId);
     }
 
     @Override
     public void add(SysConfig sysConfig) throws Exception {
+        CustomValueParser.getValue(sysConfig.getConfigValue(), sysConfig.getValueType(), sysConfig.getValueParser());
         sysConfigDao.save(sysConfig);
-        sysConfigRedis.putConfig(sysConfig);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = CONFIG_KEY, key = "#sysConfig.tenantId + ':' + #sysConfig.configKey")
     @Override
     public void edit(SysConfig sysConfig) throws Exception {
         HttpAsserts.notNull(sysConfig.getConfigId(), BAD_REQUEST, "{admin.config.id.notnull}");
 
-        SysConfig preConfig = sysConfigDao.getById(sysConfig.getConfigId());
+        SysConfig preConfig = sysConfigDao.getById(sysConfig.getTenantId(), sysConfig.getConfigId());
         HttpAsserts.notNull(preConfig, NOT_FOUND, "{admin.config.notexist}", sysConfig.getConfigId());
 
         // 校验parser
+        CustomValueParser.getValue(sysConfig.getConfigValue(), sysConfig.getValueType(), sysConfig.getValueParser());
         sysConfigDao.updateConfig(sysConfig);
-        sysConfigRedis.putConfig(sysConfig);
     }
 
     @Override
-    public void delete(List<Integer> configIds) throws Exception {
+    public void delete(String tenantId, List<Integer> configIds) throws Exception {
         List<SysConfig> list = sysConfigDao.listByIds(configIds);
         sysConfigDao.removeByIds(configIds);
+        // 手动清除缓存
         for(SysConfig conf : list) {
-            sysConfigRedis.removeConfig(conf);
+            redisHelper.delete(CONFIG_KEY + ":" + tenantId + ":" + conf.getConfigKey());
         }
     }
 
-    /**
-     * 刷新缓存
-     */
     @Override
-    public void refreshConfig() throws Exception {
-        sysConfigRedis.refreshConfig();
+    public void resetConfig(String tenantId) {
+        sysConfigDtoMapper.resetTenantConfig(tenantId);
+        stringRedisHelper.luaClean(CONFIG_KEY + ":" + tenantId + ":");
     }
 
-    /**
-     * 获取配置值
-     */
     @Override
-    public String getConfigValue(String configKey) {
-        return sysConfigRedis.getConfigValue(configKey);
+    public <T> T getConfigValue(String tenantId, String configKey) {
+        return sysConfigDao.getConfigValue(tenantId, configKey);
     }
 }

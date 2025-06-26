@@ -22,15 +22,27 @@ import java.util.List;
 @Repository
 public class SysUserRoleDao extends ServiceImpl<SysUserRoleMapper, SysUserRole> {
 
-    public void deleteByUserId(Integer userId){
+    /**
+     * 删除用户角色（用户id）
+     */
+    public void removeByUserId(Integer userId){
         lambdaUpdate().eq(SysUserRole::getUserId, userId).remove();
     }
 
+    /**
+     * 删除用户角色（角色id）
+     */
     public void deleteByRoleIds(List<Integer> roleIds){
         lambdaUpdate().in(SysUserRole::getRoleId, roleIds).remove();
     }
 
-    public void deleteUserRoles(Integer roleId, List<Integer> userIds){
-        lambdaUpdate().eq(SysUserRole::getRoleId, roleId).in(SysUserRole::getUserId, userIds).remove();
+    /**
+     * 从角色中移除用户
+     */
+    public void deleteRoleUsers(Integer roleId, List<Integer> userIds){
+        lambdaUpdate()
+                .eq(SysUserRole::getRoleId, roleId)
+                .in(SysUserRole::getUserId, userIds)
+                .remove();
     }
 }

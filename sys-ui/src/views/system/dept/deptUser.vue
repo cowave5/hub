@@ -44,7 +44,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button type="danger" plain icon="el-icon-circle-close" size="mini" @click="handleRemoveMember"
-                   :disabled="multiple || !checkPermit(['sys:role:members'])">
+                   :disabled="multiple || !checkPermit(['sys:dept:members:remove'])">
           {{ $t('user.button.remove') }}
         </el-button>
       </el-col>
@@ -95,7 +95,7 @@
       <el-table-column :label="$t('commons.label.options')" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-circle-close" @click="handleRemoveMember(scope.row)"
-                     :disabled="!checkPermit(['sys:role:members'])">
+                     :disabled="!checkPermit(['sys:dept:members:remove'])">
             {{ $t('user.button.remove') }}
           </el-button>
         </template>

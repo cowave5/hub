@@ -11,16 +11,6 @@ export function getUserDiagram() {
 }
 
 /**
- * 刷新用户组织
- */
-export function refreshUserDiagram() {
-  return request({
-    url: '/admin/api/v1/user/diagram/refresh',
-    method: 'get'
-  })
-}
-
-/**
  * 用户列表
  */
 export function getUserList(params) {

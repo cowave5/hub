@@ -31,6 +31,7 @@ export default {
       create: "New",
       edit: "Edit",
       delete: "Delete",
+      remove: "Remove",
       publish: "Publish",
       recall: "Recall",
       exec: "Execute",
@@ -92,6 +93,7 @@ export default {
       },
       sys: {
         root: "System Manage",
+        tenant: "Tenant",
         user: 'User',
         role: "Role",
         menu: "Menu",
@@ -156,7 +158,56 @@ export default {
       close_other: 'close other tabs',
       close_left: 'close tabs to the left',
       close_right: 'close tabs to the right',
+    },
+    text: {
+      limit: "Limit",
+      format: "Format"
     }
+  },
+  tenant: {
+    title: {
+      system: 'Cowave',
+      cowave: 'Cowave'
+    },
+    label: {
+      id: "Tenant Key",
+      name: "Tenant Name",
+      title: "Tenant Title",
+      logo: "Logo",
+      phone: "Phone",
+      email: "Email",
+      contact: "Contact",
+      staff: "Staff Size",
+      addr: "Address",
+      status: "Status",
+      expire: "Expire",
+    },
+    button: {
+      manager: 'Managers',
+      manager_add: "New Managers",
+      manager_remove: "Remove Managers",
+    },
+    dialog: {
+      new: "New Tenant",
+      edit: "Edit Tenant",
+    },
+    rules: {
+      id: "Tenant key can't be empty",
+      title: "Tenant title can't be empty",
+      name: "Tenant name can't be empty",
+    },
+    confirm: {
+      status_enable: "Sure to enable tenant \"{arg1}\" ?",
+      status_disable: "Sure to disable tenant \"{arg1}\" ?",
+      remove_select: "Sure to remove the selected manager ?",
+      remove_manager: "Sure to remove manager \"{arg1}\" ?",
+    },
+    text: {
+      info: "Tenant Info"
+    },
+    msg: {
+      remove_success: "Remove manager success",
+    },
   },
   user: {
     label: {
@@ -217,17 +268,17 @@ export default {
       import_text7: "Import Result",
     },
     rules: {
-      account: "user account can't be empty",
-      name: "user name can't be empty",
-      name_len: "user name length must be between 2 and 20",
-      passwd: "user password can't be empty",
-      passwd_len: "password length must be between 6 and 20",
-      email: "invalid email",
-      phone: "invalid phone number",
-      pwd_old: "old password can't be empty",
-      pwd_new: "new password can't be empty",
-      pwd_confirm: "confirm password can't be empty",
-      pwd_compare: "the two entered passwords doesn't match"
+      account: "User account can't be empty",
+      name: "User name can't be empty",
+      name_len: "User name length must be between 2 and 20",
+      passwd: "User password can't be empty",
+      passwd_len: "Password length must be between 6 and 20",
+      email: "Invalid email",
+      phone: "Invalid phone number",
+      pwd_old: "Old password can't be empty",
+      pwd_new: "New password can't be empty",
+      pwd_confirm: "Confirm password can't be empty",
+      pwd_compare: "The two entered passwords doesn't match"
     },
     confirm: {
       status_enable: "Sure to enable user \"{arg1}\" ?",
@@ -260,8 +311,10 @@ export default {
     button: {
       menus: 'Menus',
       scope: 'Data Scope',
-      members: 'Members',
       remove: "Remove Grant",
+      members: 'Members',
+      members_grant: 'Members remove',
+      members_cancel: 'Members Grant',
     },
     placeholder: {
       name: "Input role name",
@@ -288,12 +341,14 @@ export default {
     text: {
       info: "Role Info",
       members: "Members",
+      data: "role"
     },
   },
   menu: {
     label: {
       root: "root",
       name: "Name",
+      tenant: "Tenant",
       status: "Status",
       icon: "Icon",
       order: "Order",
@@ -306,7 +361,8 @@ export default {
       path: "Path",
       cacheable: "Cacheable",
       param: "Param",
-      visibility: "Visibility"
+      visibility: "Visibility",
+      shared: "Shared Menu"
     },
     button: {
       select: "Select: ",
@@ -358,7 +414,11 @@ export default {
     },
     button: {
       members: "Members",
+      members_add: "Add Members",
+      members_remove: "Remove Members",
       positions: "Positions",
+      positions_add: "Add Positions",
+      positions_remove: "Remove Positions",
     },
     placeholder: {
       name: "Input department name",
@@ -449,6 +509,9 @@ export default {
     dialog: {
       new: "New Dictionary",
       edit: "Edit Dictionary",
+    },
+    button: {
+      reset: "Reset Cache",
     },
     rules: {
       groupcode: "group code can't be empty",
@@ -588,6 +651,9 @@ export default {
       value: "Input config value",
       parser: "Input class name of value parser",
       param: "Input param of value parser"
+    },
+    button: {
+      reset: "Reset Config",
     },
     dialog: {
       new: "New Config",

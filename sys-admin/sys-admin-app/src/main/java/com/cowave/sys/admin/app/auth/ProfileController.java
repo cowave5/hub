@@ -11,6 +11,7 @@ package com.cowave.sys.admin.app.auth;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.cowave.commons.client.http.response.Response;
+import com.cowave.commons.framework.access.Access;
 import com.cowave.sys.admin.domain.auth.dto.UserProfile;
 import com.cowave.sys.admin.domain.auth.request.ApiTokenRequest;
 import com.cowave.sys.admin.domain.auth.request.PasswdReset;
@@ -73,11 +74,11 @@ public class ProfileController {
     }
 
     /**
-	 * Api权限
+	 * Api令牌权限树
 	 */
 	@GetMapping("/api/tree")
 	public Response<List<Tree<Integer>>> getApiTree(){
-		return Response.success(sysMenuService.getApiTreeByUser());
+		return Response.success(sysMenuService.getApiPermitsByUser(Access.tenantId()));
 	}
 
     /**

@@ -21,6 +21,21 @@ import java.util.List;
 public class AuthInfo {
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
+     * 租户标题
+     */
+    private String tenantTitle;
+
+    /**
+     * 租户Logo
+     */
+    private String tenantLogo;
+
+    /**
      * 用户id
      */
     private Integer userId;

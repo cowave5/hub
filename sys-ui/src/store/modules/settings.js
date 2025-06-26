@@ -19,7 +19,10 @@ const mutations = {
     if (state.hasOwnProperty(key)) {
       state[key] = value
     }
-  }
+  },
+  SET_TITLE: (state, title) => {
+      state.title = title
+  },
 }
 
 const actions = {
@@ -27,10 +30,6 @@ const actions = {
   changeSetting({ commit }, data) {
     commit('CHANGE_SETTING', data)
   },
-  // 设置网页标题
-  setTitle({ commit }, title) {
-    state.title = title
-  }
 }
 
 export default {

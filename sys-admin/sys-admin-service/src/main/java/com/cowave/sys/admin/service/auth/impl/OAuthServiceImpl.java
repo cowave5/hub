@@ -35,14 +35,12 @@ import com.cowave.sys.admin.domain.auth.request.OAuthUserQuery;
 import com.cowave.sys.admin.domain.auth.vo.OAuth2CodeVo;
 import com.cowave.sys.admin.domain.base.SysOperation;
 import com.cowave.sys.admin.domain.rabc.SysUser;
-import com.cowave.sys.admin.domain.rabc.SysUserAdmin;
 import com.cowave.sys.admin.infra.auth.dao.LdapUserDao;
 import com.cowave.sys.admin.infra.auth.dao.OAuthClientDao;
 import com.cowave.sys.admin.infra.auth.dao.OAuthServerDao;
 import com.cowave.sys.admin.infra.auth.dao.OAuthUserDao;
 import com.cowave.sys.admin.infra.auth.dao.mapper.dto.OAuthUserDtoMapper;
 import com.cowave.sys.admin.infra.base.SysOperationHandler;
-import com.cowave.sys.admin.infra.rabc.dao.SysUserAdminDao;
 import com.cowave.sys.admin.infra.rabc.dao.SysUserDao;
 import com.cowave.sys.admin.infra.rabc.dao.mapper.dto.SysRoleDtoMapper;
 import com.cowave.sys.admin.service.auth.GitlabService;
@@ -63,7 +61,7 @@ import java.util.concurrent.TimeUnit;
 import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
 import static com.cowave.commons.client.http.constants.HttpCode.INTERNAL_SERVER_ERROR;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_OAUTH;
-import static com.cowave.sys.admin.domain.auth.AccessType.*;
+import static com.cowave.sys.admin.domain.auth.AuthType.*;
 
 /**
  * @author shanhuiming
@@ -75,7 +73,6 @@ public class OAuthServiceImpl implements OAuthService {
     private final BearerTokenService bearerTokenService;
     private final RedisHelper redisHelper;
     private final SysUserDao sysUserDao;
-    private final SysUserAdminDao sysUserAdminDao;
     private final LdapUserDao ldapUserDao;
     private final OAuthUserDao oauthUserDao;
     private final OAuthClientDao oAuthClientDao;
@@ -284,19 +281,15 @@ public class OAuthServiceImpl implements OAuthService {
         if (GITLAB.equalsType(userCode)) {
             OAuthUser oAuthUser = oauthUserDao.getByUserCode(userCode);
             userDetails = oAuthUser.newUserDetails();
-            userDetails.setType(OAUTH.val() + ":" + GITLAB.val());
+            userDetails.setAuthType(OAUTH.val() + "/" + GITLAB.val());
         } else if (LDAP.equalsType(userCode)) {
             LdapUser ldapUser = ldapUserDao.getByUserCode(userCode);
             userDetails = ldapUser.newUserDetails();
-            userDetails.setType(OAUTH.val() + ":" + LDAP.val());
-        } else if (ADMIN.equalsType(userCode)) {
-            SysUserAdmin sysUserAdmin = sysUserAdminDao.getByUserCode(userCode);
-            userDetails = sysUserAdmin.newUserDetails();
-            userDetails.setType(OAUTH.val() + ":" + ADMIN.val());
+            userDetails.setAuthType(OAUTH.val() + "/" + LDAP.val());
         } else {
             SysUser sysUser = sysUserDao.getByUserCode(userCode);
             userDetails = sysUser.newUserDetails(null);
-            userDetails.setType(OAUTH.val() + ":" + SYS.val());
+            userDetails.setAuthType(OAUTH.val() + "/" + SYS.val());
         }
         // 根据scope设置permits，这里就省略了（当前登录的用户信息直接可以获取）
         userDetails.setClusterId(applicationProperties.getClusterId());

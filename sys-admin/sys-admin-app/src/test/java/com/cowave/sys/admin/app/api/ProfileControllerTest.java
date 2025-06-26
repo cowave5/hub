@@ -72,8 +72,8 @@ public class ProfileControllerTest extends SpringTest {
     @Test
     public void imageUpload() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.set("masterId", "2");
-        params.set("attachGroup", "sys-user");
+        params.set("ownerId", "2");
+        params.set("ownerType", "sys-user");
         params.set("attachType", "avatar");
         mockImport("/api/v1/profile/avatar", params, "source/cw.jpg");
     }

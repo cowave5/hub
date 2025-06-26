@@ -22,28 +22,50 @@ import java.util.List;
 @Repository
 public class SysAttachDao extends ServiceImpl<SysAttachMapper, SysAttach> {
 
-    public List<SysAttach> queryList(Long masterId, String attachGroup, String attachType){
+    /**
+     * 附件列表
+     */
+    public List<SysAttach> queryList(String ownerId, String ownerType, String attachType){
         return lambdaQuery()
-                .eq(masterId != null, SysAttach::getMasterId, masterId)
-                .eq(attachGroup != null, SysAttach::getAttachGroup, attachGroup)
+                .eq(ownerId != null, SysAttach::getOwnerId, ownerId)
+                .eq(ownerType != null, SysAttach::getOwnerType, ownerType)
                 .eq(attachType != null, SysAttach::getAttachType, attachType)
+                .orderByDesc(SysAttach::getCreateTime)
                 .list();
     }
 
-    public SysAttach latestOfMaster(Long masterId, String attachGroup){
+    /**
+     * 最新的附件
+     */
+    public SysAttach latestOfOwner(String ownerId, String ownerType, String attachType){
         return lambdaQuery()
-                .eq(SysAttach::getAttachStatus, 1)
-                .eq(SysAttach::getMasterId, masterId)
-                .eq(SysAttach::getAttachGroup, attachGroup)
+                .eq(ownerId != null, SysAttach::getOwnerId, ownerId)
+                .eq(ownerType != null, SysAttach::getOwnerType, ownerType)
+                .eq(attachType != null, SysAttach::getAttachType, attachType)
                 .orderByDesc(SysAttach::getCreateTime)
                 .last("LIMIT 1").one();
     }
 
-    public void updateMasterById(Long masterId, Long attachId){
+    /**
+     * 更新附件Owner
+     */
+    public void updateOwnerById(String ownerId, Long attachId){
         lambdaUpdate()
                 .eq(SysAttach::getAttachId, attachId)
-                .set(SysAttach::getMasterId, masterId)
-                .set(SysAttach::getAttachStatus, 1)
+                .set(SysAttach::getOwnerId, ownerId)
+                .update();
+    }
+
+    /**
+     * 清楚附件Owner
+     */
+    public void clearWithOwner(String ownerId, String ownerType, String attachType, Long attachId){
+        lambdaUpdate()
+                .eq(SysAttach::getOwnerId, ownerId)
+                .eq(SysAttach::getOwnerType, ownerType)
+                .eq(SysAttach::getAttachType, attachType)
+                .eq(attachId != null, SysAttach::getAttachId, attachId)
+                .set(SysAttach::getOwnerId, null)
                 .update();
     }
 }

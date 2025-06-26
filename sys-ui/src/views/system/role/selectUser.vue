@@ -40,7 +40,7 @@
     </el-row>
 
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="handleSelectUser" :disabled="!checkPermit(['sys:role:members'])">
+      <el-button type="primary" @click="handleSelectUser" :disabled="!checkPermit(['sys:role:members:grant'])">
         {{$t('commons.button.confirm')}}
       </el-button>
       <el-button @click="visible = false">{{$t('commons.button.cancel')}}</el-button>

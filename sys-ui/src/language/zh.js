@@ -31,6 +31,7 @@ export default {
       create: "新增",
       edit: "修改",
       delete: "删除",
+      remove: "移除",
       publish: "发布",
       recall: "撤回",
       exec: "执行",
@@ -92,6 +93,7 @@ export default {
       },
       sys: {
         root: "系统管理",
+        tenant: "租户管理",
         user: '用户管理',
         role: "角色管理",
         menu: "菜单管理",
@@ -156,7 +158,56 @@ export default {
       close_other: '关闭其他',
       close_left: '关闭左侧',
       close_right: '关闭右侧',
+    },
+    text: {
+      limit: "限制",
+      format: "格式"
     }
+  },
+  tenant: {
+    title: {
+      system: '控维科技',
+      cowave: '控维通信'
+    },
+    label: {
+      id: "租户标识",
+      name: "租户名称",
+      title: "租户标题",
+      logo: "租户Logo",
+      addr: "租户地址",
+      phone: "联系电话",
+      email: "联系邮箱",
+      contact: "联系人",
+      staff: "人员规模",
+      status: "状态",
+      expire: "到期时间",
+    },
+    button: {
+      manager: '管理员设置',
+      manager_add: "新增管理员",
+      manager_remove: "移除管理员",
+    },
+    dialog: {
+      new: "新增租户",
+      edit: "修改租户",
+    },
+    rules: {
+      id: "租户标识不能为空",
+      title: "租户标题不能为空",
+      name: "租户名称不能为空",
+    },
+    confirm: {
+      status_enable: "确认要启用租户“{arg1}”吗？",
+      status_disable: "确认要停用租户“{arg1}”吗？",
+      remove_select: "确认移除所选管理员？",
+      remove_manager: "确认移除管理员“{arg1}”？",
+    },
+    text: {
+      info: "租户信息"
+    },
+    msg: {
+      remove_success: "取消授权成功",
+    },
   },
   user: {
     label: {
@@ -260,8 +311,10 @@ export default {
     button: {
       menus: '菜单权限',
       scope: '数据权限',
+      remove: "取消授权",
       members: '角色成员',
-      remove: "取消授权"
+      members_grant: '角色成员授权',
+      members_cancel: '角色成员取消',
     },
     placeholder: {
       name: "请输入角色名称",
@@ -288,11 +341,13 @@ export default {
     text: {
       info: "角色信息",
       members: "成员列表",
+      data: "角色数据"
     },
   },
   menu: {
     label: {
       root: "根目录",
+      tenant: "租户归属",
       name: "菜单名称",
       status: "菜单状态",
       order: "显示排序",
@@ -306,7 +361,8 @@ export default {
       path: "路由地址",
       cacheable: "是否缓存",
       param: "路由参数",
-      visibility: "访问控制"
+      visibility: "访问控制",
+      shared: "公共菜单"
     },
     button: {
       select: "选择菜单: ",
@@ -358,7 +414,11 @@ export default {
     },
     button: {
       members: "部门成员",
+      members_add: "新增部门成员",
+      members_remove: "移除部门成员",
       positions: "部门岗位",
+      positions_add: "新增部门岗位",
+      positions_remove: "移除部门岗位",
     },
     placeholder: {
       name: "请输入部门名称",
@@ -449,6 +509,9 @@ export default {
     dialog: {
       new: "新增字典",
       edit: "修改字典",
+    },
+    button: {
+      reset: "重置缓存",
     },
     rules: {
       groupcode: "分组编码不能为空",
@@ -588,6 +651,9 @@ export default {
       value: "请输入参数值",
       parser: "请输入配置值转换器类名",
       param: "请输入配置值转换参数"
+    },
+    button: {
+      reset: "重置配置",
     },
     dialog: {
       new: "新增配置",

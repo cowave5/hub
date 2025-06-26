@@ -26,55 +26,50 @@ public interface SysPostService {
 	/**
 	 * 分页列表
 	 */
-	Page<SysPost> pageList(DeptPostQuery query);
+	Page<SysPost> pageList(String tenantId, DeptPostQuery query);
 
 	/**
 	 * 列表
 	 */
-	List<SysPost> list(DeptPostQuery query);
+	List<SysPost> list(String tenantId, DeptPostQuery query);
 
 	/**
 	 * 详情
 	 */
-	PostInfoDto info(Integer postId);
+	PostInfoDto info(String tenantId, Integer postId);
 
 	/**
 	 * 新增
 	 */
-	void add(PostInfoDto sysPost);
+	void create(String tenantId, PostInfoDto sysPost);
 
 	/**
 	 * 删除
 	 */
-	void delete(List<Integer> postIds);
+	void delete(String tenantId, List<Integer> postIds);
 
 	/**
 	 * 修改
 	 */
-	void edit(PostInfoDto sysPost);
+	void edit(String tenantId, PostInfoDto sysPost);
 
 	/**
 	 * 岗位组织架构
 	 */
-	Tree<String> getDiagram();
-
-	/**
-     * 刷新岗位组织
-     */
-    void refreshDiagram();
+	Tree<Integer> getDiagram(String tenantId);
 
 	/**
 	 * 岗位流程候选人
 	 */
-	List<UserNameDto> getCandidatesByCode(String postCode);
+	List<UserNameDto> getCandidatesByCode(String tenantId, String postCode);
 
 	/**
      * 岗位名称查询
      */
-	String getNameById(Integer postId);
+	String getNameById(String tenantId, Integer postId);
 
 	/**
      * 部门岗位名称查询
      */
-    List<String> getNameOfDeptPost(List<String> deptPosts);
+    List<String> getNameOfDeptPost(String tenantId, List<String> deptPosts);
 }

@@ -32,7 +32,7 @@ public class SysPostTree {
     private Integer parentId;
 
     /**
-     * 关系类型
+     * 租户id
      */
-    private Long treeType;
+    private String tenantId;
 }

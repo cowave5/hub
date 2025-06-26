@@ -43,17 +43,22 @@ export const constantRoutes = [
   },
   {
     path: '/login',
-    component: () => import('@/views/login'),
+    component: () => import('@/views/login.vue'),
     hidden: true
   },
   {
-    path: '/register',
-    component: () => import('@/views/register'),
+    path: '/cowave/login',
+    component: () => import('@/views/cowave_login.vue'),
     hidden: true
   },
   {
-    path: '/ldap',
-    component: () => import('@/views/ldap'),
+    path: '/cowave/register',
+    component: () => import('@/views/cowave_register.vue'),
+    hidden: true
+  },
+  {
+    path: '/cowave/ldap',
+    component: () => import('@/views/cowave_ldap.vue'),
     hidden: true
   },
   {
@@ -128,6 +133,19 @@ export const constantRoutes = [
         component: () => import('@/views/profile/token/index'),
         name: 'token',
         meta: { title: 'commons.theme.token', icon: 'token' }
+      }
+    ]
+  },
+  {
+    path: '/system/tenant-manager',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'tenant/:tenantId',
+        component: () => import('@/views/system/tenant/tenantManager.vue'),
+        name: 'TenantManager',
+        meta: { title: 'tenant.button.manager', activeMenu: '/system/tenant' }
       }
     ]
   },

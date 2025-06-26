@@ -68,17 +68,18 @@
         from(select
              <include refid="userColumns"/>
              from sys_user u
-             where 1 = 1
-             <if test="userName != null and userName != ''">
-                 and u.user_name like concat('%', #{userName}, '%')
+             where u.tenant_id = #{tenantId}
+             <if test="query.userName != null and query.userName != ''">
+                 and u.user_name like concat('%', #{query.userName}, '%')
              </if>
-             <if test="userPhone != null and userPhone != ''">
-                 and u.user_phone like concat('%', #{userPhone}, '%')
+             <if test="query.userPhone != null and query.userPhone != ''">
+                 and u.user_phone like concat('%', #{query.userPhone}, '%')
              </if>
-             <if test="userRank != null">
-                 and u.user_rank = #{userRank}
+             <if test="query.userRank != null">
+                 and u.user_rank = #{query.userRank}
              </if>
-             limit #{pageSize} offset #{offset}
+             order by u.user_id
+             limit #{query.pageSize} offset #{query.offset}
         ) u
         left join sys_user_dept ud on u.user_id = ud.user_id
         left join sys_dept d on ud.dept_id = d.dept_id
@@ -88,15 +89,15 @@
     <select id="count" resultType="java.lang.Integer">
         select count(1)
         from sys_user u
-        where 1 = 1
-        <if test="userName != null and userName != ''">
-            and u.user_name like concat('%', #{userName}, '%')
+        where u.tenant_id = #{tenantId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
         </if>
-        <if test="userPhone != null and userPhone != ''">
-            and u.user_phone like concat('%', #{userPhone}, '%')
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
         </if>
-        <if test="userRank != null">
-            and u.user_rank = #{userRank}
+        <if test="query.userRank != null">
+            and u.user_rank = #{query.userRank}
         </if>
     </select>
 
@@ -104,26 +105,31 @@
         select u.*,
         d.dept_id, d.dept_name, p.post_id, p.post_name,
         ud.is_default, ud.is_leader
-        from(with d as(with recursive tree (dept_id, parent_id) as
-             (select t1.dept_id, t1.parent_id from sys_dept_tree t1 where dept_id = #{deptId} union
-             select t2.dept_id, t2.parent_id from sys_dept_tree t2 join tree on t2.parent_id = tree.dept_id)
-             select tree.dept_id, dept.dept_name from tree JOIN sys_dept dept on tree.dept_id = dept.dept_id)
-             select distinct on(u.user_id)
-             <include refid="userColumns"/>
-             from d
-             join sys_user_dept ud on d.dept_id = ud.dept_id
-             join sys_user u on ud.user_id = u.user_id
-             where 1 = 1
-             <if test="userName != null and userName != ''">
-                 and u.user_name like concat('%', #{userName}, '%')
-             </if>
-             <if test="userPhone != null and userPhone != ''">
-                 and u.user_phone like concat('%', #{userPhone}, '%')
-             </if>
-             <if test="userRank != null">
-                 and u.user_rank = #{userRank}
-             </if>
-             limit #{pageSize} offset #{offset}
+        from(with d as(
+                with recursive tree (dept_id, parent_id) as(
+                    select t1.dept_id, t1.parent_id from sys_dept_tree t1 where dept_id = #{query.deptId}
+                    union
+                    select t2.dept_id, t2.parent_id from sys_dept_tree t2 join tree on t2.parent_id = tree.dept_id
+                )
+                select tree.dept_id, dept.dept_name, dept.tenant_id from tree JOIN sys_dept dept on tree.dept_id = dept.dept_id
+            )
+            select distinct on(u.user_id)
+            <include refid="userColumns"/>
+            from d
+            join sys_user_dept ud on d.dept_id = ud.dept_id
+            join sys_user u on ud.user_id = u.user_id
+            where d.tenant_id = #{tenantId}
+            <if test="query.userName != null and query.userName != ''">
+                and u.user_name like concat('%', #{query.userName}, '%')
+            </if>
+            <if test="query.userPhone != null and query.userPhone != ''">
+                and u.user_phone like concat('%', #{query.userPhone}, '%')
+            </if>
+            <if test="query.userRank != null">
+                and u.user_rank = #{query.userRank}
+            </if>
+            order by u.user_id
+            limit #{query.pageSize} offset #{query.offset}
         ) u
         left join sys_user_dept ud on u.user_id = ud.user_id
         left join sys_dept d on ud.dept_id = d.dept_id
@@ -131,23 +137,27 @@
     </select>
 
     <select id="countOfDept" resultType="java.lang.Integer">
-        with d as(with recursive tree (dept_id, parent_id) as
-        (select t1.dept_id, t1.parent_id from sys_dept_tree t1 where dept_id = #{deptId} union
-        select t2.dept_id, t2.parent_id from sys_dept_tree t2 join tree on t2.parent_id = tree.dept_id)
-        select tree.dept_id, dept.dept_name from tree JOIN sys_dept dept on tree.dept_id = dept.dept_id)
+        with d as(
+            with recursive tree (dept_id, parent_id) as(
+                select t1.dept_id, t1.parent_id from sys_dept_tree t1 where dept_id = #{query.deptId}
+                union
+                select t2.dept_id, t2.parent_id from sys_dept_tree t2 join tree on t2.parent_id = tree.dept_id
+            )
+            select tree.dept_id, dept.dept_name, dept.tenant_id from tree JOIN sys_dept dept on tree.dept_id = dept.dept_id
+        )
         select count(distinct u.user_id)
         from d
         join sys_user_dept ud on d.dept_id = ud.dept_id
         join sys_user u on ud.user_id = u.user_id
-        where 1 = 1
-        <if test="userName != null and userName != ''">
-            and u.user_name like concat('%', #{userName}, '%')
+        where d.tenant_id = #{tenantId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
         </if>
-        <if test="userPhone != null and userPhone != ''">
-            and u.user_phone like concat('%', #{userPhone}, '%')
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
         </if>
-        <if test="userRank != null">
-            and u.user_rank = #{userRank}
+        <if test="query.userRank != null">
+            and u.user_rank = #{query.userRank}
         </if>
     </select>
 
@@ -170,17 +180,42 @@
         left join sys_user_role ur on u.user_id = ur.user_id
         left join sys_user_dept ud on u.user_id = ud.user_id
         left join sys_user_tree t on u.user_id = t.user_id and t.parent_id > 0
-        where u.user_id = #{userId}
+        where u.tenant_id = #{tenantId} and u.user_id = #{userId}
     </select>
 
     <insert id="batchInsert">
-        insert into sys_user(user_code,user_name,user_account,user_passwd,user_sex,user_phone,user_email,
-                             user_status, remark,
-                             create_by, update_by, create_time, update_time) values
+        insert into sys_user(tenant_id,
+                             user_type,
+                             user_code,
+                             user_name,
+                             user_account,
+                             user_passwd,
+                             user_sex,
+                             user_phone,
+                             user_email,
+                             user_status,
+                             remark,
+                             create_by,
+                             update_by,
+                             create_time,
+                             update_time
+        ) values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.userCode},#{item.userName},#{item.userAccount},#{item.userPasswd},#{item.userSex},#{item.userPhone},#{item.userEmail},
-             #{item.userStatus},#{item.remark},
-             #{item.createBy},#{item.createBy},#{item.createTime},#{item.createTime})
+            (#{item.tenantId},
+             #{item.userType},
+             #{item.userCode},
+             #{item.userName},
+             #{item.userAccount},
+             #{item.userPasswd},
+             #{item.userSex},
+             #{item.userPhone},
+             #{item.userEmail},
+             #{item.userStatus},
+             #{item.remark},
+             #{item.createBy},
+             #{item.createBy},
+             #{item.createTime},
+             #{item.createTime})
         </foreach>
         <if test="overwrite == false">
             on conflict do nothing
@@ -206,23 +241,14 @@
         select distinct tree.user_id from tree JOIN sys_user u on tree.user_id = u.user_id
     </select>
 
-    <select id="getUserPermits" resultType="java.lang.String">
-        select distinct m.menu_permit
-        from sys_user_role u, sys_role r, sys_role_menu rm, sys_menu m
-        where u.role_id = r.role_id and r.role_id = rm.role_id and rm.menu_id = m.menu_id
-          and m.menu_status = 1
-          and m.menu_permit is not null
-          and (u.user_id = #{userId} or m.is_protected = 0)
-    </select>
-
-    <select id="getTreeNodes" resultType="com.cowave.sys.admin.domain.base.vo.TreeNode">
+    <select id="listDiagramNodes" resultType="com.cowave.sys.admin.domain.rabc.vo.UserDiagramNode">
         select t.user_id   id,
                t.parent_id pid,
                u.user_name as label,
-               d.dict_value || '/'  || d.dict_name as content
+               u.user_rank userRank
         from sys_user_tree t
         left join sys_user u ON t.user_id = u.user_id
-        left join sys_dict d on d.parent_code = 'post_level' and u.user_rank = d.dict_value
+        where t.tenant_id = #{tenantId}
         order by t.parent_id, t.user_id
     </select>
 
@@ -231,7 +257,7 @@
         from sys_user_dept ud
         inner join (select dept_id from sys_user_dept where user_id = #{userId} and is_default = 1) as d on ud.dept_id = d.dept_id
         inner join sys_user u on ud.user_id = u.user_id
-        where ud.is_leader = 1
+        where ud.is_leader = 1 and u.tenant_id = #{tenantId}
     </select>
 
     <resultMap id="profileMap" type="com.cowave.sys.admin.domain.auth.dto.UserProfile">
@@ -278,4 +304,31 @@
         left join sys_user pu on t.parent_id = pu.user_id
         where u.user_id = #{userId}
     </select>
+
+    <select id="listTenantManager" resultType="com.cowave.sys.admin.domain.rabc.dto.TenantManager">
+        select u.tenant_id tenantId,
+               u.user_id userId,
+               u.user_name userName,
+               u.user_account userAccount,
+               u.create_time createTime,
+               u.update_time updateTime
+        from sys_user u
+        join sys_user_role ur on u.user_id = ur.user_id
+        join sys_role r on ur.role_id = r.role_id
+        where u.tenant_id = #{tenantId}
+          and r.role_code = 'sysAdmin'
+    </select>
+
+    <update id="removeTenantManager">
+        DELETE
+        FROM sys_user_role ur USING sys_user u, sys_role r
+        WHERE ur.user_id = u.user_id
+          AND ur.role_id = r.role_id
+          AND r.role_code = 'sysAdmin'
+          AND u.tenant_id = #{tenantId}
+          AND u.user_id IN
+        <foreach collection="userIds"  item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
 </mapper>

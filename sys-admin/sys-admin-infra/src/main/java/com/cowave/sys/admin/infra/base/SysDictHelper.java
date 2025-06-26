@@ -36,11 +36,11 @@ public class SysDictHelper implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        log.info("init cache of dict ...");
-        refresh();
+        log.info("prepare dict ...");
+        resetCache();
     }
 
-    public void refresh() {
+    public void resetCache() {
         dictHelper.clear();
         List<DictInfoDto> list = sysDictDtoMapper.queryAll(null, null);
         for (DictInfoDto sysDict : list) {

@@ -52,7 +52,7 @@
             <el-tab-pane :label="$t('user.text.basic')" name="userinfo">
               <userInfo :user="user" />
             </el-tab-pane>
-            <el-tab-pane v-if="user.userType <= 0" :label="$t('user.button.passwd')" name="resetPwd">
+            <el-tab-pane v-if="user.userType === 'sys'" :label="$t('user.button.passwd')" name="resetPwd">
               <resetPwd :user="user" />
             </el-tab-pane>
           </el-tabs>

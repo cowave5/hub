@@ -11,6 +11,8 @@ package com.cowave.sys.admin.domain.rabc;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author shanhuiming
  */
@@ -20,15 +22,17 @@ public class SysDeptPost {
     /**
      * 部门id
      */
+    @NotNull(message = "{admin.dept.id.notnull}")
     private Integer deptId;
 
     /**
      * 岗位id
      */
+    @NotNull(message = "{admin.post.id.notnull}")
     private Integer postId;
 
     /**
 	 * 用户默认单位
 	 */
-	private Integer isDefault = 0;
+	private int isDefault;
 }

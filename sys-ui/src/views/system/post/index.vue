@@ -65,12 +65,6 @@
               <svg-icon icon-class="tree"/> {{$t('commons.button.diagram')}}
             </el-button>
           </el-col>
-          <el-col :span="1.5">
-            <el-button type="danger" plain icon="el-icon-refresh" size="mini" @click="handleRefreshCache"
-                       :disabled="!checkPermit(['sys:post:cache'])">
-              {{$t('commons.button.cache')}}
-            </el-button>
-          </el-col>
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :cols="cols"/>
         </el-row>
 
@@ -160,21 +154,35 @@
     </el-dialog>
 
     <el-dialog v-drag :title="$t('post.dialog.diagram')" :visible.sync="diagramOpen" width="80%" append-to-body>
-      <div class="dialog-content">
-        <organization-chart :datasource="diagramData">
-          <template slot-scope="{ nodeData }">
-            <div class="title">{{nodeData.label}}</div>
-          </template>
-        </organization-chart>
+      <div style="margin-left:30px;">
+        <el-row :gutter="20">
+          <el-col :span="3">
+            <el-switch v-model="diagramHorizontal" :width="50" active-text="竖排" inactive-text="横排"
+                       style="margin-top:8px;"/>
+          </el-col>
+          <el-col :span="3">
+            <el-switch v-model="diagramExpandAll" :width="50" active-text="展开"
+                       inactive-text="折叠" style="margin:8px;" @change="diagramExpand"/>
+          </el-col>
+        </el-row>
+      </div>
+      <div style="font-size:12px; margin-top:30px; display: flex; justify-content: center;">
+        <el-scrollbar style="width: fit-content;" class="el-org-tree">
+          <vue2-org-tree
+              :data="diagramData"
+              :collapsable="true"
+              :horizontal="!diagramHorizontal"
+              :default-expand-level=2
+              :render-content="diagramRender"
+              @on-expand="onExpand"/>
+        </el-scrollbar>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import {listPost, getPost, delPost, addPost, updatePost, getPostDiagram, refreshDiagram} from "@/api/system/post";
+import {listPost, getPost, delPost, addPost, updatePost, getPostDiagram} from "@/api/system/post";
 import {getDeptDiagram} from "@/api/system/dept";
-import OrganizationChart from 'vue-organization-chart'
-import 'vue-organization-chart/dist/orgchart.css'
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import {checkPermit} from "@/utils/permission";
@@ -182,7 +190,7 @@ import {checkPermit} from "@/utils/permission";
 export default {
   name: "Post",
   dicts: ['enable_disable', 'post_type'],
-  components: {Treeselect, OrganizationChart},
+  components: {Treeselect},
   data() {
     return {
       // 遮罩层
@@ -233,6 +241,8 @@ export default {
         {key: 4, label: 'commons.label.createTime', show: true},
         {key: 5, label: 'commons.label.updateTime', show: false},
       ],
+      diagramHorizontal: true,
+      diagramExpandAll: true,
     };
   },
   watch: {
@@ -356,12 +366,7 @@ export default {
       getPostDiagram().then(response => {
         this.diagramData = response.data;
         this.diagramOpen = true;
-      });
-    },
-    /** 刷新缓存 */
-    handleRefreshCache(){
-      refreshDiagram().then(() => {
-        this.$modal.msgSuccess(this.$t('commons.msg.success.refresh'));
+        this.diagramExpand();
       });
     },
     /** 取消 */
@@ -388,62 +393,61 @@ export default {
         }
       });
     },
+    diagramExpand() {
+      this.toggleExpand(this.diagramData, this.diagramExpandAll)
+    },
+    toggleExpand(data, val) {
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          this.$set(item, "expand", val);
+          if (item.children) {
+            this.toggleExpand(item.children, val);
+          }
+        });
+      } else {
+        this.$set(data, "expand", val);
+        if (data.children) {
+          this.toggleExpand(data.children, val);
+        }
+      }
+    },
+    onExpand(e, data) {
+      console.log(1)
+      if ("expand" in data) {
+        data.expand = !data.expand;
+        if (!data.expand && data.children) {
+          this.collapse(data.children);
+        }
+      } else {
+        this.$set(data, "expand", true);
+      }
+    },
+    collapse(list) {
+      console.log(2)
+      list.forEach(child => {
+        if (child.expand) {
+          child.expand = false;
+        }
+        child.children && this.collapse(child.children);
+      });
+    },
+    diagramRender(h, data) {
+      return (
+          <div>
+            <div>
+              {data.id > 0 && <svg-icon icon-class="post"/>}
+              <span style="margin-left: 2px;">{data.label}</span>
+            </div>
+          </div>
+      );
+    },
   }
 };
 </script>
 
-<style>
-.dialog-content {
-  height: 700px;
-  overflow-x: scroll;
+<style rel="stylesheet/scss" lang="scss">
+.org-tree-node-label {
+  white-space: nowrap;
 }
 
-.orgchart-container {
-  position: relative;
-  display: inline-block;
-  height: 680px;
-  width: calc(100% - 24px);
-  overflow: auto;
-  text-align: center;
-}
-
-.orgchart {
-  display: inline-block;
-  height: 100%;
-  width: 100%;
-  overflow: scroll;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  background: #fff;
-  background-size: 10px 10px;
-}
-
-.orgchart .node {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  display: inline-block;
-  position: relative;
-  margin: 0;
-  padding: 3px;
-  border: 2px dashed transparent;
-  text-align: center;
-  width: auto;
-}
-
-.orgchart .node .title {
-  font-size: 15px;
-  font-family: Arial;
-  padding: 12px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  line-height: 0;
-  flex-direction: row-reverse;
-  background: #0e5e59;
-}
 </style>

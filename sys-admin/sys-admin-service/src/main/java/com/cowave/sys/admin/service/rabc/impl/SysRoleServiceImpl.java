@@ -45,46 +45,50 @@ public class SysRoleServiceImpl implements SysRoleService {
     private final SysRoleDtoMapper sysRoleDtoMapper;
 
     @Override
-    public Page<SysRole> list(RoleQuery query) {
-        return sysRoleDao.queryPage(query);
+    public Page<SysRole> list(String tenantId, RoleQuery query) {
+        return sysRoleDao.queryPage(tenantId, query);
     }
 
     @Override
-    public RoleInfoDto info(Integer roleId) {
-        return sysRoleDtoMapper.info(roleId);
+    public RoleInfoDto info(String tenantId, Integer roleId) {
+        return sysRoleDtoMapper.info(tenantId, roleId);
     }
 
     @Override
-    public void add(SysRole sysRole) {
-    	long codeCount = sysRoleDao.countRoleCode(sysRole.getRoleCode(), null);
-    	HttpAsserts.isTrue(codeCount == 0, BAD_REQUEST, "{admin.role.code.conflict}", sysRole.getRoleCode());
+    public void add(String tenantId, SysRole sysRole) {
+    	long codeCount = sysRoleDao.countRoleCode(tenantId, sysRole.getRoleCode(), null);
+    	HttpAsserts.isTrue(codeCount == 0,
+                BAD_REQUEST, "{admin.role.code.conflict}", sysRole.getRoleCode());
     	// 新增角色
         sysRoleDao.save(sysRole);
     }
 
     @Override
-    public void delete(List<Integer> roleIds) {
+    public void delete(String tenantId, List<Integer> roleIds) {
         // 操作日志
-        List<SysRole> list = sysRoleDao.listByIds(roleIds);
+        List<SysRole> list = sysRoleDao.listByIds(tenantId, roleIds);
         OperationContext.prepareContent(list);
 
-        // 删除角色
-        sysRoleDao.removeByIds(roleIds);
-        // 角色菜单
-        sysRoleMenuDao.deleteByRoleIds(roleIds);
-        // 角色用户
-        sysUserRoleDao.deleteByRoleIds(roleIds);
+        List<Integer> deleteList = Collections.copyToList(list, SysRole::getRoleId);
+        if (!deleteList.isEmpty()) {
+            // 删除角色
+            sysRoleDao.removeByIds(deleteList);
+            // 角色菜单
+            sysRoleMenuDao.deleteByRoleIds(deleteList);
+            // 角色用户
+            sysUserRoleDao.deleteByRoleIds(deleteList);
+        }
     }
 
     @Override
-    public void edit(SysRole sysRole) {
+    public void edit(String tenantId, SysRole sysRole) {
     	HttpAsserts.notNull(sysRole.getRoleId(), BAD_REQUEST, "{admin.role.id.notnull}");
 
-    	long codeCount = sysRoleDao.countRoleCode(sysRole.getRoleCode(), sysRole.getRoleId());
+    	long codeCount = sysRoleDao.countRoleCode(tenantId, sysRole.getRoleCode(), sysRole.getRoleId());
     	HttpAsserts.isTrue(codeCount == 0, BAD_REQUEST, "{admin.role.code.conflict}", sysRole.getRoleCode());
 
         // 校验&操作日志
-    	RoleInfoDto preRole = sysRoleDtoMapper.info(sysRole.getRoleId());
+    	SysRole preRole = sysRoleDao.getById(tenantId, sysRole.getRoleId());
     	HttpAsserts.notNull(preRole, NOT_FOUND, "{admin.role.not.exist}", sysRole.getRoleId());
         OperationContext.prepareContent(preRole);
 
@@ -93,8 +97,8 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public void updateMenus(RoleMenuUpdate roleUpdate) {
-        RoleInfoDto preRole = sysRoleDtoMapper.info(roleUpdate.getRoleId());
+    public void updateMenus(String tenantId, RoleMenuUpdate roleUpdate) {
+        SysRole preRole = sysRoleDao.getById(tenantId, roleUpdate.getRoleId());
         HttpAsserts.notNull(preRole, NOT_FOUND, "{admin.role.not.exist}", roleUpdate.getRoleId());
 
         sysRoleMenuDao.deleteByRoleId(roleUpdate.getRoleId());
@@ -103,27 +107,30 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public void grantUser(RoleUserUpdate roleUpdate) {
-        sysRoleDtoMapper.addRoleUser(roleUpdate);
+    public void grantUser(String tenantId, RoleUserUpdate roleUpdate) {
+        sysRoleDtoMapper.addRoleUser(tenantId, roleUpdate);
     }
 
     @Override
-    public void cancelUser(RoleUserUpdate roleUpdate) {
-        sysUserRoleDao.deleteUserRoles(roleUpdate.getRoleId(), roleUpdate.getUserIds());
+    public void cancelUser(String tenantId, RoleUserUpdate roleUpdate) {
+        SysRole preRole = sysRoleDao.getById(tenantId, roleUpdate.getRoleId());
+        HttpAsserts.notNull(preRole, NOT_FOUND, "{admin.role.not.exist}", roleUpdate.getRoleId());
+        // 删除角色用户
+        sysUserRoleDao.deleteRoleUsers(roleUpdate.getRoleId(), roleUpdate.getUserIds());
     }
 
     @Override
-    public Page<RoleUserDto> getAuthedUser(RoleUserQuery query) {
-        return sysRoleDtoMapper.getAuthedUser(Access.page(), query);
+    public Page<RoleUserDto> getAuthedUser(String tenantId, RoleUserQuery query) {
+        return sysRoleDtoMapper.getAuthedUser(tenantId, query, Access.page());
     }
 
     @Override
-    public Page<RoleUserDto> getUnAuthedUser(RoleUserQuery query) {
-        return sysRoleDtoMapper.getUnAuthedUser(Access.page(), query);
+    public Page<RoleUserDto> getUnAuthedUser(String tenantId, RoleUserQuery query) {
+        return sysRoleDtoMapper.getUnAuthedUser(tenantId, query, Access.page());
     }
 
     @Override
-    public List<String> getNames(List<Integer> roleIds) {
-        return sysRoleDao.queryNameByIds(roleIds);
+    public List<String> getNames(String tenantId, List<Integer> roleIds) {
+        return sysRoleDao.queryNameByIds(tenantId, roleIds);
     }
 }

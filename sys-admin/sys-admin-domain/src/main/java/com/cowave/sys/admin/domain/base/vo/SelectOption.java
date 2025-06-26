@@ -10,12 +10,14 @@
 package com.cowave.sys.admin.domain.base.vo;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 /**
  * @author shanhuiming
  */
+@NoArgsConstructor
 @Data
 public class SelectOption {
 
@@ -26,4 +28,9 @@ public class SelectOption {
     private String value;
 
     private List<SelectOption> children;
+
+    public SelectOption(String key, String label){
+        this.key = key;
+        this.label = label;
+    }
 }

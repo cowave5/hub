@@ -198,7 +198,7 @@ export default {
     },
     /** 导出 */
     handleExport() {
-      this.download('/admin/api/v1/log/export', {
+      this.download('/admin/api/v1/oplog/export', {
         ...this.queryParams
       }, `操作日志_${new Date().getTime()}.xlsx`)
     },

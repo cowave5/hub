@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="form" :model="user" :rules="rules" :disabled="user.userType !== 0" label-width="80px">
+  <el-form ref="form" :model="user" :rules="rules" :disabled="user.userType !== 'sys'" label-width="80px">
     <el-form-item :label="$t('user.label.name')" prop="userName">
       <el-input v-model="user.userName" maxlength="30" />
     </el-form-item>

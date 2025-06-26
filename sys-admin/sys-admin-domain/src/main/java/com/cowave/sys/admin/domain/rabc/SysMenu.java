@@ -54,6 +54,11 @@ public class SysMenu implements AccessInfoSetter {
     @ExcelProperty("菜单编号")
     private Integer menuId;
 
+	/**
+     * 租户id
+     */
+    private String tenantId;
+
     /**
      * 菜单名称
      */

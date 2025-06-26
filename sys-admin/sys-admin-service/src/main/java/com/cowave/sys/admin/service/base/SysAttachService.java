@@ -26,7 +26,7 @@ public interface SysAttachService {
     /**
      * 列表
      */
-    List<SysAttach> list(AttachQuery query);
+    List<SysAttach> list(String tenantId, AttachQuery query);
 
     /**
      * 上传
@@ -59,17 +59,12 @@ public interface SysAttachService {
     void delete(SysAttach sysAttach) throws Exception;
 
     /**
-     * 更新宿主id
-     */
-    void updateMasterById(Long masterId, Long attachId);
-
-    /**
      * 宿主最新附件
      */
-    SysAttach latestOfMaster(Long masterId, String attachGroup) throws Exception;
+    SysAttach latestOfOwner(String ownerId, String ownerType, String attachType) throws Exception;
 
     /**
      * 保留最近几个
      */
-    void masterReserve(Long masterId, String attachGroup, String attachType, int reserve) throws Exception;
+    void masterReserve(String ownerId, String ownerType, String attachType, int reserve) throws Exception;
 }

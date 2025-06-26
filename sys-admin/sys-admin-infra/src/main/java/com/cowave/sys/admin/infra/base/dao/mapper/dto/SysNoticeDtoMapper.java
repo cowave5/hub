@@ -23,9 +23,7 @@ import java.util.List;
 @Mapper
 public interface SysNoticeDtoMapper {
 
-    void insertReadOfAll(Long noticeId);
-
-    void insertReadOfAdmin(Long noticeId);
+    void insertReadOfAll(@Param("tenantId") String tenantId, @Param("noticeId") Long noticeId);
 
     void insertReadOfLdap(Long noticeId);
 
@@ -34,17 +32,23 @@ public interface SysNoticeDtoMapper {
     /**
      * 单位用户
      */
-    void insertReadOfDept(@Param("noticeId") Long noticeId, @Param("list") List<Integer> list);
+    void insertReadOfDept(@Param("tenantId") String tenantId,
+                          @Param("noticeId") Long noticeId,
+                          @Param("list") List<Integer> list);
 
     /**
      * 角色用户
      */
-    void insertReadOfRole(@Param("noticeId") Long noticeId, @Param("list") List<Integer> list);
+    void insertReadOfRole(@Param("tenantId") String tenantId,
+                          @Param("noticeId") Long noticeId,
+                          @Param("list") List<Integer> list);
 
     /**
      * 指定用户
      */
-    void insertReadOfUser(@Param("noticeId") Long noticeId, @Param("list") List<Integer> list);
+    void insertReadOfUser(@Param("tenantId") String tenantId,
+                          @Param("noticeId") Long noticeId,
+                          @Param("list") List<Integer> list);
 
     /**
      * 更新待读总数

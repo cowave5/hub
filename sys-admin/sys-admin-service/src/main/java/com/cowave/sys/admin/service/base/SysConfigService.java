@@ -21,19 +21,19 @@ import java.util.List;
 public interface SysConfigService {
 
     /**
-     * 列表
+     * 分页
      */
-    Page<SysConfig> queryPage(ConfigQuery query);
+    Page<SysConfig> page(String tenantId, ConfigQuery query);
 
     /**
      * 列表
      */
-    List<SysConfig> queryList(ConfigQuery query);
+    List<SysConfig> list(String tenantId, ConfigQuery query);
 
     /**
      * 详情
      */
-    SysConfig info(Integer configId);
+    SysConfig info(String tenantId, Integer configId);
 
     /**
      * 新增
@@ -48,15 +48,15 @@ public interface SysConfigService {
     /**
      * 删除
      */
-    void delete(List<Integer> configIds) throws Exception;
+    void delete(String tenantId, List<Integer> configIds) throws Exception;
 
     /**
-     * 刷新配置
+     * 重置恢复
      */
-    void refreshConfig() throws Exception;
+    void resetConfig(String tenantId) throws Exception;
 
     /**
-     * 获取配置值
+     * 获取配置
      */
-    String getConfigValue(String configKey);
+    <T> T getConfigValue(String tenantId, String configKey);
 }

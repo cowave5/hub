@@ -12,11 +12,14 @@ package com.cowave.sys.admin.domain.auth;
 import com.cowave.commons.tools.EnumVal;
 import lombok.RequiredArgsConstructor;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author shanhuiming
  */
 @RequiredArgsConstructor
-public enum AccessType implements EnumVal<String> {
+public enum AuthType implements EnumVal<String> {
 
     /**
      * 用户令牌
@@ -27,11 +30,6 @@ public enum AccessType implements EnumVal<String> {
      * OAuth授权
      */
     OAUTH("oauth"),
-
-    /**
-     * 系统管理员
-     */
-    ADMIN("admin"),
 
     /**
      * 系统用户
@@ -50,6 +48,8 @@ public enum AccessType implements EnumVal<String> {
 
     private final String val;
 
+    private final Pattern pattern = Pattern.compile("^[^-]+-([^-]+)-");
+
     @Override
     public String val() {
         return val;
@@ -60,6 +60,10 @@ public enum AccessType implements EnumVal<String> {
     }
 
     public boolean equalsType(String userCode){
-        return userCode.startsWith(val);
+        Matcher matcher = pattern.matcher(userCode);
+        if (matcher.find()) {
+            return val.equals(matcher.group(1));
+        }
+        return false;
     }
 }

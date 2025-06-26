@@ -32,7 +32,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
 
-import static com.cowave.sys.admin.domain.auth.AccessType.SYS;
+import static com.cowave.sys.admin.domain.auth.AuthType.SYS;
 
 /**
  * @author shanhuiming
@@ -55,9 +55,14 @@ public class SysUser {
     private Integer userId;
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
      * 用户类型
      */
-    private Integer userType;
+    private String userType;
 
     /**
      * 用户编码
@@ -147,7 +152,9 @@ public class SysUser {
 
     public AccessUserDetails newUserDetails(SysDept userDept) {
         AccessUserDetails userDetails = AccessUserDetails.newUserDetails();
-        userDetails.setType(SYS.val());
+        userDetails.setAuthType(SYS.val());
+        userDetails.setUserType(userType);
+        userDetails.setTenantId(tenantId);
         userDetails.setUserId(userId);
         userDetails.setUserCode(userCode);
         userDetails.setUsername(userAccount);

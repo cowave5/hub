@@ -11,8 +11,9 @@ package com.cowave.sys.admin.app.rabc;
 
 import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.response.Response;
+import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.access.operation.Operation;
-import com.cowave.commons.framework.support.excel.CellWidthHandler;
+import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
 import com.cowave.sys.admin.domain.rabc.SysRole;
 import com.cowave.sys.admin.domain.rabc.dto.RoleInfoDto;
 import com.cowave.sys.admin.domain.rabc.dto.RoleUserDto;
@@ -49,7 +50,7 @@ public class SysRoleController {
     @PreAuthorize("@permit.hasPermit('sys:role:query')")
     @GetMapping
     public Response<Response.Page<SysRole>> list(RoleQuery query) {
-        return Response.page(sysRoleService.list(query));
+        return Response.page(sysRoleService.list(Access.tenantId(), query));
     }
 
     /**
@@ -60,7 +61,7 @@ public class SysRoleController {
     @PreAuthorize("@permit.hasPermit('sys:role:query')")
     @GetMapping("/{roleId}")
     public Response<RoleInfoDto> info(@PathVariable Integer roleId) {
-        return Response.success(sysRoleService.info(roleId));
+        return Response.success(sysRoleService.info(Access.tenantId(), roleId));
     }
 
     /**
@@ -70,7 +71,7 @@ public class SysRoleController {
     @PreAuthorize("@permit.hasPermit('sys:role:create')")
     @PostMapping
     public Response<Void> add(@Validated @RequestBody SysRole sysRole) throws Exception {
-        return Response.success(() -> sysRoleService.add(sysRole));
+        return Response.success(() -> sysRoleService.add(Access.tenantId(), sysRole));
     }
 
     /**
@@ -82,7 +83,7 @@ public class SysRoleController {
     @PreAuthorize("@permit.hasPermit('sys:role:delete')")
     @DeleteMapping("/{roleIds}")
     public Response<Void> delete(@PathVariable List<Integer> roleIds) throws Exception {
-        return Response.success(() -> sysRoleService.delete(roleIds));
+        return Response.success(() -> sysRoleService.delete(Access.tenantId(), roleIds));
     }
 
     /**
@@ -92,7 +93,7 @@ public class SysRoleController {
     @PreAuthorize("@permit.hasPermit('sys:role:edit')")
     @PatchMapping
     public Response<Void> edit(@Validated @RequestBody SysRole sysRole) throws Exception {
-        return Response.success(() -> sysRoleService.edit(sysRole));
+        return Response.success(() -> sysRoleService.edit(Access.tenantId(), sysRole));
     }
 
     /**
@@ -101,7 +102,7 @@ public class SysRoleController {
     @PreAuthorize("@permit.hasPermit('sys:role:menus')")
     @PatchMapping("/menus")
     public Response<Void> updateMenus(@RequestBody RoleMenuUpdate roleUpdate) throws Exception {
-        return Response.success(() -> sysRoleService.updateMenus(roleUpdate));
+        return Response.success(() -> sysRoleService.updateMenus(Access.tenantId(), roleUpdate));
     }
 
     /**
@@ -114,44 +115,45 @@ public class SysRoleController {
 		response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        List<SysRole> roleList = sysRoleService.list(Access.tenantId(), query).getRecords();
 		EasyExcel.write(response.getOutputStream(), SysRole.class)
-		.sheet("角色").registerWriteHandler(new CellWidthHandler()).doWrite(sysRoleService.list(query).getRecords());
+		.sheet("角色").registerWriteHandler(new ExcelIgnoreStyle()).doWrite(roleList);
     }
 
     /**
      * 授权用户
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:members')")
+    @PreAuthorize("@permit.hasPermit('sys:role:members:grant')")
     @PostMapping("/user/grant")
     public Response<Void> grantUser(@Validated @RequestBody RoleUserUpdate roleUpdate) throws Exception {
-    	return Response.success(() -> sysRoleService.grantUser(roleUpdate));
+    	return Response.success(() -> sysRoleService.grantUser(Access.tenantId(), roleUpdate));
     }
 
     /**
      * 取消用户
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:members')")
+    @PreAuthorize("@permit.hasPermit('sys:role:members:cancel')")
     @PostMapping("/user/cancel")
     public Response<Void> cancelUser(@Validated @RequestBody RoleUserUpdate roleUpdate) throws Exception {
-    	return Response.success(() -> sysRoleService.cancelUser(roleUpdate));
+    	return Response.success(() -> sysRoleService.cancelUser(Access.tenantId(), roleUpdate));
     }
 
     /**
      * 用户列表（已授权）
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:members')")
+    @PreAuthorize("@permit.hasPermit('sys:role:members:query')")
     @GetMapping("/users/authed")
     public Response<Response.Page<RoleUserDto>> getAuthedUser(@Valid RoleUserQuery query) {
-    	return Response.page(sysRoleService.getAuthedUser(query));
+    	return Response.page(sysRoleService.getAuthedUser(Access.tenantId(), query));
     }
 
     /**
      * 用户列表（未授权）
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:members')")
+    @PreAuthorize("@permit.hasPermit('sys:role:members:query')")
     @GetMapping("/users/unAuthed")
     public Response<Response.Page<RoleUserDto>> getUnAuthedUser(@Valid RoleUserQuery query) {
-    	return Response.page(sysRoleService.getUnAuthedUser(query));
+    	return Response.page(sysRoleService.getUnAuthedUser(Access.tenantId(), query));
     }
 
     /**
@@ -159,6 +161,6 @@ public class SysRoleController {
      */
     @GetMapping("/name/{roleIds}")
     public Response<List<String>> getNames(@PathVariable List<Integer> roleIds) {
-        return Response.success(sysRoleService.getNames(roleIds));
+        return Response.success(sysRoleService.getNames(Access.tenantId(), roleIds));
     }
 }

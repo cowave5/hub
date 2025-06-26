@@ -32,10 +32,11 @@ import java.util.Map;
 public class SysUserDao extends ServiceImpl<SysUserMapper, SysUser> {
 
     /**
-     * 获取导出用户
+     * 用户列表
      */
-    public List<SysUser> listForExport(UserExportQuery query) {
+    public List<SysUser> list(String tenantId, UserExportQuery query) {
         return lambdaQuery()
+                .eq(SysUser::getTenantId, tenantId)
                 .eq(StringUtils.isNotBlank(query.getUserRank()), SysUser::getUserRank, query.getUserRank())
                 .like(StringUtils.isNotBlank(query.getUserName()), SysUser::getUserName, query.getUserName())
                 .like(StringUtils.isNotBlank(query.getUserPhone()), SysUser::getUserPhone, query.getUserPhone())
@@ -43,38 +44,66 @@ public class SysUserDao extends ServiceImpl<SysUserMapper, SysUser> {
     }
 
     /**
-     * 查询姓名
+     * 查询用户（用户账号）
      */
-    public String queryNameById(Integer userId) {
-        return lambdaQuery().select(SysUser::getUserName)
-                .eq(SysUser::getUserId, userId)
-                .one().getUserName();
-    }
-
-    /**
-     * 查询密码
-     */
-    public String queryPasswdById(Integer userId) {
-        return lambdaQuery().select(SysUser::getUserPasswd)
-                .eq(SysUser::getUserId, userId)
-                .one().getUserPasswd();
-    }
-
-    /**
-     * 账号查询用户
-     */
-    public SysUser getByUserAccount(String userAccount){
-        return lambdaQuery().eq(SysUser::getUserAccount, userAccount).one();
-    }
-
-    /**
-     * 账号统计，排除自己
-     */
-    public long countUserAccount(String userAccount, Integer userId){
+    public SysUser getByUserAccount(String tenantId, String userAccount){
         return lambdaQuery()
+                .eq(SysUser::getTenantId, tenantId)
+                .eq(SysUser::getUserAccount, userAccount)
+                .one();
+    }
+
+    /**
+     * 查询用户（用户编码）
+     */
+    public SysUser getByUserCode(String userCode){
+        return lambdaQuery().eq(SysUser::getUserCode, userCode).one();
+    }
+
+    /**
+     * 账号统计（排除自己）
+     */
+    public long countByUserAccount(String tenantId, String userAccount, Integer userId){
+        return lambdaQuery()
+                .eq(SysUser::getTenantId, tenantId)
                 .eq(SysUser::getUserAccount, userAccount)
                 .ne(userId != null, SysUser::getUserId, userId)
                 .count();
+    }
+
+    /**
+     * 查询姓名（用户id）
+     */
+    public String queryNameByUserId(Integer userId) {
+        return lambdaQuery()
+                .eq(SysUser::getUserId, userId)
+                .select(SysUser::getUserName)
+                .oneOpt().map(SysUser::getUserName).orElse(null);
+    }
+
+    /**
+     * 查询姓名（用户id列表）
+     */
+    public List<String> getNamesById(String tenantId, List<Integer> userIds){
+        if(userIds.isEmpty()){
+            return List.of();
+        }
+        List<SysUser> list = lambdaQuery()
+                .eq(SysUser::getTenantId, tenantId)
+                .in(SysUser::getUserId, userIds)
+                .select(SysUser::getUserName)
+                .list();
+        return Collections.copyToList(list, SysUser::getUserName);
+    }
+
+    /**
+     * 查询姓名（用户编号）
+     */
+    public String queryNameByCode(String userCode){
+        return lambdaQuery()
+                .eq(SysUser::getUserCode, userCode)
+                .select(SysUser::getUserName)
+                .oneOpt().map(SysUser::getUserName).orElse(null);
     }
 
     /**
@@ -116,6 +145,13 @@ public class SysUserDao extends ServiceImpl<SysUserMapper, SysUser> {
                 .update();
     }
 
+
+
+
+
+
+
+
     /**
      * 修改个人信息
      */
@@ -128,28 +164,6 @@ public class SysUserDao extends ServiceImpl<SysUserMapper, SysUser> {
                 .set(SysUser::getUserEmail, profile.getUserEmail())
                 .set(SysUser::getUserPhone, profile.getUserPhone())
                 .update();
-    }
-
-    public SysUser getByUserCode(String userCode){
-        return lambdaQuery().eq(SysUser::getUserCode, userCode).one();
-    }
-
-    public List<String> getNamesById(List<Integer> userIds){
-        if(userIds.isEmpty()){
-            return List.of();
-        }
-        List<SysUser> list = lambdaQuery()
-                .in(SysUser::getUserId, userIds)
-                .select(SysUser::getUserName)
-                .list();
-        return Collections.copyToList(list, SysUser::getUserName);
-    }
-
-    public String queryNameByCode(String userCode){
-        return lambdaQuery()
-                .eq(SysUser::getUserCode, userCode)
-                .select(SysUser::getUserName)
-                .oneOpt().map(SysUser::getUserName).orElse(null);
     }
 
     public Map<String, String> queryCodeNameMap(List<String> userCodes){

@@ -26,6 +26,23 @@ public class SysDeptPostDao extends ServiceImpl<SysDeptPostMapper, SysDeptPost> 
      * 从部门中移除岗位
      */
     public void removePostOfDept(Integer deptId, List<Integer> postIds){
-        lambdaUpdate().eq(SysDeptPost::getDeptId, deptId).in(SysDeptPost::getPostId, postIds).remove();
+        lambdaUpdate()
+                .eq(SysDeptPost::getDeptId, deptId)
+                .in(SysDeptPost::getPostId, postIds)
+                .remove();
+    }
+
+    /**
+     * 删除岗位-关联删除
+     */
+    public void removeByPostIds(List<Integer> postIds) {
+        lambdaUpdate().in(SysDeptPost::getPostId, postIds).remove();
+    }
+
+    /**
+     * 删除部门-关联删除
+     */
+    public void removeByDeptIds(List<Integer> deptIds) {
+        lambdaUpdate().in(SysDeptPost::getDeptId, deptIds).remove();
     }
 }

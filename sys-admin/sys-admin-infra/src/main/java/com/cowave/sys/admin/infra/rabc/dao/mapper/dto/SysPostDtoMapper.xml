@@ -33,10 +33,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="postField"/>
         <choose>
             <when test="query.deptId != null">
-                from sys_dept_post dp, sys_post p where dp.dept_id = #{query.deptId} and p.post_id = dp.post_id
+                from sys_dept_post dp, sys_post p
+                where p.tenant_id = #{tenantId} and dp.dept_id = #{query.deptId} and p.post_id = dp.post_id
             </when>
             <otherwise>
-                from sys_post p where 1 = 1
+                from sys_post p where p.tenant_id = #{tenantId}
             </otherwise>
         </choose>
         <if test="query.postType != null and query.postType != ''">
@@ -53,10 +54,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="postField"/>
         <choose>
             <when test="query.deptId != null">
-                from sys_dept_post dp, sys_post p where dp.dept_id = #{query.deptId} and p.post_id = dp.post_id
+                from sys_dept_post dp, sys_post p
+                where p.tenant_id = #{tenantId} and dp.dept_id = #{query.deptId} and p.post_id = dp.post_id
             </when>
             <otherwise>
-                from sys_post p where 1 = 1
+                from sys_post p where p.tenant_id = #{tenantId}
             </otherwise>
         </choose>
         <if test="query.postType != null and query.postType != ''">
@@ -74,33 +76,38 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="postField"/>
         from sys_post p
         left join sys_post_tree t on p.post_id = t.post_id
-        where p.post_id = #{postId}
+        where p.tenant_id = #{tenantId} and p.post_id = #{postId}
     </select>
 
     <select id="getCandidatesByCode" resultType="com.cowave.sys.admin.domain.rabc.dto.UserNameDto">
         select u.user_id userId, u.user_name userName
         from sys_user u, sys_post p, sys_user_dept up
-        where p.post_code = #{postCode} and p.post_id = up.post_id and up.user_id = u.user_id
+        where p.tenant_id = #{tenantId} and p.post_code = #{postCode}
+          and p.post_id = up.post_id and up.user_id = u.user_id
     </select>
 
     <select id="childIds" resultType="java.lang.Integer">
-        with recursive tree (post_id, parent_id) as
-            (select t1.post_id, t1.parent_id from sys_post_tree t1 where post_id = #{postId} union
-            select t2.post_id, t2.parent_id from sys_post_tree t2 join tree on t2.parent_id = tree.post_id)
+        with recursive tree (post_id, parent_id) as(
+            select t1.post_id, t1.parent_id from sys_post_tree t1 where post_id = #{postId}
+            union
+            select t2.post_id, t2.parent_id from sys_post_tree t2 join tree on t2.parent_id = tree.post_id
+        )
         select distinct tree.post_id from tree JOIN sys_post u on tree.post_id = u.post_id
     </select>
 
-    <select id="getTreeNodes" resultType="com.cowave.sys.admin.domain.base.vo.TreeNode">
-        select sys_post_tree.post_id   id,
-               sys_post_tree.parent_id pid,
-               sys_post.post_name as   label
-        from sys_post_tree
-        left join sys_post ON sys_post_tree.post_id = sys_post.post_id
-        order by sys_post_tree.parent_id, sys_post_tree.post_id
+    <select id="listDiagramNodes" resultType="com.cowave.sys.admin.domain.rabc.vo.DiagramNode">
+        select t.post_id   id,
+               t.parent_id pid,
+               p.post_name as label
+        from sys_post_tree t
+        left join sys_post p ON t.post_id = p.post_id
+        where t.tenant_id = #{tenantId}
+        order by t.parent_id, t.post_id
     </select>
 
     <select id="getNameOfDeptPost" resultType="java.lang.String">
-        select dept_name || '/' || post_name from sys_dept, sys_post
-        where dept_id = #{deptId} and post_id = #{postId}
+        select d.dept_name || '/' || p.post_name from sys_dept d, sys_post p
+        where d.tenant_id = #{tenantId} and d.dept_id = #{deptId}
+          and p.tenant_id = #{tenantId} and p.post_id = #{postId}
     </select>
 </mapper>

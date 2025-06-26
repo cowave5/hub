@@ -85,7 +85,7 @@
       <el-col :span="20" :xs="24">
         <el-button type="primary" plain  size="mini" icon="el-icon-plus" @click="toSvg">导出</el-button>
         <el-button type="success" plain  size="mini" icon="el-icon-plus" @click="graphSave">保存</el-button>
-        <div ref="container" id="container" style="margin-top: 20px; flex: 1; min-height: 0; overflow: hidden; position: relative;"/>
+        <div ref="container" id="container" style="margin-top: 20px; height: calc(100vh - 40px); overflow: auto; position: relative;"/>
       </el-col>
     </el-row>
   </div>
@@ -115,10 +115,6 @@ export default {
       saveVal: '',
       canRedo: false, // 恢复
       canUndo: false, // 撤销
-      menus: [
-
-
-      ],
       data: {
 
       }
@@ -144,7 +140,8 @@ export default {
     initGraph() {
       this.graph = new Graph({
         container: this.$refs.container,
-        autoResize: true,
+        width: this.$refs.container.clientWidth,
+        height: this.$refs.container.clientHeight,
         color: '#A2B1C3',
         // 背景
         background: {
@@ -1117,26 +1114,10 @@ export default {
     /** 保存画布 */
     graphSave() {
       this.saveData = this.graph.toJSON()
-      const saveDataTrans = JSON.stringify(this.saveData)
+      const saveDataTrans = JSON.stringify(this.saveData);
       // 存到库中
-      this.$http({
-        url: this.$http.adornUrl('/basedata/transrelation/update'),
-        method: 'post',
-        data: this.$http.adornData({
-          'id': this.saveId,
-          'chartCode': saveDataTrans
-        })
-      }).then(({data}) => {
-        if (data && data.code === 0) {
-          this.$emit('reassign', this.saveVal)
-          this.$message({
-            message: '保存成功',
-            type: 'success'
-          })
-        } else {
-          this.$message.error(data.msg);
-        }
-      })
+      console.log(saveDataTrans);
+
     },
     /** 通用模板展开/收起 */
     toggleCommon() {

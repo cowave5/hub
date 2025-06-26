@@ -58,7 +58,7 @@ export function updateConfig(data) {
  */
 export function refreshConfig() {
   return request({
-    url: '/admin/api/v1/config/refresh',
+    url: '/admin/api/v1/config/reset',
     method: 'get'
   })
 }

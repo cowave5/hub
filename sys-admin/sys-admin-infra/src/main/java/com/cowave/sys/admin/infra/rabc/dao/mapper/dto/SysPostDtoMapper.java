@@ -10,11 +10,11 @@
 package com.cowave.sys.admin.infra.rabc.dao.mapper.dto;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cowave.sys.admin.domain.base.vo.TreeNode;
 import com.cowave.sys.admin.domain.rabc.SysPost;
 import com.cowave.sys.admin.domain.rabc.dto.PostInfoDto;
 import com.cowave.sys.admin.domain.rabc.dto.UserNameDto;
 import com.cowave.sys.admin.domain.rabc.request.DeptPostQuery;
+import com.cowave.sys.admin.domain.rabc.vo.DiagramNode;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,22 +29,22 @@ public interface SysPostDtoMapper {
     /**
      * 分页列表
      */
-    Page<SysPost> pageList(Page<SysPost> page, @Param("query") DeptPostQuery query);
+    Page<SysPost> pageList(@Param("tenantId") String tenantId, @Param("query") DeptPostQuery query, Page<SysPost> page);
 
     /**
 	 * 列表
 	 */
-	List<SysPost> list(@Param("query") DeptPostQuery query);
+	List<SysPost> list(@Param("tenantId") String tenantId, @Param("query") DeptPostQuery query);
 
     /**
      * 详情
      */
-    PostInfoDto info(Integer postId);
+    PostInfoDto info(@Param("tenantId") String tenantId, @Param("postId") Integer postId);
 
     /**
      * 岗位流程候选人
      */
-    List<UserNameDto> getCandidatesByCode(String postCode);
+    List<UserNameDto> getCandidatesByCode(@Param("tenantId") String tenantId, @Param("postCode") String postCode);
 
     /**
      * 下级岗位id列表
@@ -52,13 +52,12 @@ public interface SysPostDtoMapper {
     List<Integer> childIds(Integer postId);
 
     /**
-     * 岗位关系
+     * 岗位组织
      */
-    List<TreeNode> getTreeNodes();
+    List<DiagramNode> listDiagramNodes(String tenantId);
 
     /**
      * 查询部门岗位名称
      */
-    String getNameOfDeptPost(@Param("deptId") Integer deptId, @Param("postId") Integer postId);
-
+    String getNameOfDeptPost(@Param("tenantId") String tenantId, @Param("deptId") Integer deptId, @Param("postId") Integer postId);
 }

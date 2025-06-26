@@ -180,16 +180,6 @@ export function getDeptDiagramById(deptId) {
 }
 
 /**
- * 刷新部门组织
- */
-export function refreshDeptDiagram() {
-  return request({
-    url: '/admin/api/v1/dept/diagram/refresh',
-    method: 'get'
-  })
-}
-
-/**
  * 流程候选人列表
  */
 export function getDeptCandidatesByCode(deptCode) {

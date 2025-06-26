@@ -9,12 +9,14 @@
  */
 package com.cowave.sys.admin.domain.rabc;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
  * @author shanhuiming
  */
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class SysUserTree {
@@ -30,12 +32,7 @@ public class SysUserTree {
     private Integer parentId;
 
     /**
-     * 关系类型
+     * 租户id
      */
-    private Integer treeType = 1;
-
-    public SysUserTree(Integer userId, Integer parentId){
-        this.userId = userId;
-        this.parentId = parentId;
-    }
+    private String tenantId;
 }

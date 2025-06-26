@@ -43,7 +43,7 @@ public class SysNoticeController {
      */
     @GetMapping
     public Response<Response.Page<NoticeDto>> list(NoticeQuery query) {
-        return Response.success(sysNoticeService.list(query));
+        return Response.success(sysNoticeService.list(Access.tenantId(), query));
     }
 
     /**
@@ -53,7 +53,7 @@ public class SysNoticeController {
      */
     @GetMapping("/{noticeId}")
     public Response<NoticeDto> info(@PathVariable Long noticeId) {
-        return Response.success(sysNoticeService.info(noticeId));
+        return Response.success(sysNoticeService.info(Access.tenantId(), noticeId));
     }
 
     /**
@@ -71,7 +71,7 @@ public class SysNoticeController {
      */
     @DeleteMapping("/{noticeIds}")
     public Response<Void> delete(@PathVariable List<Long> noticeIds) throws Exception {
-        return Response.success(() -> sysNoticeService.delete(noticeIds));
+        return Response.success(() -> sysNoticeService.delete(Access.tenantId(), noticeIds));
     }
 
     /**
@@ -79,7 +79,7 @@ public class SysNoticeController {
      */
     @PatchMapping
     public Response<String> edit(@Validated @RequestBody NoticeCreate sysNotice) throws Exception {
-        return Response.success(() -> sysNoticeService.edit(sysNotice));
+        return Response.success(() -> sysNoticeService.edit(Access.tenantId(), sysNotice));
     }
 
     /**
@@ -89,7 +89,7 @@ public class SysNoticeController {
      */
     @PatchMapping("/publish/{noticeId}")
     public Response<Void> publish(@PathVariable Long noticeId) throws Exception {
-        return Response.success(() -> sysNoticeService.publish(noticeId));
+        return Response.success(() -> sysNoticeService.publish(Access.tenantId(), noticeId));
     }
 
     /**
@@ -99,7 +99,7 @@ public class SysNoticeController {
      */
     @GetMapping("/readers")
     public Response<Response.Page<NoticeUserDto>> getNoticeReaders(@NotNull(message = "{admin.notice.id.notnull}") Long noticeId) {
-        return Response.success(sysNoticeService.getNoticeReaders(noticeId));
+        return Response.success(sysNoticeService.getNoticeReaders(Access.tenantId(), noticeId));
     }
 
     /**
@@ -107,7 +107,7 @@ public class SysNoticeController {
      */
     @PostMapping("/image")
     public Response<SysAttach> imageUpload(@RequestParam("file") MultipartFile file) throws Exception {
-        return Response.success(sysNoticeService.imageUpload(file));
+        return Response.success(sysNoticeService.imageUpload(Access.tenantId(), file));
     }
 
     /**

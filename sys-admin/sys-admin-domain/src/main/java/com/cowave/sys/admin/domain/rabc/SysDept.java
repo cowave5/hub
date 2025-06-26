@@ -42,6 +42,11 @@ public class SysDept {
     private Integer deptId;
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
      * 部门编码
      */
     @ColumnWidth(50)

@@ -45,8 +45,28 @@ export function register(data) {
 /**
  * 登录
  */
-export function login(userAccount, passWord, code, uuid) {
+export function logon(tenantId, userAccount, passWord) {
   const data = {
+    tenantId,
+    userAccount,
+    passWord
+  }
+  return request({
+    url: '/admin/api/v1/auth/public/logon',
+    method: 'post',
+    data: data,
+    headers: {
+      requireToken: false
+    },
+  })
+}
+
+/**
+ * 登录（验证码）
+ */
+export function login(tenantId, userAccount, passWord, code, uuid) {
+  const data = {
+    tenantId,
     userAccount,
     passWord,
     "captcha" : code,
@@ -126,9 +146,9 @@ export function getAuthInfo() {
 /**
  * 获取权限路由
  */
-export const getAuthRouters = () => {
+export const getAuthMenus = () => {
   return request({
-    url: '/admin/api/v1/auth/routes',
+    url: '/admin/api/v1/auth/menus',
     method: 'get'
   })
 }
@@ -141,19 +161,5 @@ export const getOAuth2Code = (data) => {
     url: '/admin/api/v1/oauth/client/authorize/code',
     method: 'post',
     data: data
-  })
-}
-
-/**
- * 获取OAuth2授权码
- */
-export const getOAuth2Token = (data) => {
-  return request({
-    url: '/admin/api/v1/oauth/client/authorize/token',
-    method: 'post',
-    data: data,
-    headers: {
-      requireToken: false
-    },
   })
 }

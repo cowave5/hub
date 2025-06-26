@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="user-info-head" @click="editCropper()" :style="{ pointerEvents: user.userType <= 0 ? 'auto' : 'none', opacity: user.userType <= 0 ? 1 : 0.5}">
+    <div class="user-info-head" @click="editCropper()" :style="{ pointerEvents: user.userType === 'sys' ? 'auto' : 'none', opacity: user.userType === 'sys' ? 1 : 0.5}">
       <img v-bind:src="options.img" class="img-circle img-lg" alt=""/>
     </div>
     <el-dialog :title="$t('user.dialog.avatar')" :visible.sync="open" width="800px" append-to-body @opened="modalOpened"  @close="closeDialog">
@@ -124,9 +124,9 @@ export default {
       this.$refs.cropper.getCropBlob(data => {
         let formData = new FormData();
         formData.append("file", data);
-        formData.append("attachGroup", "sys-user");
+        formData.append("ownerId", this.user.userId);
+        formData.append("ownerType", "sys-user");
         formData.append("attachType", "avatar");
-        formData.append("masterId", this.user.userId);
         formData.append("isPublic", 1);
         uploadAvatar(formData).then(resp => {
           this.open = false;

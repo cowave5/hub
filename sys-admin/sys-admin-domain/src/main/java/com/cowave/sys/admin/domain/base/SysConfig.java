@@ -45,6 +45,11 @@ public class SysConfig implements AccessInfoSetter {
     private Integer configId;
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
      * 配置名称
      */
     @ExcelProperty(value = "配置名称")

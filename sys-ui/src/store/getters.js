@@ -1,4 +1,3 @@
-import noticeSocket from '@/store/modules/noticeSocket'
 
 const getters = {
   sidebar: state => state.app.sidebar,
@@ -10,6 +9,11 @@ const getters = {
 
   accessToken: state => state.user.accessToken,
   refreshToken: state => state.user.refreshToken,
+
+  tenantId: state => state.user.tenantId,
+  tenantTitle: state => state.user.tenantTitle,
+  tenantLogo: state => state.user.tenantLogo,
+
   userId: state => state.user.userId,
   name: state => state.user.name,
   avatar: state => state.user.avatar,

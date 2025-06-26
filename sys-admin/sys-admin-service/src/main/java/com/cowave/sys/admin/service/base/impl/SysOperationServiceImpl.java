@@ -33,19 +33,20 @@ import java.util.List;
 @Service
 public class SysOperationServiceImpl implements SysOperationService {
 
-	private final EsHelper esHelper;
+    private final EsHelper esHelper;
 
-	@Override
-	public Response.Page<SysOperation> list(OperationQuery query) {
-		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-		if(StringUtils.isNotBlank(query.getOpModule())) {
+    @Override
+    public Response.Page<SysOperation> list(String tenantId, OperationQuery query, boolean isPage) {
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        boolQuery.filter(QueryBuilders.termsQuery("access.accessTenantId", tenantId));
+        if (StringUtils.isNotBlank(query.getOpModule())) {
             boolQuery.filter(QueryBuilders.termsQuery("opModule", query.getOpModule()));
         }
-		if(StringUtils.isNotBlank(query.getOpType())) {
+        if (StringUtils.isNotBlank(query.getOpType())) {
             boolQuery.filter(QueryBuilders.termsQuery("opType", query.getOpType()));
         }
 
-		if (query.getBeginTime() != null || query.getEndTime() != null) {
+        if (query.getBeginTime() != null || query.getEndTime() != null) {
             RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("opTime");
             if (query.getBeginTime() != null) {
                 rangeQueryBuilder.gte(query.getBeginTime());
@@ -56,31 +57,35 @@ public class SysOperationServiceImpl implements SysOperationService {
             boolQuery.filter(rangeQueryBuilder);
         }
 
-		if (StringUtils.isNotBlank(query.getOpUser())) {
-			BoolQueryBuilder orCondition = QueryBuilders.boolQuery();
-			orCondition.should(QueryBuilders.wildcardQuery("access.accessUserName", query.getOpUser()));
-			orCondition.should(QueryBuilders.wildcardQuery("access.accessUserAccount", query.getOpUser()));
-			boolQuery.filter(orCondition);
-		}
+        if (StringUtils.isNotBlank(query.getOpUser())) {
+            BoolQueryBuilder orCondition = QueryBuilders.boolQuery();
+            orCondition.should(QueryBuilders.wildcardQuery("access.accessUserName", query.getOpUser()));
+            orCondition.should(QueryBuilders.wildcardQuery("access.accessUserAccount", query.getOpUser()));
+            boolQuery.filter(orCondition);
+        }
 
-		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        if(boolQuery.hasClauses()){
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        if (boolQuery.hasClauses()) {
             searchSourceBuilder.query(boolQuery);
         }
 
-		searchSourceBuilder.sort("opTime", SortOrder.DESC);
-		searchSourceBuilder.size(Access.pageSize());
-		searchSourceBuilder.from(Access.pageOffset());
-		return esHelper.query(SysOperation.INDEX_NAME, searchSourceBuilder, SysOperation.class);
-	}
+        searchSourceBuilder.sort("opTime", SortOrder.DESC);
+        if (isPage) {
+            searchSourceBuilder.size(Access.pageSize());
+            searchSourceBuilder.from(Access.pageOffset());
+        }
+        return esHelper.query(SysOperation.INDEX_NAME, searchSourceBuilder, SysOperation.class);
+    }
 
-	@Override
-	public void delete(List<String> ids) {
-		esHelper.bulkDelete(SysOperation.INDEX_NAME, ids);
-	}
+    @Override
+    public void delete(List<String> ids) {
+        esHelper.bulkDelete(SysOperation.INDEX_NAME, ids);
+    }
 
-	@Override
-	public void clean() {
-		esHelper.indexClean(SysOperation.INDEX_NAME);
-	}
+    @Override
+    public void clean(String tenantId) {
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        boolQuery.filter(QueryBuilders.termsQuery("access.accessTenantId", tenantId));
+        esHelper.deleteByQuery(SysOperation.INDEX_NAME, boolQuery);
+    }
 }

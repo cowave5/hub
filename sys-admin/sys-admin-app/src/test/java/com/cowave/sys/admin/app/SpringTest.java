@@ -49,7 +49,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.auth.AccessType.SYS;
+import static com.cowave.sys.admin.domain.auth.AuthType.SYS;
 
 /**
  * @author shanhuiming
@@ -118,7 +118,7 @@ public class SpringTest {
     @PostConstruct
     public void init() {
         AccessUserDetails userDetails = AccessUserDetails.newUserDetails();
-        userDetails.setType(SYS.val());
+        userDetails.setAuthType(SYS.val());
         userDetails.setUserId(6L);
         userDetails.setDeptId(1L);
         userDetails.setUsername("guanyu");
@@ -131,7 +131,7 @@ public class SpringTest {
         this.refreshToken = userDetails.getRefreshToken();
 
         AccessUserDetails logoutUserDetails = AccessUserDetails.newUserDetails();
-        logoutUserDetails.setType(SYS.val());
+        logoutUserDetails.setAuthType(SYS.val());
         logoutUserDetails.setUserId(7L);
         logoutUserDetails.setDeptId(2L);
         logoutUserDetails.setUsername("zhangfei");

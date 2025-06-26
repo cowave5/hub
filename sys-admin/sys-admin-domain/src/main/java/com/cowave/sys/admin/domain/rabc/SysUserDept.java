@@ -36,7 +36,6 @@ public class SysUserDept {
     /**
 	 * 岗位id
 	 */
-	@NotNull(message = "{admin.post.id.notnull}")
 	private Integer postId;
 
     /**
