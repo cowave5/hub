@@ -17,6 +17,7 @@ import com.cowave.sys.admin.domain.base.SysOperation;
 import com.cowave.sys.admin.domain.base.request.OperationQuery;
 import com.cowave.sys.admin.service.base.SysOperationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ import java.util.List;
 
 /**
  * 操作日志
- * @order 12
+ * @order 14
  * @author shanhuiming
  */
 @Validated
@@ -43,6 +44,7 @@ public class SysOperationController {
 	/**
 	 * 列表
 	 */
+	@PreAuthorize("@permits.hasPermit('monitor:log:query')")
 	@GetMapping
     public Response<Response.Page<SysOperation>> list(OperationQuery query) {
         return Response.success(sysOperationService.list(Access.tenantId(), query, true));
@@ -53,6 +55,7 @@ public class SysOperationController {
 	 *
 	 * @param ids 日志id列表
 	 */
+	@PreAuthorize("@permits.hasPermit('monitor:log:delete')")
 	@DeleteMapping("/{ids}")
 	public Response<Void> delete(@PathVariable List<String> ids) throws Exception {
 		return Response.success(() -> sysOperationService.delete(ids));
@@ -69,6 +72,7 @@ public class SysOperationController {
 	/**
 	 * 导出
 	 */
+	@PreAuthorize("@permits.hasPermit('monitor:log:export')")
 	@RequestMapping("/export")
 	public void export(HttpServletResponse response, OperationQuery query) throws IOException {
 		String fileName = URLEncoder.encode("操作日志", StandardCharsets.UTF_8).replace("\\+", "%20");

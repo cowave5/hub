@@ -75,14 +75,14 @@ public class SysUser {
      * 用户名称
      */
     @ExcelProperty("用户名称")
-    @NotBlank(message = "{admin.user.name.notnull}")
+    @NotBlank(message = "{admin.user.name.null}")
     private String userName;
 
     /**
      * 用户账号
      */
     @ExcelProperty("用户账号")
-    @NotBlank(message = "{admin.user.account.notnull}")
+    @NotBlank(message = "{admin.user.account.null}")
     private String userAccount;
 
     /**
@@ -121,6 +121,11 @@ public class SysUser {
      */
     @ExcelProperty(value = "用户状态", converter = StatusConverter.class)
     private Integer userStatus;
+
+    /**
+     * 二次认证
+     */
+    private String mfa;
 
     /**
      * 备注

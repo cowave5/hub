@@ -36,6 +36,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.cowave.sys.admin.domain.base.constants.OpAction.*;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_USER;
+
 /**
  * 用户
  *
@@ -53,7 +57,7 @@ public class SysUserController {
     /**
      * 列表
      */
-    @PreAuthorize("@permit.hasPermit('sys:user:query')")
+    @PreAuthorize("@permits.hasPermit('sys:user:query')")
     @GetMapping
     public Response<Response.Page<UserListDto>> list(UserQuery query) {
         return Response.success(sysUserService.list(Access.tenantId(), query));
@@ -64,7 +68,7 @@ public class SysUserController {
      *
      * @param userId 用户id
      */
-    @PreAuthorize("@permit.hasPermit('sys:user:query')")
+    @PreAuthorize("@permits.hasPermit('sys:user:query')")
     @GetMapping("/{userId}")
     public Response<UserInfoDto> info(@PathVariable Integer userId) {
         return Response.success(sysUserService.info(Access.tenantId(), userId));
@@ -73,8 +77,8 @@ public class SysUserController {
     /**
      * 新增
      */
-    @Operation(module = "op_admin", type = "op_user", action = "op_create", desc = "新增用户：#{#user.userName}")
-    @PreAuthorize("@permit.hasPermit('sys:user:create')")
+    @Operation(module = SYSTEM, type = SYSTEM_USER, action = CREATE, desc = "新增用户：#{#user.userName}")
+    @PreAuthorize("@permits.hasPermit('sys:user:create')")
     @PostMapping
     public Response<Void> create(@Validated @RequestBody UserCreate user) throws Exception {
         return Response.success(() -> sysUserService.create(Access.tenantId(), user));
@@ -85,8 +89,8 @@ public class SysUserController {
      *
      * @param userIds id列表
      */
-    @Operation(module = "op_admin", type = "op_user", action = "op_delete", desc = "删除用户")
-    @PreAuthorize("@permit.hasPermit('sys:user:delete')")
+    @Operation(module = SYSTEM, type = SYSTEM_USER, action = DELETE, desc = "删除用户")
+    @PreAuthorize("@permits.hasPermit('sys:user:delete')")
     @DeleteMapping("/{userIds}")
     public Response<Void> delete(@PathVariable List<Integer> userIds) throws Exception {
         return Response.success(() -> sysUserService.delete(Access.tenantId(), userIds));
@@ -95,8 +99,8 @@ public class SysUserController {
     /**
      * 修改
      */
-    @Operation(module = "op_admin", type = "op_user", action = "op_edit", desc = "修改用户：#{#user.userName}")
-    @PreAuthorize("@permit.hasPermit('sys:user:edit')")
+    @Operation(module = SYSTEM, type = SYSTEM_USER, action = EDIT, desc = "修改用户：#{#user.userName}")
+    @PreAuthorize("@permits.hasPermit('sys:user:edit')")
     @PatchMapping
     public Response<Void> edit(@Validated @RequestBody UserCreate user) throws Exception {
         return Response.success(() -> sysUserService.edit(Access.tenantId(), user));
@@ -105,8 +109,8 @@ public class SysUserController {
     /**
      * 修改角色
      */
-    @Operation(module = "op_admin", type = "op_user", action = "op_grant", desc = "修改用户角色：#{#user.userName}")
-    @PreAuthorize("@permit.hasPermit('sys:user:grant')")
+    @Operation(module = SYSTEM, type = SYSTEM_USER, action = GRANT, desc = "修改用户角色：#{#user.userName}")
+    @PreAuthorize("@permits.hasPermit('sys:user:grant')")
     @PatchMapping("/roles")
     public Response<Void> changeRoles(@Validated @RequestBody UserRoleUpdate user) throws Exception {
         return Response.success(() -> sysUserService.changeRoles(Access.tenantId(), user));
@@ -115,8 +119,8 @@ public class SysUserController {
     /**
      * 修改状态
      */
-    @Operation(module = "op_admin", type = "op_user", action = "op_status", desc = "修改用户状态：#{#user.userName}")
-    @PreAuthorize("@permit.hasPermit('sys:user:status')")
+    @Operation(module = SYSTEM, type = SYSTEM_USER, action = STATUS, desc = "修改用户状态：#{#user.userName}")
+    @PreAuthorize("@permits.hasPermit('sys:user:status')")
     @PatchMapping("/status")
     public Response<Void> changeStatus(@Validated @RequestBody UserStatusUpdate user) throws Exception {
         return Response.success(() -> sysUserService.changeStatus(Access.tenantId(), user));
@@ -125,8 +129,8 @@ public class SysUserController {
     /**
      * 修改密码
      */
-    @Operation(module = "op_admin", type = "op_user", action = "op_passwd", desc = "修改用户密码：#{#user.userName}")
-    @PreAuthorize("@permit.hasPermit('sys:user:passwd')")
+    @Operation(module = SYSTEM, type = SYSTEM_USER, action = PASSWD, desc = "修改用户密码：#{#user.userName}")
+    @PreAuthorize("@permits.hasPermit('sys:user:passwd')")
     @PatchMapping("/passwd")
     public Response<Void> changePasswd(@Validated @RequestBody UserPasswdUpdate user) throws Exception {
         return Response.success(() -> sysUserService.changePasswd(Access.tenantId(), user));
@@ -135,7 +139,7 @@ public class SysUserController {
     /**
      * 导入用户
      */
-    @PreAuthorize("@permit.hasPermit('sys:user:import')")
+    @PreAuthorize("@permits.hasPermit('sys:user:import')")
     @PostMapping("/import")
     public Response<Void> importUser(MultipartFile file, boolean updateSupport) throws Exception {
         try (InputStream inputStream = file.getInputStream()) {
@@ -148,7 +152,7 @@ public class SysUserController {
     /**
      * 导出用户
      */
-    @PreAuthorize("@permit.hasPermit('sys:user:export')")
+    @PreAuthorize("@permits.hasPermit('sys:user:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, UserExportQuery query) throws Exception {
         String fileName = URLEncoder.encode("用户数据", StandardCharsets.UTF_8).replace("\\+", "%20");
@@ -163,7 +167,7 @@ public class SysUserController {
     /**
      * 导出模板
      */
-    @PreAuthorize("@permit.hasPermit('sys:user:export')")
+    @PreAuthorize("@permits.hasPermit('sys:user:export')")
     @PostMapping("/export/template")
     public void exportTemplate(HttpServletResponse response) throws Exception {
         String fileName = URLEncoder.encode("test", StandardCharsets.UTF_8).replace("\\+", "%20");
@@ -184,7 +188,7 @@ public class SysUserController {
     /**
      * 用户组织架构
      */
-    @PreAuthorize("@permit.hasPermit('sys:user:diagram')")
+    @PreAuthorize("@permits.hasPermit('sys:user:diagram')")
     @GetMapping("/diagram")
     public Response<Tree<Integer>> getDiagram() {
         return Response.success(sysUserService.getDiagram(Access.tenantId()));

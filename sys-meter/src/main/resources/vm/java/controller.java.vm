@@ -45,7 +45,7 @@ public class ${className}Controller {
      * 列表
      */
     #if($authPrefix != $null)
-    @PreAuthorize("@permit.hasPermit('${authPrefix}:list')")
+    @PreAuthorize("@permits.hasPermit('${authPrefix}:list')")
     #end
     @PostMapping("/list")
     public Response<Response.Page<${className}>> list(@RequestBody ${className} ${instanceName}) {
@@ -56,7 +56,7 @@ public class ${className}Controller {
      * 详情
      */
     #if($authPrefix != $null)
-    @PreAuthorize("@permit.hasPermit('${authPrefix}:info')")
+    @PreAuthorize("@permits.hasPermit('${authPrefix}:info')")
     #end
     @GetMapping(value = "info/{${pk.fieldName}}")
     public Response<${className}> info(@PathVariable("${pk.fieldName}") ${pk.fieldTypeName} ${pk.fieldName}) {
@@ -74,7 +74,7 @@ public class ${className}Controller {
     #end
     #end
     #if($authPrefix != $null)
-    @PreAuthorize("@permit.hasPermit('${authPrefix}:add')")
+    @PreAuthorize("@permits.hasPermit('${authPrefix}:add')")
     #end
     @PostMapping("/add")
     public Response<Void> add(@Validated @RequestBody ${className} ${instanceName}) {
@@ -92,7 +92,7 @@ public class ${className}Controller {
     @Operation(type = "${logType}", action = "edit", desc = "修改${modelName}", content = Content.ALL)
     #end
     #if($authPrefix != $null)
-    @PreAuthorize("@permit.hasPermit('${authPrefix}:edit')")
+    @PreAuthorize("@permits.hasPermit('${authPrefix}:edit')")
     #end
     @PostMapping("/edit")
     public Response<${className}> edit(@Validated @RequestBody ${className} ${instanceName}) {
@@ -100,7 +100,7 @@ public class ${className}Controller {
     }
     #else
     #if($authPrefix != $null)
-    @PreAuthorize("@permit.hasPermit('${authPrefix}:edit')")
+    @PreAuthorize("@permits.hasPermit('${authPrefix}:edit')")
     #end
     @PostMapping("/edit")
     public Response<Void> edit(@Validated @RequestBody ${className} ${instanceName}) {
@@ -115,7 +115,7 @@ public class ${className}Controller {
     #if($logModel == 1)
     @Operation(type = "${logType}", action = "delete", desc = "删除${modelName}", content = Content.RESP)
     #if($authPrefix != $null)
-    @PreAuthorize("@permit.hasPermit('${authPrefix}:delete')")
+    @PreAuthorize("@permits.hasPermit('${authPrefix}:delete')")
     #end
     @GetMapping("/delete/{${pk.fieldName}s}")
     public Response<List<${className}>> delete(@PathVariable ${pk.fieldTypeName}[] ${pk.fieldName}s) {
@@ -123,7 +123,7 @@ public class ${className}Controller {
     }
     #else
     #if($authPrefix != $null)
-    @PreAuthorize("@permit.hasPermit('${authPrefix}:delete')")
+    @PreAuthorize("@permits.hasPermit('${authPrefix}:delete')")
     #end
     @GetMapping("/delete/{${pk.fieldName}s}")
     public Response<Void> delete(@PathVariable ${pk.fieldTypeName}[] ${pk.fieldName}s) {
@@ -137,7 +137,7 @@ public class ${className}Controller {
      * 导出
      */
     #if($authPrefix != $null)
-    @PreAuthorize("@permit.hasPermit('${authPrefix}:export')")
+    @PreAuthorize("@permits.hasPermit('${authPrefix}:export')")
     #end
     @RequestMapping("/export")
     public void export(HttpServletResponse response, ${className} ${instanceName}) throws IOException{

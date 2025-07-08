@@ -136,7 +136,7 @@ create table sys_attach
     attach_id     bigserial primary key,
     tenant_id     character varying(64),
     owner_id      varchar(64),
-    owner_type    character varying(64),
+    owner_module  character varying(64),
     attach_type   character varying(64),
     attach_name   character varying(1024),
     attach_size   int8,
@@ -148,51 +148,18 @@ create table sys_attach
     update_by     varchar(64),
     update_time   timestamp
 );
-create index sys_attach_master on sys_attach(owner_id, owner_type, attach_type);
+create index sys_attach_master on sys_attach(owner_id, owner_module, attach_type);
 comment on table sys_attach is '附件信息';
 comment on column sys_attach.attach_id is '附件id';
 comment on column sys_attach.tenant_id is '租户id';
 comment on column sys_attach.owner_id is '宿主id';
-comment on column sys_attach.owner_type is '宿主类型';
+comment on column sys_attach.owner_module is '宿主类型';
 comment on column sys_attach.attach_type is '附件类型';
 comment on column sys_attach.attach_name is '附件名称';
 comment on column sys_attach.attach_size is '附件大小';
 comment on column sys_attach.attach_path is '附件路径';
 comment on column sys_attach.is_private is '是否私有的 0否 1是';
 comment on column sys_attach.expire_time is '过期时间';
-
--- 数据权限
-drop table if exists sys_scope;
-CREATE TABLE sys_scope(
-    scope_id     serial primary key,
-    scope_name   character varying(255),
-    scope_type   character varying(64),
-    scope_status int2 DEFAULT 1,
-    content      json default '{}',
-    remark       varchar(200)
-);
-comment on table sys_scope is '数据权限';
-comment on column sys_scope.scope_id is '权限id';
-comment on column sys_scope.scope_name is '权限名称';
-comment on column sys_scope.scope_type is '权限类型（字典值设置表单）';
-comment on column sys_scope.scope_status is '权限状态';
-comment on column sys_scope.content is '权限规则';
-comment on column sys_scope.remark is '备注';
-
--- 角色菜单数据权限
-drop table if exists sys_role_scope;
-CREATE TABLE sys_role_scope(
-    scope_id    int4 not null,
-    role_id     int4 not null,
-    menu_permit character varying(255),
-    priority    int2 DEFAULT 1,
-    constraint sys_role_scope_pkey primary key (role_id, scope_id, menu_permit)
-);
-comment on table sys_role_scope is '角色数据权限';
-comment on column sys_role_scope.scope_id is '数据权限id';
-comment on column sys_role_scope.role_id is '角色id';
-comment on column sys_role_scope.menu_permit is '菜单权限符';
-comment on column sys_role_scope.priority is '优先级';
 
 -- 系统告警
 drop table if exists sys_alarm;
@@ -249,19 +216,3 @@ comment on column sys_alarm_type.id is '主键';
 comment on column sys_alarm_type.type_name is '类型名称';
 comment on column sys_alarm_type.type_view is '类型表单';
 comment on column sys_alarm_type.description is '类型描述';
-
--- 告警级别
-drop table if exists sys_alarm_level;
-create table sys_alarm_level(
-    id          bigserial primary key,
-    alarm_type  int8,
-    alarm_level int2,
-    level_rule  json default '{}',
-    description text
-);
-comment on table sys_alarm_level is '告警类型';
-comment on column sys_alarm_level.id is '主键';
-comment on column sys_alarm_level.alarm_type is '告警类型';
-comment on column sys_alarm_level.alarm_level is '告警级别';
-comment on column sys_alarm_level.level_rule is '级别判断规则';
-comment on column sys_alarm_level.description is '级别描述';

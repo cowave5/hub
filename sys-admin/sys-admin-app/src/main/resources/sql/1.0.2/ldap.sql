@@ -2,8 +2,7 @@
 drop table if exists ldap_config;
 create table ldap_config
 (
-    id               serial primary key,
-    ldap_name        character varying(64) not null,
+    tenant_id        character varying(64) primary key,
     ldap_status      int2 default 0,
     ldap_url         character varying(128),
     ldap_user        character varying(128),
@@ -28,8 +27,6 @@ create table ldap_config
     update_time      timestamp
 );
 comment on table ldap_config is 'ldap配置';
-comment on column ldap_config.id is 'id';
-comment on column ldap_config.ldap_name is 'Ldap名称';
 comment on column ldap_config.ldap_status is 'Ldap状态';
 comment on column ldap_config.ldap_url is 'Ldap地址';
 comment on column ldap_config.ldap_user is 'Ldap用户';
@@ -60,7 +57,7 @@ create table ldap_user
     id           bigserial primary key,
     user_code    character varying(64),
     role_code    character varying(64),
-    ldap_name    character varying(64),
+    tenant_id    character varying(64),
     user_account character varying(64),
     user_passwd  character varying(64),
     user_name    character varying(64),
@@ -73,11 +70,10 @@ create table ldap_user
     create_time  timestamp,
     update_time  timestamp
 );
-create unique index ldap_user_unique on ldap_user(user_account);
+create unique index ldap_user_unique on ldap_user(tenant_id, user_account);
 comment on table ldap_user is 'ldap用户';
 comment on column ldap_user.id is 'id';
 comment on column ldap_user.role_code is '用户角色';
-comment on column ldap_user.ldap_name is 'Ldap名称';
 comment on column ldap_user.user_info is '用户信息';
 comment on column ldap_user.user_account is '用户账号';
 comment on column ldap_user.user_passwd is '用户密码';

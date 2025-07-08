@@ -22,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import static com.cowave.sys.admin.domain.base.constants.AttachType.AVATAR;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_USER;
+
 /**
  * @author shanhuiming
  */
@@ -73,8 +76,8 @@ public class ProfileControllerTest extends SpringTest {
     public void imageUpload() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("ownerId", "2");
-        params.set("ownerType", "sys-user");
-        params.set("attachType", "avatar");
+        params.set("ownerModule", SYSTEM_USER);
+        params.set("attachType", AVATAR);
         mockImport("/api/v1/profile/avatar", params, "source/cw.jpg");
     }
 }

@@ -8,7 +8,7 @@ export default {
   components: { iFrame },
   data() {
     return {
-      url: process.env.VUE_APP_BASE_API + "/quartz/doc/index.html"
+      url: process.env.VUE_APP_BASE_API + "/job/doc/index.html"
     };
   },
 };

@@ -16,6 +16,7 @@ import com.cowave.sys.admin.domain.base.request.AttachQuery;
 import com.cowave.sys.admin.domain.base.request.AttachUpload;
 import com.cowave.sys.admin.service.base.SysAttachService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +26,7 @@ import java.util.List;
 
 /**
  * 附件
- * @order 7
+ * @order 8
  * @author shanhuiming
  */
 @Validated
@@ -49,7 +50,8 @@ public class SysAttachController {
      *
      * @param attachId 附件id
      */
-    @GetMapping("/download/{attachId}")
+    @PreAuthorize("@permits.hasPermit('sys:attach:download')")
+    @GetMapping("/{attachId}")
     public void download(HttpServletResponse response, @PathVariable Long attachId) throws Exception {
         sysAttachService.download(response, attachId);
     }
@@ -59,6 +61,7 @@ public class SysAttachController {
      *
      * @param attachId 附件id
      */
+    @PreAuthorize("@permits.hasPermit('sys:attach:preview')")
     @GetMapping("/preview/{attachId}")
     public Response<String> preview(@PathVariable Long attachId) throws Exception {
         return Response.success(sysAttachService.preview(attachId));
@@ -67,18 +70,20 @@ public class SysAttachController {
     /**
      * 列表
      */
+    @PreAuthorize("@permits.hasPermit('sys:attach:query')")
     @GetMapping
-    public Response<List<SysAttach>> list(AttachQuery query) throws Exception {
-        return Response.success(sysAttachService.list(Access.tenantId(), query));
+    public Response<Response.Page<SysAttach>> page(AttachQuery query) throws Exception {
+        return Response.page(sysAttachService.page(Access.tenantId(), query));
     }
 
     /**
      * 删除
      *
-     * @param attachId 附件id
+     * @param attachIds 文件id列表
      */
-    @DeleteMapping("/{attachId}")
-    public Response<Void> delete(@PathVariable Long attachId) throws Exception {
-        return Response.success(() -> sysAttachService.delete(attachId));
+    @PreAuthorize("@permits.hasPermit('sys:attach:delete')")
+    @DeleteMapping("/{attachIds}")
+    public Response<Void> delete(@PathVariable List<Long> attachIds) throws Exception {
+        return Response.success(() -> sysAttachService.delete(attachIds));
     }
 }

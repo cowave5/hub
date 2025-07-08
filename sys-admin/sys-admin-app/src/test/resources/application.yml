@@ -20,11 +20,10 @@ spring:
     username: cowaveAdmin@163.com
     password: TQQWRIRSQLTEELPT
   access:
-    always-success: true
     urlPatterns:
       - /api/v1/*
     auth:
-      mode: refreshToken
+      mode: access-refresh
       conflict: false
       tokenIgnoreUrls:
         - /favicon.ico

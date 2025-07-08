@@ -9,8 +9,8 @@
  */
 package com.cowave.sys.admin.infra.base.dao.mapper.dto;
 
+import com.cowave.sys.admin.domain.base.SysDict;
 import com.cowave.sys.admin.domain.base.dto.DictInfoDto;
-import com.cowave.sys.admin.domain.base.vo.SelectOption;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,17 +28,7 @@ public interface SysDictDtoMapper {
 	/**
 	 * 列表
 	 */
-	List<DictInfoDto> queryList(@Param("dictCode") String dictCode, @Param("dictName") String dictName, @Param("lang") String lang);
-
-	/**
-	 * 列表
-	 */
-	List<DictInfoDto> queryAll(@Param("groupCode") String groupCode, @Param("typeCode") String typeCode);
-
-	/**
-	 * 列表
-	 */
-	List<DictInfoDto> queryByParentCode(String parentCode);
+	List<DictInfoDto> queryList(@Param("dictCode") String dictCode, @Param("dictName") String dictName);
 
 	/**
 	 * 列表
@@ -51,17 +41,17 @@ public interface SysDictDtoMapper {
 	DictInfoDto getById(long id);
 
 	/**
-	 * 删除分组
+	 * 删除分组字典
 	 */
-	void deleteGroup(String groupCode);
+	void removeByGroup(String groupCode);
 
 	/**
-	 * 字典类型选项
+	 * 获取分组字典
 	 */
-	List<SelectOption> dictOptions();
+	List<SysDict> listByGroup(String groupCode);
 
 	/**
-	 * Group子类型选项
+	 * 获取分组类型
 	 */
-	List<SelectOption> groupOptions(String groupCode);
+	List<DictInfoDto> listTypeByGroup(String groupCode);
 }

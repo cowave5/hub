@@ -41,12 +41,15 @@ public class SysMenuDao extends ServiceImpl<SysMenuMapper, SysMenu> {
     }
 
     /**
-     * 列表查询（角色菜单）
+     * 菜单权限（公共菜单）
      */
-    public List<SysMenu> listTree(String tenantId) {
+    public List<SysMenu> listMenusInPublic(String tenantId) {
         return lambdaQuery()
-                .in(StringUtils.isNotBlank(tenantId), SysMenu::getTenantId, List.of("#", tenantId))
+                .eq(SysMenu::getIsVisible, 1)
                 .eq(SysMenu::getMenuStatus, 1)
+                .eq(SysMenu::getIsProtected, 0)
+                .in(SysMenu::getTenantId, List.of("#", tenantId))
+                .in(SysMenu::getMenuType, List.of("C", "M"))
                 .orderByAsc(SysMenu::getParentId, SysMenu::getMenuOrder)
                 .list();
     }
@@ -108,6 +111,6 @@ public class SysMenuDao extends ServiceImpl<SysMenuMapper, SysMenu> {
                 .in(SysMenu::getMenuId, menuIds)
                 .select(SysMenu::getMenuPermit)
                 .list();
-        return Collections.copyToList(menuList, SysMenu::getMenuPermit, Objects::nonNull);
+        return Collections.filterCopyToList(menuList, SysMenu::getMenuPermit, Objects::nonNull);
     }
 }

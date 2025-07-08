@@ -22,7 +22,7 @@ public class AdminRedisKeys {
     /**
      * OAuth2授权code
      */
-    public static final String AUTH_OAUTH = "sys-admin:auth:authorize:%s";
+    public static final String AUTH_OAUTH = "sys-admin:auth:oauth:%s";
 
     /**
      * Api令牌
@@ -73,4 +73,19 @@ public class AdminRedisKeys {
      * 部门岗位树
      */
     public static final String DEPT_POST_DIAGRAM = "sys-admin:diagram:dept-post";
+
+    /**
+     * 字典
+     */
+    public static final String DICT_CODE = "sys-admin:dict:code";
+
+    /**
+     * 类型字典
+     */
+    public static final String DICT_TYPE = "sys-admin:dict:type";
+
+    /**
+     * 分组字典
+     */
+    public static final String DICT_GROUP = "sys-admin:dict:group";
 }

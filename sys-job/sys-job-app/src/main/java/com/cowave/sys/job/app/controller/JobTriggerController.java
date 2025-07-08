@@ -27,7 +27,7 @@ public class JobTriggerController {
     /**
      * 列表
      */
-    @PreAuthorize("@permit.hasPermit('sys:job:query')")
+    @PreAuthorize("@permits.hasPermit('sys:job:query')")
     @GetMapping
     public Response<Response.Page<JobTrigger>> list(JobTriggerQuery query) {
         return Response.page(jobTriggerService.pageList(query));
@@ -36,7 +36,7 @@ public class JobTriggerController {
     /**
      * 新增
      */
-    @PreAuthorize("@permit.hasPermit('sys:job:create')")
+    @PreAuthorize("@permits.hasPermit('sys:job:create')")
     @PostMapping
     public Response<Void> create(@RequestBody JobTrigger jobTrigger) throws Exception {
         return Response.success(() -> jobTriggerService.create(jobTrigger));
@@ -47,7 +47,7 @@ public class JobTriggerController {
      *
      * @param jobIds 任务id列表
      */
-    @PreAuthorize("@permit.hasPermit('sys:job:delete')")
+    @PreAuthorize("@permits.hasPermit('sys:job:delete')")
     @DeleteMapping("/{jobIds}")
     public Response<Void> delete(@PathVariable List<Integer> jobIds) throws Exception {
         return Response.success(() -> jobTriggerService.delete(jobIds));
@@ -58,7 +58,7 @@ public class JobTriggerController {
      *
      * @param id 任务id
      */
-    @PreAuthorize("@permit.hasPermit('sys:job:status')")
+    @PreAuthorize("@permits.hasPermit('sys:job:status')")
     @PostMapping("/exec/{id}")
     public Response<Void> exec(@PathVariable("id") Integer id) throws Exception {
         return Response.success(() -> jobTriggerService.exec(id));
@@ -70,7 +70,7 @@ public class JobTriggerController {
      * @param id 任务id
      * @param status 任务状态
      */
-    @PreAuthorize("@permit.hasPermit('sys:job:status')")
+    @PreAuthorize("@permits.hasPermit('sys:job:status')")
     @PatchMapping("/status/{id}/{status}")
     public Response<Void> switchStatus(@PathVariable("id") Integer id, @PathVariable("status") Integer status) throws Exception {
         return Response.success(() -> jobTriggerService.switchStatus(id, status));

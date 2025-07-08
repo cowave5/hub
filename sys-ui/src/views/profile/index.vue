@@ -25,15 +25,15 @@
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="peoples"/> {{$t('user.label.role')}}
-                <div class="pull-right" v-if="user.roles.length>0">{{ user.roles }}</div>
+                <div class="pull-right" v-if="user.roles && user.roles.length>0">{{ user.roles }}</div>
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="tree"/> {{$t('user.label.dept')}}
-                <div class="pull-right" v-if="user.depts.length>0">{{ user.depts }}</div>
+                <div class="pull-right" v-if="user.depts && user.depts.length>0">{{ user.depts }}</div>
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="tree"/> {{$t('user.label.report')}}
-                <div class="pull-right" v-if="user.parents.length>0">{{ user.parents }} </div>
+                <div class="pull-right" v-if="user.parents && user.parents.length>0">{{ user.parents }} </div>
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="date"/> {{$t('commons.label.createTime')}}
@@ -55,6 +55,18 @@
             <el-tab-pane v-if="user.userType === 'sys'" :label="$t('user.button.passwd')" name="resetPwd">
               <resetPwd :user="user" />
             </el-tab-pane>
+            <el-tab-pane v-if="user.userType === 'sys'" label="MFA认证" name="configMFA">
+              <el-form ref="form" :model="mfa" @submit.native.prevent label-width="auto">
+                <mfa-qrcode v-if="mfa.mfaUrl != null" v-model="mfa.mfaUrl" :otpAuthUrl="mfa.mfaUrl"/>
+                <el-form-item label="口 令" prop="oldPassword">
+                  <el-input v-model="mfa.mfaCode" maxlength="50"/>
+                </el-form-item>
+                <el-form-item>
+                  <el-button v-if="mfa.mfaUrl != null" type="primary" size="mini" @click="submit">开启MFA认证</el-button>
+                  <el-button v-else type="danger" size="mini" @click="cancel">关闭MFA认证</el-button>
+                </el-form-item>
+              </el-form>
+            </el-tab-pane>
           </el-tabs>
         </el-card>
       </el-col>
@@ -66,24 +78,44 @@
 import userAvatar from "./userAvatar.vue";
 import userInfo from "./userInfo.vue";
 import resetPwd from "./resetPwd.vue";
-import { getUserProfile } from "@/api/profile";
+import {disableMFA, enableMFA, getMFA, getUserProfile} from "@/api/profile";
+import MfaQrcode from "@/components/MFA/index.vue";
 
 export default {
   name: "Profile",
-  components: { userAvatar, userInfo, resetPwd },
+  components: {MfaQrcode, userAvatar, userInfo, resetPwd },
   data() {
     return {
       user: {},
+      mfa: {},
       activeTab: "userinfo"
     };
   },
   created() {
     this.getUser();
+    this.acquireMFA();
   },
   methods: {
     getUser() {
       getUserProfile().then(response => {
         this.user = response.data;
+      });
+    },
+    acquireMFA() {
+      getMFA().then(response => {
+        this.mfa = response.data;
+      });
+    },
+    submit() {
+      enableMFA(this.mfa).then(() => {
+        this.acquireMFA();
+        this.$modal.msgSuccess(this.$t('commons.msg.success.edit'));
+      });
+    },
+    cancel(){
+      disableMFA(this.mfa).then(() => {
+        this.acquireMFA();
+        this.$modal.msgSuccess(this.$t('commons.msg.success.edit'));
       });
     }
   }

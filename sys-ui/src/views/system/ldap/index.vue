@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!--  筛选栏  -->
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
       <el-form-item label="Ldap账号" prop="userAccount" label-width="100">
         <el-input v-model="queryParams.ldapAccount" clearable style="width: 240px" @keyup.enter.native="handleQuery"/>
       </el-form-item>
@@ -14,8 +14,7 @@
     <!--  操作栏  -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="el-icon-edit" size="mini" @click="handleConfig"
-                   :disabled="!checkPermit(['sys:ldap:edit'])">配置</el-button>
+        <el-button type="primary" plain icon="el-icon-edit" size="mini" @click="handleConfig">配置</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -55,20 +54,6 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <h4>Ldap服务</h4>
         <el-row>
-          <el-col :span="24">
-            <el-form-item label="Ldap名称:" prop="ldapName">
-              <el-input v-model="form.ldapName" :disabled="true" placeholder="Ldap服务名称" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="Ldap地址:" prop="ldapUrl">
-              <el-input v-model="form.ldapUrl" placeholder="例如：ldap.example.com" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="用户名:" prop="ldapUser">
               <el-input v-model="form.ldapUser" placeholder="例子: user@domain.name" />
@@ -80,14 +65,14 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <h4>Ldap模式</h4>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="用户名属性:" prop="accountProperty">
-              <el-input v-model="form.accountProperty" placeholder="在用户对象上使用的属性域，例如：cn、sAMAccountName" />
+            <el-form-item label="Ldap地址:" prop="ldapUrl">
+              <el-input v-model="form.ldapUrl" placeholder="例如：ldap.example.com" />
             </el-form-item>
           </el-col>
         </el-row>
+        <h4>Ldap模式</h4>
         <el-row>
           <el-col :span="24">
             <el-form-item label="基本DN:" prop="baseDn">
@@ -99,6 +84,13 @@
           <el-col :span="24">
             <el-form-item label="用户DN:" prop="userDn">
               <el-input v-model="form.userDn" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="用户名属性:" prop="accountProperty">
+              <el-input v-model="form.accountProperty" placeholder="在用户对象上使用的属性域，例如：cn、sAMAccountName" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -162,10 +154,8 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleValid"
-                   :disabled="!checkPermit(['sys:ldap:edit'])">测试</el-button>
-        <el-button @click="submitForm"
-                   :disabled="!checkPermit(['sys:ldap:edit'])">保存</el-button>
+        <el-button type="primary" @click="handleValid" :disabled="!checkPermit(['sys:ldap:edit'])">测试</el-button>
+        <el-button @click="submitForm" :disabled="!checkPermit(['sys:ldap:edit'])">保存</el-button>
         <el-button @click="cancel">取消</el-button>
       </div>
     </el-dialog>
@@ -221,7 +211,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="saveRole"
-                   :disabled="!checkPermit(['oauth:gitlab:user:edit'])">保存</el-button>
+                   :disabled="!checkPermit(['sys:ldap:edit'])">保存</el-button>
         <el-button @click="cancelRole">取消</el-button>
       </div>
     </el-dialog>
@@ -269,7 +259,6 @@ export default {
       // 表单参数
       form: {
         id: undefined,
-        ldapName: "cowave",
         ldapUrl: undefined,
         ldapUser: undefined,
         ldapPasswd: undefined,
@@ -298,9 +287,6 @@ export default {
   computed: {
     rules() {
       return {
-        ldapName: [
-          { required: true, message: "Ldap服务名称不能为空", trigger: "blur" }
-        ],
         ldapUrl: [
           { required: true, message: "Ldap服务地址不能为空", trigger: "blur" }
         ],
@@ -330,8 +316,6 @@ export default {
     /** 表单重置 */
     reset() {
       this.form = {
-        id: undefined,
-        ldapName: "cowave",
         ldapUrl: undefined,
         ldapUser: undefined,
         ldapPasswd: undefined,
@@ -359,18 +343,18 @@ export default {
     resetQuery() {
       this.queryParams = {
           page: 1,
-          pageSize: 10,
-          ldapName: undefined
+          pageSize: 10
       };
       this.resetForm("queryForm");
       this.handleQuery();
     },
     /** 配置 */
     handleConfig() {
-      this.reset();
-      this.open = true;
       getLdapConfig().then(response => {
         this.form = response.data;
+        if(this.form == null){
+          this.reset();
+        }
         this.open = true;
       });
     },

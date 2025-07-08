@@ -22,7 +22,7 @@ public class RoleUserQuery {
     /**
      * 部门id
      */
-    @NotNull(message = "{admin.role.id.notnull}")
+    @NotNull(message = "{admin.role.id.null}")
     private Integer roleId;
 
     /**

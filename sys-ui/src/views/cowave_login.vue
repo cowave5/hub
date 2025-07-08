@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="form" :model="form" :rules="loginRules" class="login-form">
-      <h3 class="title">Cowave管理系统</h3>
+      <h3 class="title">控维通信</h3>
       <el-form-item prop="username">
         <el-input v-model="form.username" type="text" autocomplete="new-password" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
@@ -84,6 +84,9 @@ export default {
       immediate: true
     }
   },
+  mounted() {
+    localStorage.setItem('tenant_login_route', '/cowave/login');
+  },
   created() {
     this.version = process.env.VUE_APP_VERSION;
     this.getCode();
@@ -91,7 +94,7 @@ export default {
   },
   methods: {
     getCode() {
-      getCodeImg().then(res => {
+      getCodeImg("cowave").then(res => {
         this.codeUrl = "data:image/gif;base64," + res.data.img;
         this.form.uuid = res.data.uuid;
         this.captchaOnOff = res.data.captchaOnOff;
@@ -129,9 +132,13 @@ export default {
             Cookies.remove("password");
             Cookies.remove('rememberMe');
           }
-          this.$store.dispatch("Login", this.form).then(async () => {
-            this.$router.push({path: this.redirect || "/"}).catch(() => {});
-            await this.$store.dispatch('OpenNoticeSocket');
+          this.$store.dispatch("Login", this.form).then(async response => {
+            if (response.mfaRequired) {
+              await this.$router.push({path: '/mfa'}).catch(() => {});
+            } else {
+              await this.$router.push({path: this.redirect || "/"}).catch(() => {});
+              await this.$store.dispatch('OpenNoticeSocket');
+            }
           }).catch(() => {
             this.loading = false;
             if (this.captchaOnOff) {

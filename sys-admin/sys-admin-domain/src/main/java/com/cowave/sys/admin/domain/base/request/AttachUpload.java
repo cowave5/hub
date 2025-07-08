@@ -34,9 +34,9 @@ public class AttachUpload {
     private String ownerId;
 
     /**
-     * 宿主类型
+     * 宿主模块
      */
-    private String ownerType;
+    private String ownerModule;
 
     /**
      * 附件类型

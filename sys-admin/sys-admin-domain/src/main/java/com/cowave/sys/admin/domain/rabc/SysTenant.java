@@ -27,15 +27,20 @@ public class SysTenant implements AccessInfoSetter {
     /**
      * 租户id
      */
-    @NotBlank(message = "{admin.tenant.id.notnull}")
+    @NotBlank(message = "{admin.tenant.id.null}")
     @TableId
     private String tenantId;
 
     /**
      * 租户名称
      */
-    @NotBlank(message = "{admin.tenant.name.notnull}")
+    @NotBlank(message = "{admin.tenant.name.null}")
     private String tenantName;
+
+    /**
+     * 租户首页
+     */
+    private String viewIndex;
 
     /**
      * 租户联系人
@@ -75,7 +80,7 @@ public class SysTenant implements AccessInfoSetter {
     /**
      * 租户标题
      */
-    @NotBlank(message = "{admin.tenant.title.notnull}")
+    @NotBlank(message = "{admin.tenant.title.null}")
     private String title;
 
     /**

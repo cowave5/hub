@@ -5,7 +5,7 @@ import request from '@/utils/request'
  */
 export function getLdapConfig() {
   return request({
-    url: '/admin/api/v1/ldap/config/cowave',
+    url: '/admin/api/v1/ldap/config',
     method: 'get'
   })
 }

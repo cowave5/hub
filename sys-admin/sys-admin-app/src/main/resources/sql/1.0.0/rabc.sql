@@ -11,6 +11,7 @@ create table sys_tenant
     expire_time  timestamp,
     title        character varying(64),
     logo         text,
+    view_index   character varying(64) default 'index_tenant',
     tenant_user  character varying(128),
     tenant_addr  character varying(256),
     tenant_phone character varying(64),
@@ -159,6 +160,7 @@ create table sys_user
     user_email   character varying(128),
     user_rank    character varying(64),
     user_status  int2 default 1,
+    mfa          character varying(64),
     remark       character varying(200),
     create_by    character varying(64),
     create_time  timestamp,
@@ -255,10 +257,12 @@ comment on column sys_user_role.role_id is '角色id';
 
 -- 菜单信息
 drop table if exists sys_menu;
-create table sys_menu(
+create table sys_menu
+(
     menu_id      serial primary key,
     parent_id    int4                   default 0,
     tenant_id    character varying(64),
+    menu_module  character varying(64),
     menu_name    character varying(64) not null,
     menu_order   integer                default 0,
     menu_permit  character varying(255),
@@ -302,14 +306,39 @@ comment on column sys_menu.update_time is '更新时间';
 
 -- 角色菜单
 drop table if exists sys_role_menu;
-create table sys_role_menu(
-    role_id int4 not null,
-    menu_id int4 not null,
+create table sys_role_menu
+(
+    role_id  int4 not null,
+    menu_id  int4 not null,
+    scope_id int4,
     constraint sys_role_menu_pkey primary key (role_id, menu_id)
 );
 comment on table sys_role_menu is '角色菜单';
 comment on column sys_role_menu.role_id is '角色id';
 comment on column sys_role_menu.menu_id is '菜单id';
+
+-- 数据权限
+drop table if exists sys_scope;
+CREATE TABLE sys_scope
+(
+    scope_id      serial primary key,
+    tenant_id     character varying(64),
+    scope_name    character varying(255),
+    scope_module  character varying(64),
+    scope_status  int2 DEFAULT 1,
+    scope_content json default '{}',
+    remark        varchar(200),
+    create_by     character varying(64),
+    create_time   timestamp,
+    update_by     character varying(64),
+    update_time   timestamp
+);
+comment on table sys_scope is '数据权限';
+comment on column sys_scope.scope_id is '权限id';
+comment on column sys_scope.scope_name is '权限名称';
+comment on column sys_scope.scope_status is '权限状态';
+comment on column sys_scope.scope_content is '权限规则';
+comment on column sys_scope.remark is '备注';
 
 -- 用户ApiToken
 drop table if exists api_token;

@@ -22,13 +22,13 @@ public class SysDeptPost {
     /**
      * 部门id
      */
-    @NotNull(message = "{admin.dept.id.notnull}")
+    @NotNull(message = "{admin.dept.id.null}")
     private Integer deptId;
 
     /**
      * 岗位id
      */
-    @NotNull(message = "{admin.post.id.notnull}")
+    @NotNull(message = "{admin.post.id.null}")
     private Integer postId;
 
     /**

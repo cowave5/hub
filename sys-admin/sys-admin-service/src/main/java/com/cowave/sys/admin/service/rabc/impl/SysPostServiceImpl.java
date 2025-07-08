@@ -105,7 +105,7 @@ public class SysPostServiceImpl implements SysPostService {
     @CacheEvict(value = {POST_DIAGRAM, DEPT_POST_DIAGRAM}, key = "#tenantId")
     @Override
     public void edit(String tenantId, PostInfoDto sysPost) {
-        HttpAsserts.notNull(sysPost.getPostId(), BAD_REQUEST, "{admin.post.id.notnull}");
+        HttpAsserts.notNull(sysPost.getPostId(), BAD_REQUEST, "{admin.post.id.null}");
 
         // 操作日志
         PostInfoDto prePost = sysPostDtoMapper.info(tenantId, sysPost.getPostId());

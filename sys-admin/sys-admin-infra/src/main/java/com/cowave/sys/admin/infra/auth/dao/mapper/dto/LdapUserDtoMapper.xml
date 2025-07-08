@@ -19,7 +19,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result column="id"            property="id"/>
         <result column="role_code"     property="roleCode"/>
         <result column="role_name"     property="roleName"/>
-        <result column="ldap_name"     property="ldapName"/>
         <result column="user_info"     property="userInfo"/>
         <result column="user_account"  property="userAccount"/>
         <result column="user_passwd"   property="userPasswd"/>
@@ -37,7 +36,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select u.id,
                u.role_code,
                u.user_name,
-               u.ldap_name,
                u.user_info,
                u.user_account,
                u.user_name,
@@ -51,7 +49,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                r.role_name
         from ldap_user u
         left join sys_role r on u.role_code = r.role_code
-        where 1 = 1
+        where u.tenant_id = #{tenantId}
         <if test="userAccount != null and userAccount != ''">
             and user_account like concat('%', #{userAccount}, '%')
         </if>

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!--  筛选栏  -->
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
       <el-form-item label="任务名称" prop="taskName">
         <el-input v-model="queryParams.taskName" placeholder="请输入任务名称" clearable style="width: 180px" @keyup.enter.native="handleQuery"/>
       </el-form-item>

@@ -7,36 +7,17 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.sys.admin.domain.base;
+package com.cowave.sys.admin.domain.rabc.dto;
 
-import com.cowave.commons.tools.EnumVal;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 
 /**
  * @author shanhuiming
  */
-@RequiredArgsConstructor
-public enum NoticeStatus implements EnumVal<Integer> {
+@Data
+public class SysMenuScope {
 
-    /**
-     * 草稿
-     */
-    DRAFT(0),
+    private Integer menuId;
 
-    /**
-     * 已发布
-     */
-    PUBLISH(1),
-
-    /**
-     * 已撤回
-     */
-    RECALL(2);
-
-    private final Integer val;
-
-    @Override
-    public Integer val() {
-        return val;
-    }
+    private Integer scopeId;
 }

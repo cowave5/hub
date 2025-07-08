@@ -57,7 +57,7 @@ public class LeaveFlowServiceImpl implements LeaveFlowService {
                 if(activeTask != null){
                     l.setTaskId(activeTask.getId());
                     l.setProcessTask(activeTask.getName());
-                    l.setProcessTaskUser(sysUserDao.queryNameByUserId(Integer.valueOf(activeTask.getAssignee())));
+                    l.setProcessTaskUser(sysUserDao.queryNameById(Integer.valueOf(activeTask.getAssignee())));
                 }
             }
         }

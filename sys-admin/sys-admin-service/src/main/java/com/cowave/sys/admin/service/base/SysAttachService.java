@@ -9,14 +9,15 @@
  */
 package com.cowave.sys.admin.service.base;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.sys.admin.domain.base.SysAttach;
 import com.cowave.sys.admin.domain.base.request.AttachQuery;
 import com.cowave.sys.admin.domain.base.request.AttachUpload;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * @author shanhuiming
@@ -24,9 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 public interface SysAttachService {
 
     /**
-     * 列表
+     * 分页
      */
-    List<SysAttach> list(String tenantId, AttachQuery query);
+    Page<SysAttach> page(String tenantId, AttachQuery query);
 
     /**
      * 上传
@@ -51,20 +52,25 @@ public interface SysAttachService {
     /**
      * 删除
      */
-    void delete(Long attachId) throws Exception;
+    void delete(List<Long> attachIds) throws Exception;
 
     /**
      * 删除
      */
-    void delete(SysAttach sysAttach) throws Exception;
+    void remove(SysAttach sysAttach) throws Exception;
+
+    /**
+     * 删除
+     */
+    void removeById(Long attachId) throws Exception;
 
     /**
      * 宿主最新附件
      */
-    SysAttach latestOfOwner(String ownerId, String ownerType, String attachType) throws Exception;
+    SysAttach latestOfOwner(String ownerId, String ownerModule, String attachType) throws Exception;
 
     /**
      * 保留最近几个
      */
-    void masterReserve(String ownerId, String ownerType, String attachType, int reserve) throws Exception;
+    void reserveByOwner(String ownerId, String ownerModule, String attachType, int reserve) throws Exception;
 }

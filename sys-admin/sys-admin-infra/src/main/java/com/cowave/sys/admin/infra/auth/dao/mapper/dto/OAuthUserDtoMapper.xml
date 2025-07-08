@@ -43,7 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                r.role_name
         from oauth_user u
         left join sys_role r on u.role_code = r.role_code
-        where server_type = #{query.serverType}
+        where u.tenant_id = #{tenantId} and server_type = #{query.serverType}
         <if test="query.userAccount != null and query.userAccount != ''">
             and user_account like concat('%', #{query.userAccount}, '%')
         </if>

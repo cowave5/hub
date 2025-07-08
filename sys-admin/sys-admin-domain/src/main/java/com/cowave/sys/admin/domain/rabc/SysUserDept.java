@@ -24,13 +24,13 @@ public class SysUserDept {
     /**
 	 * 用户id
 	 */
-	@NotNull(message = "{admin.user.id.notnull}")
+	@NotNull(message = "{admin.user.id.null}")
 	private Integer userId;
 
     /**
 	 * 部门id
 	 */
-	@NotNull(message = "{admin.dept.id.notnull}")
+	@NotNull(message = "{admin.dept.id.null}")
 	private Integer deptId;
 
     /**

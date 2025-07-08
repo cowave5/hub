@@ -81,12 +81,9 @@
                      :disabled="scope.row.tenantId === '#'">
             <svg-icon icon-class="pscope"/>{{$t('role.button.menus')}}
           </el-button>
-          <el-button size="mini" type="text" @click="handleDataScope(scope.row)"
-                     :disabled="scope.row.tenantId === '#' || !checkPermit(['sys:role:scope'])">
-            <svg-icon icon-class="vscope"/> {{$t('role.button.scope')}}
-          </el-button>
           <el-button size="mini" type="text" @click="handleAuthUser(scope.row)">
-            <svg-icon icon-class="peoples"/> {{$t('role.button.members')}}</el-button>
+            <svg-icon icon-class="peoples"/> {{$t('role.button.members')}}
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -143,8 +140,8 @@
                    :check-strictly="!menuCheckStrictly" empty-text="..." :props="defaultProps">
             <span class="el-tree-node__label" slot-scope="{data}" style="display: flex; justify-content: space-between; width: 100%;">
               {{ $t(data.label) }}
-              <el-select v-if="data.menuType === 'B'" v-model="data.scope" placeholder="选择数据权限" size="small" class="tree-node-select">
-                <el-option v-for="option in dataPermits" :key="option.value" :label="option.label" :value="option.value"/>
+              <el-select v-if="data.menuType === 'B'" v-model="data.scopeId" placeholder="选择数据权限" size="small" class="tree-node-select">
+                <el-option v-for="option in data.scopes" :key="option.scopeId" :label="option.scopeName" :value="option.scopeId"/>
               </el-select>
             </span>
           </el-tree>
@@ -158,35 +155,11 @@
         <el-button @click="cancelMenuScope">{{$t('commons.button.cancel')}}</el-button>
       </div>
     </el-dialog>
-
-    <!-- 数据权限对话框 -->
-    <el-dialog v-drag :title="$t('role.button.scope')" :visible.sync="openDataScope" width="500px" append-to-body>
-      <span>Todo in the future.</span>
-<!--      <el-form :model="form" label-width="100px">-->
-<!--        <el-form-item :label="$t('role.label.name')">-->
-<!--          <el-input v-model="form.roleName" :disabled="true" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item :label="$t('role.label.code')">-->
-<!--          <el-input v-model="form.roleCode" :disabled="true" />-->
-<!--        </el-form-item>-->
-<!--      </el-form>-->
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitDataScope">{{$t('commons.button.confirm')}}</el-button>
-        <el-button @click="cancelDataScope">{{$t('commons.button.cancel')}}</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import {
-  getRoleList,
-  getRoleInfo,
-  delRole,
-  addRole,
-  updateRole,
-  updateRoleMenus
-} from '@/api/system/role'
+import {addRole, delRole, getRoleInfo, getRoleList, updateRole, updateRoleMenus} from '@/api/system/role'
 import {getMenuTree} from "@/api/system/menu";
 import {checkPermit} from "@/utils/permission";
 
@@ -213,8 +186,6 @@ export default {
       title: "",
       // 新增修改对话框
       open: false,
-      // 数据权限对话框
-      openDataScope: false,
       // 查询参数
       queryParams: {
         page: 1,
@@ -239,13 +210,16 @@ export default {
       menuCheckStrictly: true,
       defaultProps: {
         children: "children",
-        label: "label"
+        label: "label",
+        disabled: (data, node) => {
+          return data.protected === 0;
+        }
       },
       menuForm: {
         roleId: undefined,
         roleName: undefined,
         roleCode: undefined,
-        menuIds: [],
+        menuScopes: [],
       },
       cols: [
         {key: 0, label: 'role.label.name', show: true},
@@ -253,10 +227,6 @@ export default {
         {key: 2, label: 'commons.label.createTime', show: true},
         {key: 3, label: 'commons.label.updateTime', show: false},
       ],
-      dataPermits: [
-        { value: 'option1', label: '选项1' },
-        { value: 'option2', label: '选项2' }
-      ]
     };
   },
   created() {
@@ -376,13 +346,17 @@ export default {
           this.menuForm.roleId = response.data.roleId;
           this.menuForm.roleName = response.data.roleName;
           this.menuForm.roleCode = response.data.roleCode;
-          // 选中
-          let menuIds = response.data.menuIds;
-          menuIds.forEach((v) => {
-            this.$nextTick(()=>{
-              this.$refs.menuTree.setChecked(v, true ,false);
-            })
-          })
+          // 选中用户有权限的节点
+          let menuScopes = response.data.menuScopes || [];
+          menuScopes.forEach(({menuId, scopeId}) => {
+            this.$nextTick(() => {
+              this.$refs.menuTree.setChecked(menuId, true, false);
+              const node = this.findNodeById(menuId, this.menuOptions);
+              if (node) {
+                this.$set(node, 'scopeId', scopeId);
+              }
+            });
+          });
         });
       });
       this.openMenuScope = true;
@@ -393,7 +367,7 @@ export default {
     },
     /** 角色菜单提交 */
     submitMenuScope(){
-      this.menuForm.menuIds = this.getCheckedMenus();
+      this.menuForm.menuScopes = this.getCheckedMenus();
       updateRoleMenus(this.menuForm).then(() => {
         this.$modal.msgSuccess(this.$t('commons.msg.success.edit'));
         this.openMenuScope = false;
@@ -407,14 +381,13 @@ export default {
       // 半选中的节点
       let halfCheckedKeys = this.$refs.menuTree.getHalfCheckedKeys();
       checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
-      // let checkedMenus = checkedKeys.map(id => {
-      //   let node = this.findNodeById(id, this.menuOptions) // 查找对应节点
-      //   return {
-      //     id: id,
-      //     scope: node ? node.scope || '' : '' // 确保 scope 有值
-      //   }
-      // })
-      return checkedKeys;
+      return checkedKeys.map(id => {
+        let node = this.findNodeById(id, this.menuOptions);
+        return {
+          menuId: id,
+          scopeId: (node && node.scopeId) ? node.scopeId : null
+        };
+      });
     },
     findNodeById(id, nodes) {
       for (let node of nodes) {
@@ -440,26 +413,6 @@ export default {
     /** 父子联动 */
     handleCheckedTreeConnect(value, type) {
       this.menuCheckStrictly = value ? true: false;
-    },
-    /** 数据权限 */
-    handleDataScope(row) {
-      getRoleInfo(row.roleId).then(response => {
-        this.openDataScope = true;
-        // this.$nextTick(() => {
-        //   roleDeptTreeselect.then(res => {
-        //     this.$refs.dept.setCheckedKeys(res.checkedKeys);
-        //   });
-        // });
-      });
-    },
-    /** 数据权限取消 */
-    cancelDataScope() {
-      this.openDataScope = false;
-    },
-    /** 数据权限提交 */
-    submitDataScope: function() {
-      this.openDataScope = false;
-
     },
     /** 分配用户 */
     handleAuthUser: function(row) {

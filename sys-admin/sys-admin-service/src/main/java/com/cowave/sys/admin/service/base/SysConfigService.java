@@ -38,22 +38,22 @@ public interface SysConfigService {
     /**
      * 新增
      */
-    void add(SysConfig sysConfig) throws Exception;
+    void add(SysConfig sysConfig);
 
     /**
      * 编辑
      */
-    void edit(SysConfig sysConfig) throws Exception;
+    void edit(SysConfig sysConfig);
 
     /**
      * 删除
      */
-    void delete(String tenantId, List<Integer> configIds) throws Exception;
+    void delete(String tenantId, List<Integer> configIds);
 
     /**
      * 重置恢复
      */
-    void resetConfig(String tenantId) throws Exception;
+    void resetConfig(String tenantId);
 
     /**
      * 获取配置

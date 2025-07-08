@@ -24,19 +24,19 @@ public class TenantStatusUpdate {
     /**
      * 租户id
      */
-    @NotBlank(message = "{admin.tenant.id.notnull}")
+    @NotBlank(message = "{admin.tenant.id.null}")
     @TableId
     private String tenantId;
 
     /**
      * 租户名称
      */
-    @NotBlank(message = "{admin.tenant.name.notnull}")
+    @NotBlank(message = "{admin.tenant.name.null}")
     private String tenantName;
 
     /**
      * 用户状态
      */
-    @NotNull(message = "{admin.tenant.status.notnull}")
+    @NotNull(message = "{admin.tenant.status.null}")
     private Integer status;
 }

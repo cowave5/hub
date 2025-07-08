@@ -58,7 +58,7 @@ public class SysDept {
      */
 	@ColumnWidth(50)
 	@ExcelProperty("部门名称")
-    @NotBlank(message = "{admin.dept.name.notnull}")
+    @NotBlank(message = "{admin.dept.name.null}")
     private String deptName;
 
     /**

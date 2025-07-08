@@ -10,6 +10,7 @@
 package com.cowave.sys.admin.infra.rabc.dao.mapper.dto;
 
 import com.cowave.sys.admin.domain.rabc.SysMenu;
+import com.cowave.sys.admin.domain.rabc.dto.SysMenuTree;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -47,4 +48,9 @@ public interface SysMenuDtoMapper {
      * 删除当前以及子菜单
      */
     void loopDeleteMenus(Integer menuId);
+
+    /**
+     * 菜单树（包含数据权限）
+     */
+    List<SysMenuTree> listTree(String tenantId);
 }

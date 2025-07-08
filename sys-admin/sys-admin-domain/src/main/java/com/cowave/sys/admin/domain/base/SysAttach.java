@@ -47,9 +47,9 @@ public class SysAttach implements AccessInfoSetter {
     private String ownerId;
 
     /**
-     * 宿主类型
+     * 宿主模块
      */
-    private String ownerType;
+    private String ownerModule;
 
     /**
      * 附件类型
@@ -83,12 +83,6 @@ public class SysAttach implements AccessInfoSetter {
     private Date expireTime;
 
     /**
-     * 预览地址
-     */
-    @TableField(exist = false)
-    private String viewUrl;
-
-    /**
      * 创建人
      */
     private String createBy;
@@ -109,4 +103,16 @@ public class SysAttach implements AccessInfoSetter {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
+
+    /**
+     * 预览地址
+     */
+    @TableField(exist = false)
+    private String viewUrl;
+
+    /**
+     * 宿主名称
+     */
+    @TableField(exist = false)
+    private String ownerName;
 }

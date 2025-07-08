@@ -29,7 +29,7 @@ public class SysAlarmTypeDto {
 	/**
 	 * 类型名称
 	 */
-	@NotBlank(message = "{admin.alarm.type.name.notnull}")
+	@NotBlank(message = "{admin.alarm.type.name.null}")
 	private String typeName;
 
 	/**

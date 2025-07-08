@@ -3,12 +3,12 @@
     <el-form ref="form" :model="form" class="login-form">
       <h3 class="title">授权应用访问</h3>
       <el-form-item prop="clientName">
-        <el-input v-model="form.clientName" type="text" autocomplete="new-password" label="客户端名称">
+        <el-input v-model="form.clientName" type="text" label="客户端名称">
           <svg-icon slot="prefix" icon-class="model" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input v-model="form.authScope" type="text" autocomplete="new-password" label="授权范围">
+        <el-input v-model="form.authScope" type="text" label="授权范围">
           <svg-icon slot="prefix" icon-class="vscope" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
@@ -54,7 +54,12 @@ export default {
   },
   methods: {
     handleRedirect() {
-      window.location.href = '/prod-api/admin/api/v1/oauth/client/redirect/' + this.form.code;
+      if (process.env.NODE_ENV === 'production') {
+        window.location.href = '/prod-api/admin/api/v1/oauth/client/redirect/' + this.form.code;
+      }else{
+        window.location.href = '/dev-api/admin/api/v1/oauth/client/redirect/' + this.form.code;
+      }
+
     }
   }
 };

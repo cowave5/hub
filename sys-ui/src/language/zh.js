@@ -31,7 +31,10 @@ export default {
       create: "新增",
       edit: "修改",
       delete: "删除",
+      clean: "清除",
       remove: "移除",
+      preview: "预览",
+      download: "下载",
       publish: "发布",
       recall: "撤回",
       exec: "执行",
@@ -97,6 +100,8 @@ export default {
         user: '用户管理',
         role: "角色管理",
         menu: "菜单管理",
+        scope: "数据权限",
+        attach: "文件管理",
         dept: "部门管理",
         post: "岗位管理",
         dict: "字典管理",
@@ -104,9 +109,9 @@ export default {
         ldap: "Ldap认证",
         doc: {
           api: "Api文档",
-          admin: "系统服务",
-          quartz: "定时服务",
-          meter: "测试服务"
+          admin: "系统管理",
+          job: "定时任务",
+          meter: "测试管理"
         },
         schedule: {
           root: "定时任务",
@@ -347,7 +352,8 @@ export default {
   menu: {
     label: {
       root: "根目录",
-      tenant: "租户归属",
+      tenant: "所属租户",
+      module: "所属模块",
       name: "菜单名称",
       status: "菜单状态",
       order: "显示排序",
@@ -362,7 +368,7 @@ export default {
       cacheable: "是否缓存",
       param: "路由参数",
       visibility: "访问控制",
-      shared: "公共菜单"
+      shared: "共享菜单"
     },
     button: {
       select: "选择菜单: ",
@@ -384,13 +390,15 @@ export default {
     rules: {
       name: "菜单名称不能为空",
       path: "路由地址不能为空",
-      order: "菜单顺序不能为空"
+      order: "菜单顺序不能为空",
+      tenant: "所属租户不能为空"
     },
     confirm: {
       delete: "确认要删除菜单“{arg1}”吗？",
     },
     content: {
       name: "名称支持国际化，可以定义成国际化资源中的key",
+      module: "针对菜单和按钮，用于筛选数据权限选项",
       status: "停用的路由不会出现在侧边栏，也不能被访问",
       frame: "外链路由需要以`http(s)://`开头",
       visible: "隐藏的路由不会出现在侧边栏，但仍然可以访问",
@@ -548,6 +556,11 @@ export default {
       public: "公开的",
       protected: "受限的",
 
+      attach_type: "文件类型",
+      avatar: "头像",
+      logo: "Logo",
+      image: "图片",
+
       flow: "流程字典",
       leave: "请假类型",
       annual: "年假",
@@ -598,9 +611,7 @@ export default {
       notice_notice: "通知",
       notice_press: "催办提醒",
 
-      op_log: "操作日志",
       op_action: "日志动作",
-      op_admin: "系统管理",
       op_create: "新增",
       op_delete: "删除",
       op_edit: "修改",
@@ -608,14 +619,36 @@ export default {
       op_passwd: "密码修改",
       op_grant: "角色修改",
       op_login: "登录",
-      op_oauth: "OAuth授权",
+      op_login_oauth: "OAuth授权",
       op_logout: "退出",
       op_logout_force: "强制退出",
-      op_auth: "鉴权管理",
-      op_user: "用户管理",
-      op_dept: "部门管理",
-      op_role: "角色管理",
-      op_post: "岗位管理",
+
+      domain_module: "领域模型",
+
+      domain_system: "系统管理",
+      module_auth: "鉴权管理",
+      module_tenant: "租户管理",
+      module_user: "用户管理",
+      module_dept: "部门管理",
+      module_role: "角色管理",
+      module_post: "岗位管理",
+      module_menu: "菜单管理",
+      module_scope: "数据权限",
+      module_dict: "字典管理",
+      module_config: "系统参数",
+      module_task: "任务管理",
+      module_ldap: "Ldap用户",
+      module_oauth: "oauth用户",
+      module_notice: "通知公告",
+      module_attach: "文件管理",
+
+      domain_monitor: "系统监控",
+      module_online: "在线用户",
+      module_oplog: "操作日志",
+
+      domain_flow: "流程管理",
+
+      domain_meter: "软件测试",
 
       menu: "菜单字典",
       menu_type: "菜单类型",
@@ -687,5 +720,49 @@ export default {
       type: "请选择类型",
       status: "请选择状态"
     }
+  },
+  attach: {
+    label: {
+      tenant: "所属租户",
+      type: "文件类型",
+      module: "所属模块",
+      owner: "所属名称",
+      name: "文件名称",
+      size: "文件大小",
+      private: "是否私有",
+      expire: "到期时间",
+    },
+    placeholder: {
+      tenant: "请选择租户",
+      type: "请选择文件类型",
+    },
+    confirm: {
+      delete_select: "确认删除所选文件？",
+    },
+  },
+  scope: {
+    label: {
+      module: "数据模块",
+      name: "权限名称",
+    },
+    button: {
+      scope: "编辑权限",
+    },
+    placeholder: {
+      module: "选择数据模块",
+    },
+    dialog: {
+      new: "新增数据权限",
+      edit: "修改数据权限",
+    },
+    rules: {
+      name: "权限名称不能为空",
+      module: "数据模块不能为空",
+    },
+    confirm: {
+      delete_select: "确认删除所选权限？",
+      status_enable: "确认启用数据权限“{arg1}”吗？",
+      status_disable: "确认停用数据权限“{arg1}”吗？",
+    },
   }
 }

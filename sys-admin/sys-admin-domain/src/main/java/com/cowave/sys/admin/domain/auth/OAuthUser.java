@@ -34,6 +34,11 @@ public class OAuthUser {
     private Long id;
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
      * 服务类型
      */
     private String serverType;
@@ -89,7 +94,7 @@ public class OAuthUser {
         AccessUserDetails userDetails = AccessUserDetails.newUserDetails();
         userDetails.setAuthType(GITLAB.val());
         userDetails.setUserType(GITLAB.val());
-        userDetails.setTenantId("cowave");
+        userDetails.setTenantId(tenantId);
         userDetails.setUserId(id);
         userDetails.setUserCode(userCode);
         userDetails.setUsername(userAccount);

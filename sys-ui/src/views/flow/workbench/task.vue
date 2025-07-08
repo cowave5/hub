@@ -3,7 +3,7 @@
     <el-tabs v-model="activeTab">
       <el-tab-pane label="所有任务" name="allTask">
         <el-row>
-          <el-form :model="allParams" ref="allForm" size="small" :inline="true" v-show="showSearch" label-width="68px" >
+          <el-form :model="allParams" ref="allForm" size="small" :inline="true" v-show="showSearch" label-width="auto" >
             <el-form-item label="任务流程">
               <el-select v-model="allParams.processKey" placeholder="选择流程类型">
                 <el-option v-for="flow in flowOptions" :key="flow.key" :label="`${flow.name}`" :value="flow.key"/>
@@ -60,7 +60,7 @@
 
       <el-tab-pane label="我的待办" name="myTask">
         <el-row>
-          <el-form :model="myParams" ref="myForm" size="small" :inline="true" v-show="showSearch" label-width="68px" >
+          <el-form :model="myParams" ref="myForm" size="small" :inline="true" v-show="showSearch" label-width="auto" >
             <el-form-item label="任务流程">
               <el-select v-model="myParams.processKey" placeholder="选择流程类型">
                 <el-option v-for="flow in flowOptions" :key="flow.key" :label="`${flow.name}`" :value="flow.key"/>
@@ -115,7 +115,7 @@
 
       <el-tab-pane label="我办理的" name="myHistory">
         <el-row>
-          <el-form :model="historyParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px" >
+          <el-form :model="historyParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto" >
             <el-form-item label="任务流程">
               <el-select v-model="historyParams.processKey" placeholder="选择流程类型">
                 <el-option v-for="flow in flowOptions" :key="flow.key" :label="`${flow.name}`" :value="flow.key"/>

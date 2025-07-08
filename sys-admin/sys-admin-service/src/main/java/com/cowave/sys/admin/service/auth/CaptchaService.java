@@ -14,13 +14,10 @@ import com.cowave.commons.client.http.asserts.HttpAsserts;
 import com.cowave.commons.client.http.asserts.I18Messages;
 import com.cowave.commons.framework.helper.redis.RedisHelper;
 import com.cowave.sys.admin.domain.auth.vo.CaptchaInfo;
-import com.cowave.sys.admin.domain.auth.request.LoginRequest;
-import com.cowave.sys.admin.domain.auth.request.RegisterRequest;
 import com.cowave.sys.admin.domain.auth.OAuthServer;
 import com.cowave.sys.admin.infra.base.dao.SysConfigDao;
 import com.google.code.kaptcha.Producer;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -31,11 +28,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
-import static com.cowave.commons.client.http.constants.HttpCode.FORBIDDEN;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_CAPTCHA;
 
 /**
@@ -80,15 +75,11 @@ public class CaptchaService {
     private final JavaMailSender mailSender;
     private final SecureRandom random = new SecureRandom();
 
-    public CaptchaInfo captcha() throws IOException {
-        List<OAuthServer> oAuthServers = oAuthService.getEnableServers();
-        String oauthUrl = null;
-        if(CollectionUtils.isNotEmpty(oAuthServers)){
-            // 目前只有Gitlab一个授权服务
-            oauthUrl = oAuthServers.get(0).gitlabAuthorizeUrl();
-        }
-        boolean registerOnOff = sysConfigDao.getConfigValue("cowave", "sys.registerOnOff");
-        boolean captchaOnOff = sysConfigDao.getConfigValue("cowave", "sys.captchaOnOff");
+    public CaptchaInfo captcha(String tenantId) throws IOException {
+        OAuthServer gitlabServer = oAuthService.getServerConfig(tenantId, "gitlab");
+        String oauthUrl = gitlabServer.gitlabAuthorizeUrl();
+        boolean registerOnOff = sysConfigDao.getConfigValue(tenantId, "sys.registerOnOff");
+        boolean captchaOnOff = sysConfigDao.getConfigValue(tenantId, "sys.captchaOnOff");
         if (!captchaOnOff) {
             return new CaptchaInfo(registerOnOff, oauthUrl);
         }
@@ -97,7 +88,7 @@ public class CaptchaService {
         String capStr, code = null;
         BufferedImage image = null;
         // 生成验证码
-        String captchaType = sysConfigDao.getConfigValue("cowave", "sys.captchaType");
+        String captchaType = sysConfigDao.getConfigValue(tenantId, "sys.captchaType");
         if ("math".equals(captchaType)) {
             String capText = captchaProducerMath.createText();
             capStr = capText.substring(0, capText.lastIndexOf("@"));
@@ -115,12 +106,12 @@ public class CaptchaService {
         return new CaptchaInfo(uuid, encode(os.toByteArray()), true, registerOnOff, oauthUrl);
     }
 
-    public void validCaptcha(LoginRequest request){
-        boolean captchaOnOff = sysConfigDao.getConfigValue("cowave", "sys.captchaOnOff");
+    public void validCaptcha(String tenantId, String captchaId, String captcha){
+        boolean captchaOnOff = sysConfigDao.getConfigValue(tenantId, "sys.captchaOnOff");
         if(captchaOnOff){
-            String captcha = redisHelper.getValue(AUTH_CAPTCHA.formatted(request.getCaptchaId()));
-            HttpAsserts.notNull(captcha, BAD_REQUEST, "{admin.captcha.expired}");
-            HttpAsserts.equals(captcha, request.getCaptcha(), BAD_REQUEST, "{admin.captcha.failed}");
+            String stub = redisHelper.getValue(AUTH_CAPTCHA.formatted(captchaId));
+            HttpAsserts.notNull(stub, BAD_REQUEST, "{admin.captcha.expired}");
+            HttpAsserts.equals(stub, captcha, BAD_REQUEST, "{admin.captcha.failed}");
         }
     }
 
@@ -135,13 +126,10 @@ public class CaptchaService {
         redisHelper.putExpire(AUTH_CAPTCHA.formatted(code), email, CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
     }
 
-    public void validEmail(RegisterRequest request){
-        boolean registerOnOff = sysConfigDao.getConfigValue("cowave", "sys.registerOnOff");
-        HttpAsserts.isTrue(registerOnOff, FORBIDDEN, "{admin.register.disable}");
-
-        String email = redisHelper.getValue(AUTH_CAPTCHA.formatted(request.getCaptcha()));
-        HttpAsserts.notNull(email, BAD_REQUEST, "{admin.captcha.expired}");
-        HttpAsserts.equals(email, request.getUserEmail(), BAD_REQUEST, "{admin.register.failed}");
+    public void validEmail(String email, String captcha){
+        String stub = redisHelper.getValue(AUTH_CAPTCHA.formatted(captcha));
+        HttpAsserts.notNull(stub, BAD_REQUEST, "{admin.captcha.expired}");
+        HttpAsserts.equals(stub, email, BAD_REQUEST, "{admin.register.failed}");
     }
 
     private static String encode(byte[] binaryData) {

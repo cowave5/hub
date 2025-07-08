@@ -7,51 +7,43 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.sys.admin.domain.base;
+package com.cowave.sys.admin.domain.auth.request;
 
-import com.cowave.commons.tools.EnumVal;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author shanhuiming
  */
-@RequiredArgsConstructor
-public enum NoticeReadStatus implements EnumVal<Integer> {
+@Data
+public class Login {
 
     /**
-     * 消息未读
+     * 租户id
      */
-    UNREAD_PUBLISH(0),
+    @NotBlank(message = "{admin.tenant.id.null}")
+    private String tenantId;
 
     /**
-     * 消息未读删除
+     * 用户名
      */
-    UNREAD_DELETE(1),
+	@NotBlank(message = "{admin.user.account.null}")
+    private String userAccount;
 
     /**
-     * 消息未读撤回
+     * 用户密码
      */
-    UNREAD_RECALL(2),
+    @NotBlank(message = "{admin.user.passwd.null}")
+    private String passWord;
 
     /**
-     * 消息已读
+     * 验证码
      */
-    READ_PUBLISH(10),
+    private String captcha;
 
     /**
-     * 消息已读删除
+     * 验证码Id
      */
-    READ_DELETE(11),
-
-    /**
-     * 消息已读撤回
-     */
-    READ_RECALL(22);
-
-    private final Integer val;
-
-    @Override
-    public Integer val() {
-        return val;
-    }
+    private String captchaId;
 }

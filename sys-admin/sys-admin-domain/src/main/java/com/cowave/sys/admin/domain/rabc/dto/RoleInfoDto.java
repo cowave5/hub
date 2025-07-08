@@ -26,5 +26,5 @@ public class RoleInfoDto extends SysRole {
     /**
 	 * 角色菜单
 	 */
-	private List<Long> menuIds = new ArrayList<>();
+	private List<SysMenuScope> menuScopes = new ArrayList<>();
 }

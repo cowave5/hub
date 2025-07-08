@@ -16,7 +16,7 @@ import com.cowave.sys.admin.domain.rabc.SysDept;
 import com.cowave.sys.admin.domain.rabc.SysDeptTree;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -31,7 +31,7 @@ public class DeptCreate extends SysDept implements AccessInfoSetter {
     /**
 	 * 上级部门Id列表
 	 */
-	@NotEmpty(message = "{admin.dept.parentIds.notnull}")
+	@NotEmpty(message = "{admin.dept.parentIds.null}")
 	private List<Integer> parentIds;
 
     public List<SysDeptTree> getDeptParents(){

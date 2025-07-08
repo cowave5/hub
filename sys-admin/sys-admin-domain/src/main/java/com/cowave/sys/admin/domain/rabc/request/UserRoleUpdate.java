@@ -27,19 +27,19 @@ public class UserRoleUpdate {
     /**
      * 用户id
      */
-    @NotNull(message = "{admin.user.id.notnull}")
+    @NotNull(message = "{admin.user.id.null}")
     private Integer userId;
 
     /**
      * 用户名称
      */
-    @NotBlank(message = "{admin.user.name.notnull}")
+    @NotBlank(message = "{admin.user.name.null}")
     private String userName;
 
     /**
      * 角色id列表
      */
-    @NotEmpty(message = "{admin.role.ids.notnull}")
+    @NotEmpty(message = "{admin.role.ids.null}")
     private List<Integer> roleIds;
 
     public List<SysUserRole> getUserRoles(){

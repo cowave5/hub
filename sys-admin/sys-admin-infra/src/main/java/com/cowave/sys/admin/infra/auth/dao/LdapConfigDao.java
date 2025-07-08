@@ -20,11 +20,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class LdapConfigDao extends ServiceImpl<LdapConfigMapper, LdapConfig> {
 
-    public LdapConfig queryByName(String ldapName){
-        return lambdaQuery().eq(LdapConfig::getLdapName, ldapName).one();
-    }
-
-    public void removeByName(String ldapName){
-        lambdaUpdate().eq(LdapConfig::getLdapName, ldapName).remove();
-    }
 }

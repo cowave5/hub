@@ -10,6 +10,7 @@
 package com.cowave.sys.admin.app.auth;
 
 import com.cowave.commons.client.http.response.Response;
+import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.access.security.AccessUserDetails;
 import com.cowave.sys.admin.domain.auth.OAuthClient;
 import com.cowave.sys.admin.domain.auth.OAuthServer;
@@ -29,8 +30,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * OAuth配置
- * @order 25
+ * OAuth授权
+ * @order 11
  * @author shanhuiming
  */
 @Validated
@@ -46,28 +47,28 @@ public class OAuthController {
      *
      * @param serverType 服务类型
      */
-    @PreAuthorize("@permit.hasPermit('oauth:gitlab:query')")
+    @PreAuthorize("@permits.hasPermit('oauth:gitlab:query')")
     @GetMapping("/config/{serverType}")
     public Response<OAuthServer> getServerConfig(@PathVariable String serverType) {
-        return Response.success(oauthService.getServerConfig(serverType));
+        return Response.success(oauthService.getServerConfig(Access.tenantId(), serverType));
     }
 
     /**
      * 修改授权服务配置
      */
-    @PreAuthorize("@permit.hasPermit('oauth:gitlab:edit')")
+    @PreAuthorize("@permits.hasPermit('oauth:gitlab:edit')")
     @PatchMapping("/config")
     public Response<Void> updateServerConfig(@RequestBody OAuthServer oAuthServer) throws Exception {
-        return Response.success(() -> oauthService.updateServerConfig(oAuthServer));
+        return Response.success(() -> oauthService.updateServerConfig(Access.tenantId(), oAuthServer));
     }
 
     /**
      * 用户列表
      */
-    @PreAuthorize("@permit.hasPermit('oauth:gitlab:user:query')")
+    @PreAuthorize("@permits.hasPermit('oauth:gitlab:user:query')")
     @GetMapping("/user")
     public Response<Response.Page<OAuthUserDto>> listUser(OAuthUserQuery query) {
-        return Response.page(oauthService.listUser(query));
+        return Response.page(oauthService.listUser(Access.tenantId(), query));
     }
 
     /**
@@ -75,10 +76,10 @@ public class OAuthController {
      *
      * @param userId 用户id
      */
-    @PreAuthorize("@permit.hasPermit('oauth:gitlab:user:delete')")
+    @PreAuthorize("@permits.hasPermit('oauth:gitlab:user:delete')")
     @DeleteMapping("/user/{userId}")
     public Response<Void> deleteUser(@PathVariable Integer userId) throws Exception {
-        return Response.success(() -> oauthService.deleteUser(userId));
+        return Response.success(() -> oauthService.deleteUser(Access.tenantId(), userId));
     }
 
     /**
@@ -87,37 +88,37 @@ public class OAuthController {
      * @param userId 用户id
      * @param roleCode 角色编码
      */
-    @PreAuthorize("@permit.hasPermit('oauth:gitlab:user:edit')")
+    @PreAuthorize("@permits.hasPermit('oauth:gitlab:user:edit')")
     @PatchMapping("/user/role/{userId}/{roleCode}")
     public Response<Void> updateUserRole(@PathVariable Integer userId, @PathVariable String roleCode) throws Exception {
-        return Response.success(() -> oauthService.updateUserRole(userId, roleCode));
+        return Response.success(() -> oauthService.updateUserRole(Access.tenantId(), userId, roleCode));
     }
 
     /**
      * 授权客户端列表
      */
-    @PreAuthorize("@permit.hasPermit('oauth:client:query')")
+    @PreAuthorize("@permits.hasPermit('oauth:client:query')")
     @GetMapping("/client")
     public Response<Response.Page<OAuthClient>> listClient(String clientName) {
-        return Response.page(oauthService.listClient(clientName));
+        return Response.page(oauthService.listClient(Access.tenantId(), clientName));
     }
 
     /**
      * 新增授权客户端
      */
-    @PreAuthorize("@permit.hasPermit('oauth:client:create')")
+    @PreAuthorize("@permits.hasPermit('oauth:client:create')")
     @PostMapping("/client")
     public Response<OAuthClient> createClient(@RequestBody OAuthClient oAuthClient) {
-        return Response.success(oauthService.createClient(oAuthClient));
+        return Response.success(oauthService.createClient(Access.tenantId(), oAuthClient));
     }
 
     /**
      * 删除授权客户端
      */
-    @PreAuthorize("@permit.hasPermit('oauth:client:delete')")
+    @PreAuthorize("@permits.hasPermit('oauth:client:delete')")
     @DeleteMapping("/client/{ids}")
     public Response<Void> deleteClient(@PathVariable List<Integer> ids) throws Exception {
-        return Response.success(() -> oauthService.deleteClient(ids));
+        return Response.success(() -> oauthService.deleteClient(Access.tenantId(), ids));
     }
 
     /**

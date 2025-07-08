@@ -1,6 +1,4 @@
 spring:
-  access:
-    always-success: true
   main:
     allow-bean-definition-overriding: true
   datasource:

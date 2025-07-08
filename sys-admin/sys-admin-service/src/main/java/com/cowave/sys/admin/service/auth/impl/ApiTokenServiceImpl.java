@@ -96,7 +96,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
     @Override
     public List<ApiTokenVo> listApiToken(){
         List<ApiToken> tokenList = apiTokenDao.listByUserCode(Access.userCode());
-        List<ApiTokenVo> list = Collections.copyToList(tokenList, ApiTokenVo.class);
+        List<ApiTokenVo> list = Collections.convertToList(tokenList, ApiTokenVo.class);
         for(ApiTokenVo tokenVo : list){
             Map<String, Object> accessInfo = redisHelper.getValue(AUTH_API_CURRENT.formatted(tokenVo.getTokenId()));
             if(accessInfo != null){

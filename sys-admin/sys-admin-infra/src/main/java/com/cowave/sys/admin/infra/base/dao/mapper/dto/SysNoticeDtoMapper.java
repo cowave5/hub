@@ -75,7 +75,7 @@ public interface SysNoticeDtoMapper {
     /**
      * 新用户的消息
      */
-    void initNoticeMsgForNewUser(Integer userId);
+    void initNoticeMsgForNewUser(String userCode);
 
     /**
      * 新用户更新消息统计

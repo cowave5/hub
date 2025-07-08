@@ -22,6 +22,7 @@ spring:
           management:
             context-path: /actuator
       config:
+        file-extension: yml
         namespace: ${nacos_namespace:}
         cluster-name: ${nacos_cluster:}
         group: ${nacos_group:DEFAULT_GROUP}

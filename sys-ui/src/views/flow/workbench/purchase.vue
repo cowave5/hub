@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
       <el-form-item label="采购状态" label-width="120">
         <el-select v-model="queryParams.processStatus" placeholder="选择采购状态">
           <el-option :key="1" :value="1" label="部门审批" />

@@ -31,6 +31,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static com.cowave.sys.admin.domain.base.constants.OpAction.*;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_POST;
+
 /**
  * 岗位
  * @order 2
@@ -47,7 +51,7 @@ public class SysPostController {
 	/**
 	 * 列表
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:post:query')")
+	@PreAuthorize("@permits.hasPermit('sys:post:query')")
 	@GetMapping
 	public Response<Response.Page<SysPost>> list(DeptPostQuery query) {
 		return Response.page(sysPostService.pageList(Access.tenantId(), query));
@@ -58,7 +62,7 @@ public class SysPostController {
 	 *
 	 * @param postId 岗位id
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:post:query')")
+	@PreAuthorize("@permits.hasPermit('sys:post:query')")
 	@GetMapping("/{postId}")
 	public Response<PostInfoDto> info(@PathVariable Integer postId) {
 		return Response.success(sysPostService.info(Access.tenantId(), postId));
@@ -67,8 +71,8 @@ public class SysPostController {
 	/**
 	 * 新增
 	 */
-	@Operation(module = "op_admin", type = "op_post", action = "op_create", desc = "新增岗位：#{#sysPost.postName}")
-	@PreAuthorize("@permit.hasPermit('sys:post:create')")
+	@Operation(module = SYSTEM, type = SYSTEM_POST, action = CREATE, desc = "新增岗位：#{#sysPost.postName}")
+	@PreAuthorize("@permits.hasPermit('sys:post:create')")
 	@PostMapping
 	public Response<Void> create(@Validated @RequestBody PostInfoDto sysPost) throws Exception {
 		return Response.success(() -> sysPostService.create(Access.tenantId(), sysPost));
@@ -79,8 +83,8 @@ public class SysPostController {
 	 *
 	 * @param postIds 岗位id列表
 	 */
-	@Operation(module = "op_admin", type = "op_post", action = "op_delete", desc = "删除岗位")
-	@PreAuthorize("@permit.hasPermit('sys:post:delete')")
+	@Operation(module = SYSTEM, type = SYSTEM_POST, action = DELETE, desc = "删除岗位")
+	@PreAuthorize("@permits.hasPermit('sys:post:delete')")
 	@DeleteMapping("/{postIds}")
 	public Response<Void> delete(@PathVariable List<Integer> postIds) throws Exception {
 		return Response.success(() -> sysPostService.delete(Access.tenantId(), postIds));
@@ -89,8 +93,8 @@ public class SysPostController {
 	/**
 	 * 修改
 	 */
-	@Operation(module = "op_admin", type = "op_post", action = "op_edit", desc = "修改岗位：#{#sysPost.postName}")
-	@PreAuthorize("@permit.hasPermit('sys:post:edit')")
+	@Operation(module = SYSTEM, type = SYSTEM_POST, action = EDIT, desc = "修改岗位：#{#sysPost.postName}")
+	@PreAuthorize("@permits.hasPermit('sys:post:edit')")
 	@PatchMapping
 	public Response<Void> edit(@Validated @RequestBody PostInfoDto sysPost) throws Exception {
 		return Response.success(() -> sysPostService.edit(Access.tenantId(), sysPost));
@@ -99,7 +103,7 @@ public class SysPostController {
 	/**
 	 * 导出岗位
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:post:export')")
+	@PreAuthorize("@permits.hasPermit('sys:post:export')")
 	@PostMapping("/export")
 	public void export(HttpServletResponse response, DeptPostQuery query) throws IOException {
 		String fileName = URLEncoder.encode("岗位数据", StandardCharsets.UTF_8).replace("\\+", "%20");
@@ -114,7 +118,7 @@ public class SysPostController {
 	/**
 	 * 岗位组织架构
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:post:diagram')")
+	@PreAuthorize("@permits.hasPermit('sys:post:diagram')")
 	@GetMapping("/diagram")
 	public Response<Tree<Integer>> getDiagram() {
 		return Response.success(sysPostService.getDiagram(Access.tenantId()));

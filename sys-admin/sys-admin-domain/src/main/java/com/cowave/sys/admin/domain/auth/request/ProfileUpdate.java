@@ -23,7 +23,7 @@ public class ProfileUpdate {
     /**
      * 用户名称
      */
-    @NotBlank(message = "{admin.user.name.notnull}")
+    @NotBlank(message = "{admin.user.name.null}")
     private String userName;
 
     /**

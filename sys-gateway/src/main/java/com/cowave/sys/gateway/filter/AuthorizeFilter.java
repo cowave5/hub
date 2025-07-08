@@ -27,7 +27,6 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -73,7 +72,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         // 获取token
         String token = httpRequest.getHeaders().getFirst(Authorization);
         if (StringUtils.isBlank(token)) {
-            return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.no");
+            return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.access.empty");
         }
         if(token.startsWith("Bearer ")) {
             token = token.replace("Bearer ", "");
@@ -84,11 +83,12 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         try {
             claims = Jwts.parser().setSigningKey(accessProperties.accessSecret()).parseClaimsJws(token).getBody();
         }catch(ExpiredJwtException e) {
-            return writeResponse(exchange.getResponse(), INVALID_TOKEN, "frame.auth.expired");
+            return writeResponse(exchange.getResponse(), INVALID_TOKEN, "frame.auth.access.expire");
         }catch(Exception e) {
-            return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.invalid");
+            return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.access.invalid");
         }
 
+        String tenantId = (String) claims.get(CLAIM_TENANT_ID);
         String tokenType = (String) claims.get(CLAIM_TYPE);
         String accessId = (String) claims.get(CLAIM_ACCESS_ID);
 
@@ -97,7 +97,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
             // 是否已注销
             List<NetUtils.IpMask> ipRules = redisHelper.getValue("sys-admin:auth:api:" + accessId);
             if(ipRules == null){
-                return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.denied");
+                return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.access.denied");
             }
 
             // 校验Ip段
@@ -113,7 +113,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
                 }
             }
             if(!isIpAllowed){
-                return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.ip");
+                return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.access.denied.ip");
             }
 
             // 最近一次访问信息
@@ -124,12 +124,12 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
             String userIp = (String) claims.get(CLAIM_ACCESS_IP);
             String tokenConflict = (String) claims.get(CLAIM_CONFLICT);
             if ("Y".equals(tokenConflict) && !Objects.equals(accessIp, userIp)) {
-                return writeResponse(exchange.getResponse(), INVALID_TOKEN, "frame.auth.ipchanged");
+                return writeResponse(exchange.getResponse(), INVALID_TOKEN, "frame.auth.access.changed.ip");
             }
 
             // 是否已注销
-            if(!redisHelper.existKey(AUTH_ACCESS_KEY.formatted("sys-admin", accessId))){
-                return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.denied");
+            if(!redisHelper.existKey(AUTH_ACCESS_KEY.formatted("sys-admin", tenantId, accessId))){
+                return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.access.denied");
             }
         }
 
@@ -178,8 +178,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
     }
 
     private Mono<Void> writeResponse(ServerHttpResponse response, ResponseCode responseCode, String messageKey) {
-        // int httpStatus = responseCode.getStatus();
-        response.setStatusCode(HttpStatus.valueOf(SUCCESS.getStatus()));
+        response.setRawStatusCode(responseCode.getStatus());
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
         byte[] bytes;

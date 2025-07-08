@@ -97,4 +97,33 @@
          select m2.menu_id, m2.parent_id from sys_menu m2 join tree on m2.parent_id = tree.menu_id)
         delete from sys_menu m using tree where m.menu_id = tree.menu_id
     </delete>
+
+	<resultMap id="menuTreeMap" type="com.cowave.sys.admin.domain.rabc.dto.SysMenuTree">
+        <result column="menuId"       property="menuId"/>
+		<result column="parentId"     property="parentId"/>
+		<result column="menuName"     property="menuName"/>
+		<result column="menuOrder"    property="menuOrder"/>
+		<result column="menuType"     property="menuType"/>
+		<result column="isProtected"  property="isProtected"/>
+        <collection property="scopes" javaType="list" ofType="com.cowave.sys.admin.domain.rabc.SysScope">
+            <result column="scopeId"    property="scopeId"/>
+            <result column="scopeName"  property="scopeName"/>
+        </collection>
+    </resultMap>
+
+	<select id="listTree" resultMap="menuTreeMap">
+		select s.scope_id     scopeId,
+			   s.scope_name   scopeName,
+			   m.menu_id      menuId,
+			   m.parent_id    parentId,
+			   m.menu_name    menuName,
+			   m.menu_order   menuOrder,
+			   m.menu_type    menuType,
+			   m.is_protected isProtected
+		from sys_menu m
+		left join sys_scope s on m.menu_module = s.scope_module and s.scope_status = 1 and s.tenant_id in ('#', #{tenantId})
+		where m.tenant_id in ('#', #{tenantId})
+		  and m.menu_status = 1
+		order by m.parent_id, m.menu_order
+	</select>
 </mapper>

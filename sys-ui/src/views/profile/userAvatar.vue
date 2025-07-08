@@ -57,7 +57,7 @@
 <script>
 import store from "@/store";
 import { VueCropper } from "vue-cropper";
-import { uploadAvatar } from "@/api/profile";
+import {uploadAttach} from "@/api/system/attach";
 
 export default {
   components: { VueCropper },
@@ -125,12 +125,12 @@ export default {
         let formData = new FormData();
         formData.append("file", data);
         formData.append("ownerId", this.user.userId);
-        formData.append("ownerType", "sys-user");
+        formData.append("ownerModule", "module_user");
         formData.append("attachType", "avatar");
         formData.append("isPublic", 1);
-        uploadAvatar(formData).then(resp => {
+        uploadAttach(formData).then(resp => {
           this.open = false;
-          this.options.img = resp.data;
+          this.options.img = resp.data.viewUrl;
           store.commit('SET_AVATAR', this.options.img);
           this.$modal.msgSuccess(this.$t('commons.msg.success.edit'));
           this.visible = false;

@@ -228,9 +228,9 @@ services:
       default:
         ipv4_address: 192.168.64.16
 
-  sys-quartz:
-    image: sys-quartz:1.0.3
-    container_name: sys-quartz
+  sys-job:
+    image: sys-job:1.0.3
+    container_name: sys-job
     ports:
       - 19040:19040
       - 19041:19041
@@ -244,12 +244,12 @@ services:
       nacos_group: DEFAULT_GROUP
       datasource_username: postgres
       datasource_password: postgres
-      datasource_url: jdbc:postgresql://sys-postgres:5432/sys-quartz
+      datasource_url: jdbc:postgresql://sys-postgres:5432/sys-job
       TZ: Asia/Shanghai
     volumes:
-      - ./sys-quartz:/opt/cowave/sys-quartz/log
+      - ./sys-job:/opt/cowave/sys-job/log
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:19040/quartz/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:19040/job/actuator/health"]
       interval: 5s
       timeout: 3s
       retries: 10

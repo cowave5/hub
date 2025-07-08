@@ -22,7 +22,7 @@ public class DeptPostQuery {
     /**
      * 部门id
      */
-    @NotNull(message = "{admin.dept.id.notnull}")
+    @NotNull(message = "{admin.dept.id.null}")
     private Integer deptId;
 
     /**

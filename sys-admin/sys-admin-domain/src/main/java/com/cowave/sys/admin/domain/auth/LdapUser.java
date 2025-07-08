@@ -9,11 +9,12 @@
  */
 package com.cowave.sys.admin.domain.auth;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.cowave.commons.framework.access.security.AccessUserDetails;
 import lombok.Data;
 import java.util.Date;
 
-import static com.cowave.sys.admin.domain.auth.AuthType.GITLAB;
 import static com.cowave.sys.admin.domain.auth.AuthType.LDAP;
 
 /**
@@ -25,6 +26,7 @@ public class LdapUser {
     /**
      * 用户id
      */
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
@@ -38,9 +40,9 @@ public class LdapUser {
     private String roleCode;
 
     /**
-     * Ldap名称
+     * 租户id
      */
-    private String ldapName;
+    private String tenantId;
 
     /**
      * 用户信息
@@ -101,7 +103,7 @@ public class LdapUser {
         AccessUserDetails userDetails = AccessUserDetails.newUserDetails();
         userDetails.setAuthType(LDAP.val());
         userDetails.setUserType(LDAP.val());
-        userDetails.setTenantId("cowave");
+        userDetails.setTenantId(tenantId);
         userDetails.setUserId(id);
         userDetails.setUserCode(userCode);
         userDetails.setUsername(userAccount);

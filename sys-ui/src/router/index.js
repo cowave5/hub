@@ -47,6 +47,16 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/mfa',
+    component: () => import('@/views/mfa.vue'),
+    hidden: true
+  },
+  {
+    path: '/tenant/login',
+    component: () => import('@/views/tenant_login.vue'),
+    hidden: true
+  },
+  {
     path: '/cowave/login',
     component: () => import('@/views/cowave_login.vue'),
     hidden: true
@@ -63,7 +73,7 @@ export const constantRoutes = [
   },
   {
     path: '/oauth/gitlab',
-    component: () => import('@/views/oauth'),
+    component: () => import('@/views/cowave_oauth.vue'),
     hidden: true
   },
   {

@@ -19,6 +19,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.HashMap;
 
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_USER;
+
 /**
  * @author shanhuiming
  */
@@ -36,7 +38,7 @@ public class SysKafkaHelperTest extends SpringTest {
         kafkaTemplate.send("sys-alarm", JSON.toJSONString(sysAlarm));
 
         SysOperation sysOperation = new SysOperation();
-        sysOperation.setOpType ("sys-user");
+        sysOperation.setOpType (SYSTEM_USER);
         sysOperation.setOpContent(new HashMap<>());
         kafkaTemplate.send("sys-oplog", JSON.toJSONString(sysOperation));
     }

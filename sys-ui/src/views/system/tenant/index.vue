@@ -101,7 +101,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item :label="$t('tenant.label.logo')" prop="logo">
-              <imageUpload v-model="imageUrl" tenantId="system" ownerType="sys-tenant" attachType="logo" :headers="headers"
+              <imageUpload v-model="imageUrl" tenantId="system" ownerModule="module_tenant" attachType="logo" :headers="headers"
                            @uploadCallback="handleLogoUploaded"/>
             </el-form-item>
           </el-col>

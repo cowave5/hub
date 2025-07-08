@@ -115,9 +115,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <insert id="initNoticeMsgForNewUser">
-        insert into sys_notice_user(notice_id, user_id)
-        select notice_id, #{userId} from sys_notice where notice_status = 1 and goals_all = 1
-        on conflict(user_id, notice_id) do nothing
+        insert into sys_notice_user(notice_id, user_code)
+        select notice_id, #{userCode} from sys_notice where notice_status = 1 and goals_all = 1
+        on conflict(notice_id, user_code) do nothing
     </insert>
 
     <update id="updateNoticeStatForNewUser">

@@ -164,7 +164,8 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="内容">
-              <editor v-model="form.content" :min-height="240" @notice="recordAttach" attachUrl="/admin/api/v1/notice/image"/>
+              <editor v-model="form.content" :min-height="240"
+                      @notice="recordAttach" ownerModule="module_notice" attachType="image"/>
             </el-form-item>
           </el-col>
         </el-row>

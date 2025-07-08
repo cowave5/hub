@@ -100,7 +100,7 @@ public class SysDeptServiceImpl implements SysDeptService {
     @Override
     public void edit(String tenantId, DeptCreate deptCreate) {
         Integer deptId = deptCreate.getDeptId();
-        HttpAsserts.notNull(deptId, BAD_REQUEST, "{admin.dept.id.notnull}");
+        HttpAsserts.notNull(deptId, BAD_REQUEST, "{admin.dept.id.null}");
 
         // 校验&操作日志
         DeptInfoDto preDept = sysDeptDtoMapper.info(tenantId, deptId);

@@ -36,9 +36,14 @@ public class OAuthClient implements AccessInfoSetter {
     private Integer id;
 
     /**
+     * 租户id
+     */
+    private String tenantId;
+
+    /**
      * 客户端名称
      */
-    @NotBlank(message = "{admin.oauth.name.notnull}")
+    @NotBlank(message = "{admin.oauth.name.null}")
     private String clientName;
 
     /**
@@ -54,21 +59,21 @@ public class OAuthClient implements AccessInfoSetter {
     /**
      * 支持的授权方式
      */
-    @NotBlank(message = "{admin.oauth.grant.notnull}")
+    @NotBlank(message = "{admin.oauth.grant.null}")
     @TableField(typeHandler = PgListHandler.class)
     private List<String> grantType;
 
     /**
      * 授权范围
      */
-    @NotBlank(message = "{admin.oauth.scope.notnull}")
+    @NotBlank(message = "{admin.oauth.scope.null}")
     @TableField(typeHandler = PgListHandler.class)
     private List<String> authScope;
 
     /**
      * 回调地址
      */
-    @NotBlank(message = "{admin.oauth.redirect.notnull}")
+    @NotBlank(message = "{admin.oauth.redirect.null}")
     private String redirectUrl;
 
     /**

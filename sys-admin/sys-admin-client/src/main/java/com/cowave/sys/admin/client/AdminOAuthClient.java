@@ -26,7 +26,7 @@ public interface AdminOAuthClient {
     /**
      * 获取授权令牌
      */
-    @HttpLine("POST /authorize/token")
+    @HttpLine("POST /admin/api/v1/oauth/client/authorize/token")
     AccessUserDetails getAuthorizeToken(@HttpHost String httpUrl, OAuth2TokenRequest request);
 
     /**

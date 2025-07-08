@@ -23,18 +23,18 @@ public class UserStatusUpdate {
     /**
      * 用户id
      */
-    @NotNull(message = "{admin.user.id.notnull}")
+    @NotNull(message = "{admin.user.id.null}")
     private Integer userId;
 
     /**
      * 用户名称
      */
-    @NotBlank(message = "{admin.user.name.notnull}")
+    @NotBlank(message = "{admin.user.name.null}")
     private String userName;
 
     /**
      * 用户状态
      */
-    @NotNull(message = "{admin.user.status.notnull}")
+    @NotNull(message = "{admin.user.status.null}")
     private Integer userStatus;
 }

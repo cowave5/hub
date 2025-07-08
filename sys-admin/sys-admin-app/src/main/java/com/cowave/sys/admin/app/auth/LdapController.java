@@ -10,6 +10,7 @@
 package com.cowave.sys.admin.app.auth;
 
 import com.cowave.commons.client.http.response.Response;
+import com.cowave.commons.framework.access.Access;
 import com.cowave.sys.admin.domain.auth.LdapConfig;
 import com.cowave.sys.admin.domain.auth.dto.LdapUserDto;
 import com.cowave.sys.admin.service.auth.LdapService;
@@ -19,8 +20,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Ldap配置
- * @order 24
+ * Ldap鉴权
+ * @order 10
  * @author shanhuiming
  */
 @RequiredArgsConstructor
@@ -33,25 +34,25 @@ public class LdapController {
     /**
      * 获取配置
      */
-    @PreAuthorize("@permit.hasPermit('sys:ldap:query')")
-    @GetMapping("/config/{ldapName}")
-    public Response<LdapConfig> getConfig(@PathVariable String ldapName) {
-        return Response.success(ldapService.queryByName(ldapName));
+    @PreAuthorize("@permits.hasPermit('sys:ldap:query')")
+    @GetMapping("/config")
+    public Response<LdapConfig> getConfig() {
+        return Response.success(ldapService.getConfig(Access.tenantId()));
     }
 
     /**
      * 修改配置
      */
-    @PreAuthorize("@permit.hasPermit('sys:ldap:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:ldap:edit')")
     @PatchMapping("/config")
     public Response<Void> updateConfig(@Validated @RequestBody LdapConfig ldapConfig) throws Exception {
-        return Response.success(() -> ldapService.updateConfig(ldapConfig));
+        return Response.success(() -> ldapService.updateConfig(Access.tenantId(), ldapConfig));
     }
 
     /**
      * 测试配置
      */
-    @PreAuthorize("@permit.hasPermit('sys:ldap:edit')")
+    @PreAuthorize("@permits.hasPermit('sys:ldap:edit')")
     @PostMapping("/config/valid")
     public Response<Void> validConfig(@Validated @RequestBody LdapConfig ldapConfig) throws Exception {
         return Response.success(() -> ldapService.validConfig(ldapConfig));
@@ -61,20 +62,20 @@ public class LdapController {
      * 用户列表
      * @param ldapAccount ladp账号
      */
-    @PreAuthorize("@permit.hasPermit('sys:user:query')")
+    @PreAuthorize("@permits.hasPermit('sys:ldap:query')")
     @GetMapping(value = {"/user"})
     public Response<Response.Page<LdapUserDto>> listUser(String ldapAccount) {
-        return Response.page(ldapService.listUser(ldapAccount));
+        return Response.page(ldapService.listUser(Access.tenantId(), ldapAccount));
     }
 
     /**
      * 删除用户
      * @param userId 用户id
      */
-    @PreAuthorize("@permit.hasPermit('sys:user:query')")
+    @PreAuthorize("@permits.hasPermit('sys:ldap:edit')")
     @DeleteMapping(value = {"/user/{userId}"})
     public Response<Void> deleteUser(@PathVariable Integer userId) throws Exception {
-        return Response.success(() -> ldapService.deleteUser(userId));
+        return Response.success(() -> ldapService.deleteUser(Access.tenantId(), userId));
     }
 
     /**
@@ -83,9 +84,9 @@ public class LdapController {
      * @param userId 用户id
      * @param roleCode 角色编码
      */
-    @PreAuthorize("@permit.hasPermit('sys:user:query')")
+    @PreAuthorize("@permits.hasPermit('sys:ldap:edit')")
     @PatchMapping("/user/role/{userId}/{roleCode}")
     public Response<Void> changeUserRole(@PathVariable Integer userId, @PathVariable String roleCode) throws Exception {
-        return Response.success(() -> ldapService.changeUserRole(userId, roleCode));
+        return Response.success(() -> ldapService.changeUserRole(Access.tenantId(), userId, roleCode));
     }
 }

@@ -467,7 +467,7 @@ export default {
     this.getList();
     this.getDeptOptions();
     this.getUserOptions();
-    this.getConfigValue("sys.initPassword").then(resp => {
+    getConfigValue("sys.initPassword").then(resp => {
       this.initPasswd = resp.data;
     });
   },

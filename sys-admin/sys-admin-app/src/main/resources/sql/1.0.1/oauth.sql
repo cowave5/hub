@@ -1,8 +1,8 @@
--- oauth 配置
+-- oauth 授权服务
 drop table if exists oauth_server;
 create table oauth_server
 (
-    id            serial primary key,
+    tenant_id     character varying(64) primary key,
     server_type   character varying(64),
     app_id        character varying(64),
     app_secret    character varying(64),
@@ -18,9 +18,8 @@ create table oauth_server
     update_by     character varying(64),
     update_time   timestamp
 );
-create unique index oauth_server_unique on oauth_server(server_type);
+create unique index oauth_server_unique on oauth_server(tenant_id, server_type);
 comment on table oauth_server is 'OAuth服务';
-comment on column oauth_server.id is 'id';
 comment on column oauth_server.status is '状态 0 关闭 1开启';
 comment on column oauth_server.role_code is '用户角色';
 comment on column oauth_server.server_type is '服务类型';
@@ -41,6 +40,7 @@ drop table if exists oauth_user;
 create table oauth_user
 (
     id           bigserial primary key,
+    tenant_id    character varying(64),
     server_type  character varying(64),
     user_code    character varying(64),
     role_code    character varying(64),
@@ -52,7 +52,7 @@ create table oauth_user
     create_time  timestamp,
     update_time  timestamp
 );
-create unique index oauth_user_unique on oauth_user(server_type, user_account);
+create unique index oauth_user_unique on oauth_user(tenant_id, server_type, user_account);
 comment on table oauth_user is '授权用户';
 comment on column oauth_user.id is 'id';
 comment on column oauth_user.server_type is '应用类型';
@@ -70,6 +70,7 @@ drop table if exists oauth_client;
 create table oauth_client
 (
     id            serial primary key,
+    tenant_id     character varying(64),
     client_name   character varying(64),
     client_id     character varying(64),
     client_secret character varying(64),
@@ -81,7 +82,6 @@ create table oauth_client
     update_by     character varying(64),
     update_time   timestamp
 );
-create unique index oauth_client_unique on oauth_client(client_id);
 comment on table oauth_client is 'OAuth客户端';
 comment on column oauth_client.id is 'id';
 comment on column oauth_client.client_name is '客户端名称';

@@ -39,7 +39,7 @@ public interface SysNoticeService {
     /**
      * 新增
      */
-    void add(NoticeCreate sysNotice) throws Exception;
+    void add(String tenantId, NoticeCreate sysNotice) throws Exception;
 
     /**
      * 删除
@@ -55,11 +55,6 @@ public interface SysNoticeService {
      * 发布
      */
     void publish(String tenantId, Long noticeId);
-
-    /**
-     * 上传图片
-     */
-    SysAttach imageUpload(String tenantId, MultipartFile file) throws Exception;
 
     /**
      * 已读列表

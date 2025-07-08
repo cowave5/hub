@@ -22,17 +22,6 @@ export function updateUserProfile(data) {
 }
 
 /**
- * 头像上传
- */
-export function uploadAvatar(data) {
-  return request({
-    url: '/admin/api/v1/profile/avatar',
-    method: 'patch',
-    data: data
-  })
-}
-
-/**
  * 密码重置
  */
 export function resetPasswd(oldPasswd, newPasswd) {
@@ -42,6 +31,38 @@ export function resetPasswd(oldPasswd, newPasswd) {
   }
   return request({
     url: '/admin/api/v1/profile/passwd',
+    method: 'patch',
+    data: data
+  })
+}
+
+/**
+ * MFA获取
+ */
+export function getMFA() {
+  return request({
+    url: '/admin/api/v1/profile/mfa',
+    method: 'get'
+  })
+}
+
+/**
+ * MFA绑定
+ */
+export function enableMFA(data) {
+  return request({
+    url: '/admin/api/v1/profile/mfa/enable',
+    method: 'patch',
+    data: data
+  })
+}
+
+/**
+ * MFA解除
+ */
+export function disableMFA(data) {
+  return request({
+    url: '/admin/api/v1/profile/mfa/disable',
     method: 'patch',
     data: data
   })

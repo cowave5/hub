@@ -19,15 +19,21 @@ import Quill from "quill";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
-import {uploadAttach} from "@/api/system/notice";
 import cache from "@/plugins/cache";
+import {uploadAttach} from "@/api/system/attach";
 
 export default {
   name: "Editor",
   props: {
-    attachUrl: {
+    // 宿主模块
+    ownerModule: {
       type: String,
-      default: "",
+      default: null
+    },
+    // 附件类型
+    attachType: {
+      type: String,
+      default: null
     },
     /* 编辑器的内容 */
     value: {
@@ -188,14 +194,14 @@ export default {
     upload() {
       let formData = new FormData();
       formData.append("file", this.uploadFile);
-      uploadAttach(formData, this.attachUrl).then(resp => {
+      formData.append("ownerModule", this.ownerModule);
+      formData.append("attachType", this.attachType);
+      uploadAttach(formData).then(resp => {
         let quill = this.Quill;
-        if (resp.code === "200") {
-          let length = quill.getSelection().index;
-          quill.insertEmbed(length, "image", resp.data.viewUrl);
-          quill.setSelection(length + 1);
-          this.$emit("notice", resp.data);
-        }
+        let length = quill.getSelection().index;
+        quill.insertEmbed(length, "image", resp.data.viewUrl);
+        quill.setSelection(length + 1);
+        this.$emit("notice", resp.data);
       });
     },
   },

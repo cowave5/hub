@@ -26,26 +26,26 @@ public class TenantManagerCreate {
     /**
      * 租户id
      */
-    @NotBlank(message = "{admin.tenant.id.notnull}")
+    @NotBlank(message = "{admin.tenant.id.null}")
     private String tenantId;
 
     /**
      * 用户名称
      */
-    @NotBlank(message = "{admin.user.name.notnull}")
+    @NotBlank(message = "{admin.user.name.null}")
     private String userName;
 
     /**
      * 用户账号
      */
-    @NotBlank(message = "{admin.user.account.notnull}")
+    @NotBlank(message = "{admin.user.account.null}")
     private String userAccount;
 
     /**
      * 用户密码
      */
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotBlank(message = "{admin.user.passwd.notnull}")
+    @NotBlank(message = "{admin.user.passwd.null}")
     private String userPasswd;
 
     public SysUser newSysUser() {

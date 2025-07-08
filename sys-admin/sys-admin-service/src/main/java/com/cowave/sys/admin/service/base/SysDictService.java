@@ -9,10 +9,12 @@
  */
 package com.cowave.sys.admin.service.base;
 
+import com.cowave.sys.admin.domain.base.SysDict;
 import com.cowave.sys.admin.domain.base.dto.DictInfoDto;
 import com.cowave.sys.admin.domain.base.request.DictQuery;
 import com.cowave.sys.admin.domain.base.vo.SelectOption;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -46,7 +48,22 @@ public interface SysDictService{
 	void edit(DictInfoDto sysDict);
 
 	/**
-	 * 获取分组类型
+	 * 获取字典
 	 */
-	List<SelectOption> groupOptions(String groupCode);
+	SysDict getByCode(String dictCode);
+
+	/**
+	 * 获取类型字典
+	 */
+	List<SysDict> listByType(String typeCode);
+
+	/**
+	 * 获取分组字典
+	 */
+	List<SysDict> listByGroup(String groupCode);
+
+	/**
+	 * 获取分组选项
+	 */
+	Collection<SelectOption> listTypeByGroup(String groupCode);
 }

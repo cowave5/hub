@@ -13521,7 +13521,7 @@ const wb = {
             {
                 icon: "Cloud",
                 name: "控维通信",
-                link: "http://192.168.141.74:81"
+                link: "http://10.64.4.74:81"
             },
         ],
     Sb = e => (yn("data-v-c32f090c"), e = e(), bn(), e), Cb = {key: 0, class: "links"}, _b = {class: "line"},

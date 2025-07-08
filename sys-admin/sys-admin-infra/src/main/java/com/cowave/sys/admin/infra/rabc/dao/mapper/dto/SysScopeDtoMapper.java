@@ -7,27 +7,22 @@
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
-package com.cowave.sys.admin.domain.auth.request;
+package com.cowave.sys.admin.infra.rabc.dao.mapper.dto;
 
-import lombok.Data;
+import com.cowave.sys.admin.domain.rabc.SysScope;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
-import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * @author shanhuiming
  */
-@Data
-public class LdapRequest {
+@Mapper
+public interface SysScopeDtoMapper {
 
     /**
-     * 用户名
+     * 获取数据权限
      */
-	@NotBlank(message = "{admin.user.account.notnull}")
-    private String userAccount;
-
-    /**
-     * 用户密码
-     */
-    @NotBlank(message = "{admin.user.passwd.notnull}")
-    private String passWord;
+    List<SysScope> listScopeByPermit(@Param("permit") String permit, @Param("list")  List<String> roleCodes);
 }

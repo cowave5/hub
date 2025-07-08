@@ -50,14 +50,14 @@ public class SysRole implements AccessInfoSetter {
     /**
      * 角色编码
      */
-    @NotBlank(message = "{admin.role.code.notnull}")
+    @NotBlank(message = "{admin.role.code.null}")
 	@ExcelProperty(value = "角色编码")
     private String roleCode;
 
     /**
      * 角色名称
      */
-    @NotBlank(message = "{admin.role.name.notnull}")
+    @NotBlank(message = "{admin.role.name.null}")
 	@ExcelProperty(value = "角色名称")
     private String roleName;
 

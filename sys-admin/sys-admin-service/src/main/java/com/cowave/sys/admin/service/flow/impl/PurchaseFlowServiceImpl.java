@@ -54,7 +54,7 @@ public class PurchaseFlowServiceImpl implements PurchaseFlowService {
             Task activeTask = taskService.createTaskQuery().processInstanceId(p.getProcessId()).active().singleResult();
             if(activeTask != null){
                 p.setTaskId(activeTask.getId());
-                p.setProcessTaskUser(sysUserDao.queryNameByUserId(Integer.valueOf(activeTask.getAssignee())));
+                p.setProcessTaskUser(sysUserDao.queryNameById(Integer.valueOf(activeTask.getAssignee())));
             }
         }
         return page;

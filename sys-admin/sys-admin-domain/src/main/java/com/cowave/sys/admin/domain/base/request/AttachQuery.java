@@ -9,7 +9,10 @@
  */
 package com.cowave.sys.admin.domain.base.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @author shanhuiming
@@ -23,12 +26,24 @@ public class AttachQuery {
     private String ownerId;
 
     /**
-     * 宿主类型
+     * 宿主模块
      */
-    private String ownerType;
+    private String ownerModule;
 
     /**
      * 附件类型
      */
     private String attachType;
+
+    /**
+     * 开始时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date beginTime;
+
+    /**
+     * 结束时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date endTime;
 }

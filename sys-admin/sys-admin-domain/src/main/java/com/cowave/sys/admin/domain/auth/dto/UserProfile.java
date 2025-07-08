@@ -68,6 +68,11 @@ public class UserProfile {
     private String avatar;
 
     /**
+     * 二次认证密钥
+     */
+    private String mfa;
+
+    /**
      * 用户电话
      */
     private String userPhone;

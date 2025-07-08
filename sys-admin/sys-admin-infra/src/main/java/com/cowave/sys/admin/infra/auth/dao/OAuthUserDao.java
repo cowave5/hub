@@ -26,24 +26,46 @@ import java.util.Map;
 @Repository
 public class OAuthUserDao extends ServiceImpl<OAuthUserMapper, OAuthUser> {
 
-    public OAuthUser getByAccount(String userAccount, String serverType){
+    /**
+     * 查询用户（账号）
+     */
+    public OAuthUser getByAccount(String tenantId, String serverType, String userAccount){
         return lambdaQuery()
-                .eq(OAuthUser::getUserAccount, userAccount)
+                .eq(OAuthUser::getTenantId, tenantId)
                 .eq(OAuthUser::getServerType, serverType)
+                .eq(OAuthUser::getUserAccount, userAccount)
                 .one();
     }
 
+    /**
+     * 查询用户（编码）
+     */
     public OAuthUser getByUserCode(String userCode){
         return lambdaQuery().eq(OAuthUser::getUserCode, userCode).one();
     }
 
-    public void updateRoleCodeById(Integer userId, String roleCode){
-        lambdaUpdate().eq(OAuthUser::getId, userId)
+    /**
+     * 删除用户
+     */
+    public void removeById(String tenantId, Integer userId){
+        lambdaUpdate().eq(OAuthUser::getTenantId, tenantId).eq(OAuthUser::getId, userId).remove();
+    }
+
+    /**
+     * 更新用户角色
+     */
+    public void updateRoleCodeById(String tenantId, Integer userId, String roleCode){
+        lambdaUpdate()
+                .eq(OAuthUser::getTenantId, tenantId)
+                .eq(OAuthUser::getId, userId)
                 .set(OAuthUser::getRoleCode, roleCode)
                 .set(OAuthUser::getUpdateTime, new Date())
                 .update();
     }
 
+    /**
+     * 查询用户名称
+     */
     public String queryNameByCode(String userCode){
         return lambdaQuery()
                 .eq(OAuthUser::getUserCode, userCode)
@@ -51,6 +73,9 @@ public class OAuthUserDao extends ServiceImpl<OAuthUserMapper, OAuthUser> {
                 .oneOpt().map(OAuthUser::getUserName).orElse(null);
     }
 
+    /**
+     * 查询用户名称
+     */
     public Map<String, String> queryCodeNameMap(List<String> userCodes){
         if(userCodes.isEmpty()){
             return new HashMap<>();

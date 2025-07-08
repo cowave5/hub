@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!--  筛选栏  -->
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
       <el-form-item :label="$t('config.label.name')" prop="configName">
         <el-input v-model="queryParams.configName" :placeholder="$t('config.placeholder.name')"
                   clearable style="width: 240px" @keyup.enter.native="handleQuery"/>

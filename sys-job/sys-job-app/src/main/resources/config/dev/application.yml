@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/sys-job
+    username: postgres
+    password: postgres
+  liquibase:
+    enabled: true
+    change-log: sql/changelog.yml
+  job:
+    server:
+      address: localhost:19040

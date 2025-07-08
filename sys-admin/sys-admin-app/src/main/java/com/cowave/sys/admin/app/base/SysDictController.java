@@ -12,10 +12,10 @@ package com.cowave.sys.admin.app.base;
 import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.response.Response;
 import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
+import com.cowave.sys.admin.domain.base.SysDict;
 import com.cowave.sys.admin.domain.base.dto.DictInfoDto;
 import com.cowave.sys.admin.domain.base.request.DictQuery;
 import com.cowave.sys.admin.domain.base.vo.SelectOption;
-import com.cowave.sys.admin.infra.base.SysDictHelper;
 import com.cowave.sys.admin.service.base.SysDictService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -39,14 +40,12 @@ import java.util.List;
 @RequestMapping("/api/v1/dict")
 public class SysDictController {
 
-	private final SysDictHelper sysDictHelper;
-
 	private final SysDictService sysDictService;
 
 	/**
 	 * 列表
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:dict:query')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:query')")
 	@GetMapping
 	public Response<List<DictInfoDto>> list(DictQuery query) {
 		return Response.success(sysDictService.queryList(query));
@@ -55,7 +54,7 @@ public class SysDictController {
 	/**
 	 * 详情
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:dict:query')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:query')")
 	@GetMapping("/{dictId}")
 	public Response<DictInfoDto> info(@PathVariable Long dictId) {
 		return Response.success(sysDictService.info(dictId));
@@ -64,7 +63,7 @@ public class SysDictController {
 	/**
 	 * 新增
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:dict:create')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:create')")
 	@PostMapping
 	public Response<Void> create(@RequestBody DictInfoDto sysDict) throws Exception {
 		return Response.success(() -> sysDictService.add(sysDict));
@@ -73,7 +72,7 @@ public class SysDictController {
 	/**
 	 * 删除
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:dict:delete')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:delete')")
 	@DeleteMapping("/{dictIds}")
 	public Response<Void> delete(@PathVariable List<Integer> dictIds) throws Exception {
 		return Response.success(() -> sysDictService.delete(dictIds));
@@ -82,7 +81,7 @@ public class SysDictController {
 	/**
 	 * 修改
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:dict:edit')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:edit')")
 	@PatchMapping
 	public Response<Void> edit(@RequestBody DictInfoDto sysDict) throws Exception {
 		return Response.success(() -> sysDictService.edit(sysDict));
@@ -91,7 +90,7 @@ public class SysDictController {
 	/**
 	 * 导出字典
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:dict:export')")
+	@PreAuthorize("@permits.hasPermit('sys:dict:export')")
 	@PostMapping ("/export")
 	public void export(HttpServletResponse response) throws IOException {
 		String fileName = URLEncoder.encode("字典数据", StandardCharsets.UTF_8).replace("\\+", "%20");
@@ -103,43 +102,34 @@ public class SysDictController {
 	}
 
 	/**
-	 * 重置缓存
-	 */
-	@PreAuthorize("@permit.hasPermit('sys:dict:cache')")
-	@GetMapping("/reset")
-	public Response<Void> resetCache() throws Exception {
-		return Response.success(sysDictHelper::resetCache);
-	}
-
-	/**
 	 * 获取字典
 	 */
 	@GetMapping("/code/{dictCode}")
-	public Response<DictInfoDto> getDict(@PathVariable String dictCode) {
-		return Response.success(sysDictHelper.getDict(dictCode));
+	public Response<SysDict> getByCode(@PathVariable String dictCode) {
+		return Response.success(sysDictService.getByCode(dictCode));
 	}
 
 	/**
 	 * 获取类型字典
 	 */
 	@GetMapping("/type/{typeCode}")
-	public Response<List<DictInfoDto>> getType(@PathVariable String typeCode) {
-		return Response.success(sysDictHelper.getType(typeCode));
+	public Response<List<SysDict>> listByType(@PathVariable String typeCode) {
+		return Response.success(sysDictService.listByType(typeCode));
 	}
 
 	/**
 	 * 获取分组字典
 	 */
 	@GetMapping("/group/{groupCode}")
-	public Response<List<DictInfoDto>> getGroup(@PathVariable String groupCode) {
-		return Response.success(sysDictHelper.getGroup(groupCode));
+	public Response<List<SysDict>> listByGroup(@PathVariable String groupCode) {
+		return Response.success(sysDictService.listByGroup(groupCode));
 	}
 
 	/**
 	 * 获取分组类型
 	 */
 	@GetMapping("/group/types/{groupCode}")
-	public Response<List<SelectOption>> groupOptions(@PathVariable String groupCode) {
-		return Response.success(sysDictService.groupOptions(groupCode));
+	public Response<Collection<SelectOption>> listTypeByGroup(@PathVariable String groupCode) {
+		return Response.success(sysDictService.listTypeByGroup(groupCode));
 	}
 }

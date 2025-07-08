@@ -15,7 +15,7 @@
 
       <!--   筛选栏   -->
       <el-col :span="20" :xs="24">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
           <el-form-item :label="$t('post.label.name')" prop="postName">
             <el-input v-model="queryParams.postName" :placeholder="$t('post.placeholder.name')"
                       clearable @keyup.enter.native="handleQuery"/>

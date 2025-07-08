@@ -1,14 +1,14 @@
 <template>
   <div class="register">
     <el-form ref="form" :model="ldap" :rules="ldapRules" class="register-form">
-      <h3 class="title">Cowave管理系统</h3>
+      <h3 class="title">控维通信</h3>
       <el-form-item prop="username">
-        <el-input v-model="ldap.username" type="text" autocomplete="new-password" placeholder="域账号">
+        <el-input v-model="ldap.username" type="text" placeholder="域账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input v-model="ldap.password" type="password" autocomplete="new-password" placeholder="密码" @keyup.enter.native="handleLogin">
+        <el-input v-model="ldap.password" type="password" placeholder="密码" @keyup.enter.native="handleLogin">
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
@@ -36,6 +36,7 @@ export default {
       version: "",
       year: new Date().getFullYear(),
       ldap: {
+        tenantId: "cowave",
         username: "",
         password: "",
       },

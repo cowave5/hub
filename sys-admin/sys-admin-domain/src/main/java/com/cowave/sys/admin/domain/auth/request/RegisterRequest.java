@@ -21,6 +21,12 @@ import javax.validation.constraints.Pattern;
 public class RegisterRequest {
 
     /**
+     * 租户id
+     */
+    @NotBlank(message = "{admin.tenant.id.null}")
+    private String tenantId;
+
+    /**
      * 验证码
      */
     @NotBlank(message = "{admin.captcha.failed}")
@@ -29,19 +35,19 @@ public class RegisterRequest {
     /**
      * 用户邮箱
      */
-    @NotBlank(message = "{admin.user.email.notnull}")
+    @NotBlank(message = "{admin.user.email.null}")
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "{admin.user.email.invalid}")
     private String userEmail;
 
     /**
      * 用户账号
      */
-    @NotBlank(message = "{admin.user.account.notnull}")
+    @NotBlank(message = "{admin.user.account.null}")
     private String userAccount;
 
     /**
      * 用户名称
      */
-    @NotBlank(message = "{admin.user.name.notnull}")
+    @NotBlank(message = "{admin.user.name.null}")
     private String userName;
 }

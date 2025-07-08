@@ -51,7 +51,7 @@ public class SysMenuController{
 	/**
 	 * 列表
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:menu:query')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:query')")
 	@GetMapping
 	public Response<Response.Page<SysMenu>> list(String menuName, Integer menuStatus){
 		return Response.page(sysMenuService.list(menuName, menuStatus));
@@ -62,7 +62,7 @@ public class SysMenuController{
      *
      * @param menuId 菜单id
      */
-	@PreAuthorize("@permit.hasPermit('sys:menu:query')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:query')")
     @GetMapping("/{menuId}")
     public Response<SysMenu> info(@PathVariable Integer menuId) {
         return Response.success(sysMenuService.info(menuId));
@@ -71,7 +71,7 @@ public class SysMenuController{
     /**
      * 新增
      */
-	@PreAuthorize("@permit.hasPermit('sys:menu:create')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:create')")
     @PostMapping
     public Response<Long> add(@Validated @RequestBody SysMenu sysMenu) throws Exception {
         return Response.success(() -> sysMenuService.add(sysMenu));
@@ -82,7 +82,7 @@ public class SysMenuController{
      *
      * @param menuId 菜单id
      */
-	@PreAuthorize("@permit.hasPermit('sys:menu:delete')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:delete')")
     @DeleteMapping("/{menuId}")
     public Response<Void> delete(@PathVariable Integer menuId) throws Exception {
         return Response.success(() -> sysMenuService.delete(menuId));
@@ -91,7 +91,7 @@ public class SysMenuController{
     /**
      * 修改
      */
-	@PreAuthorize("@permit.hasPermit('sys:menu:edit')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:edit')")
     @PatchMapping
     public Response<Void> edit(@Validated @RequestBody SysMenu sysMenu) throws Exception {
         return Response.success(() -> sysMenuService.edit(sysMenu));
@@ -100,7 +100,7 @@ public class SysMenuController{
 	/**
 	 * 导出菜单
 	 */
-	@PreAuthorize("@permit.hasPermit('sys:menu:export')")
+	@PreAuthorize("@permits.hasPermit('sys:menu:export')")
 	@PostMapping("/export")
 	public void export(HttpServletResponse response) throws IOException {
 		String fileName = URLEncoder.encode("菜单数据", StandardCharsets.UTF_8).replace("\\+", "%20");

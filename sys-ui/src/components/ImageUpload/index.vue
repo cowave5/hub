@@ -65,8 +65,8 @@ export default {
       type: String,
       default: null
     },
-    // 宿主类型
-    ownerType: {
+    // 宿主模块
+    ownerModule: {
       type: String,
       default: null
     },
@@ -99,7 +99,7 @@ export default {
     attachData() {
       return {
         tenantId: this.tenantId,
-        ownerType: this.ownerType,
+        ownerModule: this.ownerModule,
         attachType: this.attachType
       }
     },

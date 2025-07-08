@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * 系统告警
- * @order 13
+ * @order 15
  * @author shanhuiming
  */
 @Validated
@@ -88,7 +88,7 @@ public class SysAlarmController {
 	 * @param id 告警id
 	 */
 	@GetMapping(value = "/info")
-    public Response<SysAlarmDto> info(@NotNull(message = "{admin.alarm.id.notnull}") Long id) {
+    public Response<SysAlarmDto> info(@NotNull(message = "{admin.alarm.id.null}") Long id) {
         return Response.success(sysAlarmService.info(id));
     }
 
@@ -98,7 +98,7 @@ public class SysAlarmController {
 	 * @param id 告警id
 	 */
 	@GetMapping("/delete")
-	public Response<Void> delete(@NotNull(message = "{admin.alarm.id.notnull}") Long id) {
+	public Response<Void> delete(@NotNull(message = "{admin.alarm.id.null}") Long id) {
 		sysAlarmService.delete(id);
 		return Response.success();
 	}

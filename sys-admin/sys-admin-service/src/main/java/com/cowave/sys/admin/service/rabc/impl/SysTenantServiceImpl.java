@@ -39,6 +39,8 @@ import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.DEPT_USER_DIAGRAM;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.USER_DIAGRAM;
 import static com.cowave.sys.admin.domain.auth.AuthType.SYS;
+import static com.cowave.sys.admin.domain.base.constants.AttachType.LOGO;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_TENANT;
 
 /**
  * @author shanhuiming
@@ -73,8 +75,7 @@ public class SysTenantServiceImpl implements SysTenantService {
 
     @Override
     public void edit(TenantCreate tenantCreate) {
-        sysAttachDao.clearWithOwner(tenantCreate.getTenantId(),
-                "sys-tenant", "logo", tenantCreate.getAttachId());
+        sysAttachDao.clearOwner(tenantCreate.getTenantId(), SYSTEM_TENANT, LOGO, tenantCreate.getAttachId());
         if (tenantCreate.getAttachId() != null) {
             sysAttachDao.updateOwnerById(tenantCreate.getTenantId(), tenantCreate.getAttachId());
         } else {
@@ -96,7 +97,7 @@ public class SysTenantServiceImpl implements SysTenantService {
     @CacheEvict(value = {USER_DIAGRAM, DEPT_USER_DIAGRAM}, key = "#managerCreate.tenantId")
     @Override
     public void createManager(TenantManagerCreate managerCreate) {
-        long accountCount = sysUserDao.countByUserAccount(
+        long accountCount = sysUserDao.countByAccount(
                 managerCreate.getTenantId(), managerCreate.getUserAccount(), null);
 		HttpAsserts.isTrue(accountCount == 0,
                 BAD_REQUEST, "{admin.user.account.conflict}", managerCreate.getUserAccount());
@@ -121,7 +122,6 @@ public class SysTenantServiceImpl implements SysTenantService {
     @Override
     public List<SelectOption> tenantOptions() {
         List<SysTenant> tenantList = sysTenantDao.list();
-        return Collections.copyToList(tenantList,
-                t -> new SelectOption(t.getTenantId(), t.getTenantName()));
+        return Collections.copyToList(tenantList, t -> new SelectOption(t.getTenantId(), t.getTitle()));
     }
 }

@@ -1,24 +1,24 @@
 <template>
   <div class="register">
     <el-form ref="form" :model="form" :rules="registerRules" class="register-form">
-      <h3 class="title">Cowave管理系统</h3>
+      <h3 class="title">控维通信</h3>
       <el-form-item prop="userAccount">
-        <el-input v-model="form.userAccount" type="text" autocomplete="new-password" placeholder="账号">
+        <el-input v-model="form.userAccount" type="text" placeholder="账号">
           <svg-icon slot="prefix" icon-class="guide" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="userName">
-        <el-input v-model="form.userName" type="text" autocomplete="new-password" placeholder="昵称">
+        <el-input v-model="form.userName" type="text" placeholder="昵称">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="userEmail">
-        <el-input v-model="form.userEmail" type="text" autocomplete="new-password" placeholder="邮箱">
+        <el-input v-model="form.userEmail" type="text" placeholder="邮箱">
           <svg-icon slot="prefix" icon-class="email" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="captcha">
-        <el-input v-model="form.captcha" autocomplete="new-password" placeholder="验证码"
+        <el-input v-model="form.captcha" placeholder="验证码"
                   style="width: 63%" @keyup.enter.native="handleRegister">
           <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
         </el-input>
@@ -56,6 +56,7 @@ export default {
       year: new Date().getFullYear(),
       codeUrl: "",
       form: {
+        tenantId: "cowave",
         userAccount: "",
         userName: "",
         userEmail: "",

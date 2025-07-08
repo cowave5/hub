@@ -3,12 +3,12 @@
     <el-form ref="form" :model="form" :rules="rules" class="register-form">
       <h3 class="title">控维科技</h3>
       <el-form-item prop="username">
-        <el-input v-model="form.username" type="text" autocomplete="new-password" placeholder="账号">
+        <el-input v-model="form.username" type="text" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input v-model="form.password" type="password" autocomplete="new-password" placeholder="密码" @keyup.enter.native="handleLogin">
+        <el-input v-model="form.password" type="password" placeholder="密码" @keyup.enter.native="handleLogin">
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
@@ -27,7 +27,7 @@
 <script>
 
 export default {
-  name: "system/login",
+  name: "Login",
   data() {
     return {
       version: "",
@@ -39,7 +39,7 @@ export default {
       },
       rules: {
         username: [
-          { required: true, trigger: "blur", message: "请输入您的域账号" }
+          { required: true, trigger: "blur", message: "请输入您的账号" }
         ],
         password: [
           { required: true, trigger: "blur", message: "请输入您的密码" }
@@ -50,6 +50,9 @@ export default {
       timeKeeping: false,
     };
   },
+  mounted() {
+    localStorage.setItem('tenant_login_route', '/login');
+  },
   created() {
     this.version = process.env.VUE_APP_VERSION;
   },
@@ -58,9 +61,13 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.loading = true;
-          this.$store.dispatch("Logon", this.form).then(async () => {
-            this.$router.push({path: this.redirect || "/"}).catch(() => {});
-            await this.$store.dispatch('OpenNoticeSocket');
+          this.$store.dispatch("Logon", this.form).then(async response => {
+            if (response.mfaRequired) {
+              await this.$router.push({path: '/mfa'}).catch(() => {});
+            } else {
+              await this.$router.push({path: this.redirect || "/"}).catch(() => {});
+              await this.$store.dispatch('OpenNoticeSocket');
+            }
           }).catch(() => {
             this.loading = false;
           });
@@ -77,7 +84,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-system.jpg");
+  background-image: url("../assets/images/login-tenant.jpg");
   background-size: cover;
 }
 .title {
@@ -99,15 +106,9 @@ export default {
   border-radius: 15px;
   padding: 20px 20px 0px 20px;
   /* 为其整体设置接近透明的效果*/
-  background-color: rgba(40, 38, 38, 0.5);
-  /* 设置box-shadow使其有立体感 */
-  box-shadow: 5px 5px 0 0  rgba(0,0,0,0.2);
+  background-color: rgb(130 158 153 / 50%);
+  position: relative;
   width: 350px;
-
-  position: fixed;
-  top: 60px;
-  right: 100px;
-  z-index: 999;
 
   .el-input {
     height: 38px;
@@ -178,15 +179,14 @@ export default {
 
 .el-button--primary {
   color: #FFFFFF;
-  background-color: #363b40;
-  border-color: #363b40;
-  background-color: rgba(0,0,0,0.5);
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2);
 }
 
 .el-button--primary:hover {
   color: #FFFFFF;
-  background-color: #363b40;
-  border-color: #363b40;
-  background-color: rgba(0,0,0.5,0.8);
+  background-color: #55625F7F;
+  border-color: #55625F7F;
 }
 </style>

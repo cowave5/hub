@@ -24,12 +24,12 @@ public class TenantManagerRemove {
     /**
      * 租户id
      */
-    @NotBlank(message = "{admin.tenant.id.notnull}")
+    @NotBlank(message = "{admin.tenant.id.null}")
     private String tenantId;
 
     /**
      * 用户id列表
      */
-    @NotEmpty(message = "{admin.user.ids.notnull}")
+    @NotEmpty(message = "{admin.user.ids.null}")
     private List<Integer> userIds;
 }

@@ -54,16 +54,6 @@ export function updateDict(data) {
 }
 
 /**
- * 重置缓存
- */
-export function refreshDict() {
-  return request({
-    url: '/admin/api/v1/dict/reset',
-    method: 'get'
-  })
-}
-
-/**
  * 获取类型字典
  */
 export function getDictByType(dictType) {
@@ -72,3 +62,24 @@ export function getDictByType(dictType) {
     method: 'get'
   })
 }
+
+/**
+ * 获取分组字典
+ */
+export function getDictByGroup(dictGroup) {
+  return request({
+    url: '/admin/api/v1/dict/group/' + dictGroup,
+    method: 'get'
+  })
+}
+
+/**
+ * 获取分组类型
+ */
+export function listTypeByGroup(groupCode) {
+  return request({
+    url: '/admin/api/v1/dict/group/types/' + groupCode,
+    method: 'get'
+  })
+}
+

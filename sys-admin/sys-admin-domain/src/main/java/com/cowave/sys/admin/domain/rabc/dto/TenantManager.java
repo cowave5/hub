@@ -25,7 +25,7 @@ public class TenantManager {
     /**
      * 租户id
      */
-    @NotBlank(message = "{admin.tenant.id.notnull}")
+    @NotBlank(message = "{admin.tenant.id.null}")
     private String tenantId;
 
     /**
@@ -36,13 +36,13 @@ public class TenantManager {
     /**
      * 用户名称
      */
-    @NotBlank(message = "{admin.user.name.notnull}")
+    @NotBlank(message = "{admin.user.name.null}")
     private String userName;
 
     /**
      * 用户账号
      */
-    @NotBlank(message = "{admin.user.account.notnull}")
+    @NotBlank(message = "{admin.user.account.null}")
     private String userAccount;
 
     /**

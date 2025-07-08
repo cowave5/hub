@@ -1,7 +1,7 @@
 -- 租户信息
-INSERT INTO "sys_tenant" ("tenant_id", "tenant_name", "title", "tenant_user", "tenant_addr", "tenant_phone", "tenant_email", "user_index", "user_count","status", "expire_time", "remark", "create_by", "create_time", "update_by", "update_time", "logo") VALUES
-('system', '控维科技', 'tenant.title.system',NULL, '华清园6栋', NULL, NULL, 1, 1, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00', NULL),
-('cowave', '控维通信', 'tenant.title.cowave', NULL, '华清园6栋', NULL, NULL, 9, 9, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00', NULL);
+INSERT INTO "sys_tenant" ("tenant_id", "tenant_name", "title", "view_index","tenant_user", "tenant_addr", "tenant_phone", "tenant_email", "user_index", "user_count","status", "expire_time", "remark", "create_by", "create_time", "update_by", "update_time", "logo") VALUES
+('system', '控维科技', 'tenant.title.system', 'index_system', NULL, '华清园6栋', NULL, NULL, 1, 1, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00', NULL),
+('cowave', '控维通信', 'tenant.title.cowave', 'index_cowave',NULL, '华清园6栋', NULL, NULL, 9, 9, 1, NULL, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00', NULL);
 
 --部门数据
 INSERT INTO "sys_dept" ("dept_id", "tenant_id", "dept_type", "dept_code", "dept_name", "dept_short", "dept_addr", "dept_phone", "remark", "create_by", "create_time", "update_by", "update_time") VALUES
@@ -157,189 +157,202 @@ INSERT INTO "sys_role" ("role_id", "tenant_id", "role_code", "role_name", "role_
 SELECT setval('sys_role_role_id_seq', (SELECT max(role_id) FROM sys_role));
 
 --菜单数据
-INSERT INTO "sys_menu" ("menu_id", "parent_id", "tenant_id", "menu_name", "menu_order", "menu_permit", "menu_path", "menu_param", "menu_type", "menu_icon", "component", "menu_status", "is_frame", "is_cache", "is_visible", "is_protected", "remark", "create_by", "create_time", "update_by", "update_time") VALUES
-(4, 0, 'cowave', 'commons.menu.cowave', 100, NULL, 'https://www.cowave.com', NULL, 'C', 'guide', NULL, 1, 0, 1, 1, 0, '控维官网', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+INSERT INTO "sys_menu" ("menu_id", "parent_id", "tenant_id", "menu_module", "menu_name", "menu_order", "menu_permit", "menu_path", "menu_param", "menu_type", "menu_icon", "component", "menu_status", "is_frame", "is_cache", "is_visible", "is_protected", "remark", "create_by", "create_time", "update_by", "update_time") VALUES
+(4, 0, 'cowave', NULL, 'commons.menu.cowave', 100, NULL, 'https://www.cowave.com', NULL, 'C', 'guide', NULL, 1, 0, 1, 1, 0, '控维官网', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 系统管理
-(1, 0, '#', 'commons.menu.sys.root', 7, NULL, 'system', NULL, 'M', 'system', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(1, 0, '#', NULL, 'commons.menu.sys.root', 7, NULL, 'system', NULL, 'M', 'system', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 租户管理
-(173, 1, 'system', 'commons.menu.sys.tenant', 1, 'sys:tenant:query', 'tenant', NULL, 'M', 'tenant', 'system/tenant/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(174, 173, 'system', 'commons.button.query', 1, 'sys:tenant:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(175, 173, 'system', 'commons.button.create', 2, 'sys:tenant:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(176, 173, 'system', 'commons.button.edit', 3, 'sys:tenant:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(177, 173, 'system', 'commons.button.status', 4, 'sys:tenant:status', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(190, 173, 'system', 'tenant.button.manager', 5, 'sys:tenant:manager:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(191, 173, 'system', 'tenant.button.manager_add', 6, 'sys:tenant:manager:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(192, 173, 'system', 'tenant.button.manager_remove', 7, 'sys:tenant:manager:remove', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(173, 1, 'system', NULL, 'commons.menu.sys.tenant', 1, NULL, 'tenant', NULL, 'M', 'tenant', 'system/tenant/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(174, 173, 'system', 'module_tenant', 'commons.button.query', 1, 'sys:tenant:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(175, 173, 'system', 'module_tenant', 'commons.button.create', 2, 'sys:tenant:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(176, 173, 'system', 'module_tenant', 'commons.button.edit', 3, 'sys:tenant:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(177, 173, 'system', 'module_tenant', 'commons.button.status', 4, 'sys:tenant:status', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(190, 173, 'system', 'module_tenant', 'tenant.button.manager', 5, 'sys:tenant:manager:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(191, 173, 'system', 'module_tenant', 'tenant.button.manager_add', 6, 'sys:tenant:manager:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(192, 173, 'system', 'module_tenant', 'tenant.button.manager_remove', 7, 'sys:tenant:manager:remove', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 用户管理
-(5, 1, '#', 'commons.menu.sys.user', 2, 'sys:user:query', 'user', NULL, 'C', 'user', 'system/user/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(22, 5, '#', 'commons.button.query', 1, 'sys:user:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(23, 5, '#', 'commons.button.create', 2, 'sys:user:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(24, 5, '#', 'commons.button.edit', 3, 'sys:user:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(25, 5, '#', 'commons.button.delete', 4, 'sys:user:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(26, 5, '#', 'commons.button.export', 5, 'sys:user:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(27, 5, '#', 'commons.button.import', 6, 'sys:user:import', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(88, 5, '#', 'commons.button.diagram', 7, 'sys:user:diagram', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(85, 5, '#', 'user.button.grant', 9, 'sys:user:grant', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(28, 5, '#', 'user.button.passwd', 10, 'sys:user:passwd', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(112, 5, '#', 'commons.button.status', 11, 'sys:user:status', '#', NULL, 'B', '#', NULL, 1, 1, 1, 0, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(5, 1, '#', NULL, 'commons.menu.sys.user', 2, NULL, 'user', NULL, 'C', 'user', 'system/user/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(22, 5, '#', 'module_user', 'commons.button.query', 1, 'sys:user:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(23, 5, '#', 'module_user', 'commons.button.create', 2, 'sys:user:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(24, 5, '#', 'module_user', 'commons.button.edit', 3, 'sys:user:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(25, 5, '#', 'module_user', 'commons.button.delete', 4, 'sys:user:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(26, 5, '#', 'module_user', 'commons.button.export', 5, 'sys:user:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(27, 5, '#', 'module_user', 'commons.button.import', 6, 'sys:user:import', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(88, 5, '#', 'module_user', 'commons.button.diagram', 7, 'sys:user:diagram', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(85, 5, '#', 'module_user', 'user.button.grant', 9, 'sys:user:grant', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(28, 5, '#', 'module_user', 'user.button.passwd', 10, 'sys:user:passwd', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(112, 5, '#', 'module_user', 'commons.button.status', 11, 'sys:user:status', '#', NULL, 'B', '#', NULL, 1, 1, 1, 0, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 角色管理
-(6, 1, '#', 'commons.menu.sys.role', 3, 'sys:role:query', 'role', NULL, 'C', 'peoples', 'system/role/index', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(29, 6, '#', 'commons.button.query', 1, 'sys:role:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(30, 6, '#', 'commons.button.create', 2, 'sys:role:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(31, 6, '#', 'commons.button.edit', 3, 'sys:role:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(32, 6, '#', 'commons.button.delete', 4, 'sys:role:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(33, 6, '#', 'commons.button.export', 5, 'sys:role:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(97, 6, '#', 'role.button.menus', 6, 'sys:role:menus', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(98, 6, '#', 'role.button.scope', 7, 'sys:role:scope', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(99, 6, '#', 'role.button.members', 8, 'sys:role:members:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(178, 6, '#', 'role.button.members_grant', 9, 'sys:role:members:grant', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(179, 6, '#', 'role.button.members_cancel', 10, 'sys:role:members:cancle', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(6, 1, '#', NULL, 'commons.menu.sys.role', 3, NULL, 'role', NULL, 'C', 'peoples', 'system/role/index', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(29, 6, '#', 'module_role', 'commons.button.query', 1, 'sys:role:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(30, 6, '#', 'module_role', 'commons.button.create', 2, 'sys:role:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(31, 6, '#', 'module_role', 'commons.button.edit', 3, 'sys:role:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(32, 6, '#', 'module_role', 'commons.button.delete', 4, 'sys:role:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(33, 6, '#', 'module_role', 'commons.button.export', 5, 'sys:role:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(97, 6, '#', 'module_role', 'role.button.menus', 6, 'sys:role:menus', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(99, 6, '#', 'module_role', 'role.button.members', 8, 'sys:role:members:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(178, 6, '#', 'module_role', 'role.button.members_grant', 9, 'sys:role:members:grant', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(179, 6, '#', 'module_role', 'role.button.members_cancel', 10, 'sys:role:members:cancle', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 部门管理
-(8, 1, '#', 'commons.menu.sys.dept', 4, 'sys:dept:query', 'dept', NULL, 'C', 'dept', 'system/dept/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(39, 8, '#', 'commons.button.query', 1, 'sys:dept:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(40, 8, '#', 'commons.button.create', 2, 'sys:dept:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(41, 8, '#', 'commons.button.edit', 3, 'sys:dept:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(42, 8, '#', 'commons.button.delete', 4, 'sys:dept:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(90, 8, '#', 'commons.button.export', 5, 'sys:dept:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(91, 8, '#', 'commons.button.diagram', 6, 'sys:dept:diagram', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(180, 8, '#', 'dept.button.members', 9, 'sys:dept:members:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(181, 8, '#', 'dept.button.members_add', 10, 'sys:dept:members:add', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(182, 8, '#', 'dept.button.members_remove', 11, 'sys:dept:members:remove', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(183, 8, '#', 'dept.button.positions', 12, 'sys:dept:positions:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(184, 8, '#', 'dept.button.positions_add', 13, 'sys:dept:positions:add', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(185, 8, '#', 'dept.button.positions_remove', 14, 'sys:dept:positions:remove', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(8, 1, '#', NULL, 'commons.menu.sys.dept', 4, NULL, 'dept', NULL, 'C', 'dept', 'system/dept/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(39, 8, '#', 'module_dept', 'commons.button.query', 1, 'sys:dept:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(40, 8, '#', 'module_dept', 'commons.button.create', 2, 'sys:dept:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(41, 8, '#', 'module_dept', 'commons.button.edit', 3, 'sys:dept:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(42, 8, '#', 'module_dept', 'commons.button.delete', 4, 'sys:dept:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(90, 8, '#', 'module_dept', 'commons.button.export', 5, 'sys:dept:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(91, 8, '#', 'module_dept', 'commons.button.diagram', 6, 'sys:dept:diagram', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(180, 8, '#', 'module_dept', 'dept.button.members', 9, 'sys:dept:members:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(181, 8, '#', 'module_dept', 'dept.button.members_add', 10, 'sys:dept:members:add', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(182, 8, '#', 'module_dept', 'dept.button.members_remove', 11, 'sys:dept:members:remove', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(183, 8, '#', 'module_dept', 'dept.button.positions', 12, 'sys:dept:positions:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(184, 8, '#', 'module_dept', 'dept.button.positions_add', 13, 'sys:dept:positions:add', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(185, 8, '#', 'module_dept', 'dept.button.positions_remove', 14, 'sys:dept:positions:remove', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 岗位管理
-(9, 1, '#', 'commons.menu.sys.post', 5, 'sys:post:query', 'post', NULL, 'C', 'post', 'system/post/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(43, 9, '#', 'commons.button.query', 1, 'sys:post:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(44, 9, '#', 'commons.button.create', 2, 'sys:post:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(45, 9, '#', 'commons.button.edit', 3, 'sys:post:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(46, 9, '#', 'commons.button.delete', 4, 'sys:post:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(47, 9, '#', 'commons.button.export', 5, 'sys:post:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(95, 9, '#', 'commons.button.diagram', 6, 'sys:post:diagram', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(9, 1, '#', NULL, 'commons.menu.sys.post', 5, NULL, 'post', NULL, 'C', 'post', 'system/post/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(43, 9, '#', 'module_post', 'commons.button.query', 1, 'sys:post:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(44, 9, '#', 'module_post', 'commons.button.create', 2, 'sys:post:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(45, 9, '#', 'module_post', 'commons.button.edit', 3, 'sys:post:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(46, 9, '#', 'module_post', 'commons.button.delete', 4, 'sys:post:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(47, 9, '#', 'module_post', 'commons.button.export', 5, 'sys:post:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(95, 9, '#', 'module_post', 'commons.button.diagram', 6, 'sys:post:diagram', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 菜单管理
-(7, 1, 'system', 'commons.menu.sys.menu', 6, 'sys:menu:query', 'menu', NULL, 'C', 'tree-table', 'system/menu/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(34, 7, 'system', 'commons.button.query', 1, 'sys:menu:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(35, 7, 'system', 'commons.button.create', 2, 'sys:menu:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(36, 7, 'system', 'commons.button.edit', 3, 'sys:menu:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(37, 7, 'system', 'commons.button.delete', 4, 'sys:menu:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(100, 7, 'system', 'commons.button.export', 5, 'sys:menu:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(7, 1, 'system', NULL, 'commons.menu.sys.menu', 6, NULL, 'menu', NULL, 'C', 'tree-table', 'system/menu/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(34, 7, 'system', 'module_menu', 'commons.button.query', 1, 'sys:menu:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(35, 7, 'system', 'module_menu', 'commons.button.create', 2, 'sys:menu:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(36, 7, 'system', 'module_menu', 'commons.button.edit', 3, 'sys:menu:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(37, 7, 'system', 'module_menu', 'commons.button.delete', 4, 'sys:menu:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(100, 7, 'system', 'module_menu', 'commons.button.export', 5, 'sys:menu:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+
+-- 数据权限
+(195, 1, '#', NULL, 'commons.menu.sys.scope', 9, NULL, 'scope', NULL, 'C', 'vscope', 'system/scope/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(196, 195, '#', 'module_scope', 'commons.button.query', 1, 'sys:scope:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(197, 195, '#', 'module_scope', 'commons.button.delete', 2, 'sys:scope:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(198, 195, '#', 'module_scope', 'commons.button.create', 3, 'sys:scope:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(199, 195, '#', 'module_scope', 'commons.button.edit', 4, 'sys:scope:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+
+-- 文件管理
+(200, 1, 'system', NULL, 'commons.menu.sys.attach', 8, NULL, 'attach', NULL, 'C', 'attach', 'system/attach/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(201, 200, 'system', 'module_attach', 'commons.button.query', 1, 'sys:attach:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(202, 200, 'system', 'module_attach', 'commons.button.delete', 2, 'sys:attach:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(203, 200, 'system', 'module_attach', 'commons.button.preview', 3, 'sys:attach:preview', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(204, 200, 'system', 'module_attach', 'commons.button.download', 4, 'sys:attach:download', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 字典管理
-(10, 1, 'system', 'commons.menu.sys.dict', 7, 'sys:dict:query', 'dict', NULL, 'C', 'dict', 'system/dict/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(48, 10, 'system', 'commons.button.query', 1, 'sys:dict:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(49, 10, 'system', 'commons.button.create', 2, 'sys:dict:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(50, 10, 'system', 'commons.button.edit', 3, 'sys:dict:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(51, 10, 'system', 'commons.button.delete', 4, 'sys:dict:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(52, 10, 'system', 'commons.button.export', 5, 'sys:dict:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(101, 10, 'system', 'dict.button.reset', 6, 'sys:dict:cache', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(10, 1, 'system', NULL, 'commons.menu.sys.dict', 7, NULL, 'dict', NULL, 'C', 'dict', 'system/dict/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(48, 10, 'system', 'module_dict', 'commons.button.query', 1, 'sys:dict:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(49, 10, 'system', 'module_dict', 'commons.button.create', 2, 'sys:dict:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(50, 10, 'system', 'module_dict', 'commons.button.edit', 3, 'sys:dict:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(51, 10, 'system', 'module_dict', 'commons.button.delete', 4, 'sys:dict:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(52, 10, 'system', 'module_dict', 'commons.button.export', 5, 'sys:dict:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 系统配置
-(11, 1, '#', 'commons.menu.sys.config', 9, 'sys:config:query', 'config', NULL, 'C', 'param', 'system/config/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(53, 11, '#', 'commons.button.query', 1, 'sys:config:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(54, 11, '#', 'commons.button.create', 2, 'sys:config:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(55, 11, '#', 'commons.button.edit', 3, 'sys:config:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(56, 11, '#', 'commons.button.delete', 4, 'sys:config:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(57, 11, '#', 'commons.button.export', 5, 'sys:config:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(102, 11, '#', 'config.button.reset', 6, 'sys:config:reset', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(11, 1, '#', NULL, 'commons.menu.sys.config', 10, NULL, 'config', NULL, 'C', 'param', 'system/config/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(53, 11, '#', 'module_config', 'commons.button.query', 1, 'sys:config:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(54, 11, '#', 'module_config', 'commons.button.create', 2, 'sys:config:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(55, 11, '#', 'module_config', 'commons.button.edit', 3, 'sys:config:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(56, 11, '#', 'module_config', 'commons.button.delete', 4, 'sys:config:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(57, 11, '#', 'module_config', 'commons.button.export', 5, 'sys:config:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(102, 11, '#', 'module_config', 'config.button.reset', 6, 'sys:config:reset', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 定时任务
-(15, 1, '#', 'commons.menu.sys.schedule.root', 10, 'sys:job:query', 'job', NULL, 'C', 'job', 'system/job/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2023-08-10 06:41:40.275'),
-(67, 15, '#', 'commons.button.query', 1, 'sys:job:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(68, 15, '#', 'commons.button.create', 2, 'sys:job:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(69, 15, '#', 'commons.button.edit', 3, 'sys:job:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(70, 15, '#', 'commons.button.delete', 4, 'sys:job:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(72, 15, '#', 'commons.button.export', 5, 'sys:job:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(117, 15, '#', 'commons.button.exec', 6, 'sys:job:exec', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(71, 15, '#', 'commons.button.status', 7, 'sys:job:status', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(118, 15, '#', 'commons.menu.sys.schedule.refresh', 8, 'sys:job:refresh', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(138, 15, '#', 'commons.menu.sys.schedule.logQuery', 9, 'sys:job:log:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(140, 15, '#', 'commons.menu.sys.schedule.logExport', 9, 'sys:job:log:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(139, 15, '#', 'commons.menu.sys.schedule.logDelete', 9, 'sys:job:log:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(15, 1, '#', NULL, 'commons.menu.sys.schedule.root', 11, NULL, 'job', NULL, 'C', 'job', 'system/job/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2023-08-10 06:41:40.275'),
+(67, 15, '#', 'module_task', 'commons.button.query', 1, 'sys:job:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(68, 15, '#', 'module_task', 'commons.button.create', 2, 'sys:job:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(69, 15, '#', 'module_task', 'commons.button.edit', 3, 'sys:job:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(70, 15, '#', 'module_task', 'commons.button.delete', 4, 'sys:job:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(72, 15, '#', 'module_task', 'commons.button.export', 5, 'sys:job:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(117, 15, '#', 'module_task', 'commons.button.exec', 6, 'sys:job:exec', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(71, 15, '#', 'module_task', 'commons.button.status', 7, 'sys:job:status', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(118, 15, '#', 'module_task', 'commons.menu.sys.schedule.refresh', 8, 'sys:job:refresh', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(138, 15, '#', 'module_task', 'commons.menu.sys.schedule.logQuery', 9, 'sys:job:log:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(140, 15, '#', 'module_task', 'commons.menu.sys.schedule.logExport', 9, 'sys:job:log:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(139, 15, '#', 'module_task', 'commons.menu.sys.schedule.logDelete', 9, 'sys:job:log:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- api文档
-(21, 1, 'system', 'commons.menu.sys.doc.api', 11, NULL, 'doc', NULL, 'M', 'api', '', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(115, 21, 'system', 'commons.menu.sys.doc.admin', 1, NULL, 'admin', NULL, 'C', 'interface', 'system/doc/admin', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(116, 21, 'system', 'commons.menu.sys.doc.quartz', 2, NULL, 'quartz', NULL, 'C', 'interface', 'system/doc/quartz', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(126, 21, 'system', 'commons.menu.sys.doc.meter', 3, NULL, 'meter', NULL, 'C', 'interface', 'system/doc/meter', 1, 1, 1, 1, 1, NULL, NULL, '2023-08-10 06:55:27.034', NULL, '2023-08-10 06:55:27.034'),
+(21, 1, 'system', NULL, 'commons.menu.sys.doc.api', 12, NULL, 'doc', NULL, 'M', 'api', '', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(115, 21, 'system', NULL, 'commons.menu.sys.doc.admin', 1, NULL, 'admin', NULL, 'C', 'interface', 'system/doc/admin', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(116, 21, 'system', NULL, 'commons.menu.sys.doc.job', 2, NULL, 'job', NULL, 'C', 'interface', 'system/doc/job', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(126, 21, 'system', NULL, 'commons.menu.sys.doc.meter', 3, NULL, 'meter', NULL, 'C', 'interface', 'system/doc/meter', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- Ldap配置
-(148, 1, '#', 'commons.menu.sys.ldap', 12, 'sys:ldap:query', 'ldap', NULL, 'C', 'ldap', 'system/ldap/index', 1, 1, 1, 1, 1, NULL, NULL, '2024-03-18 13:57:36.631', NULL, '2024-03-18 13:59:53.624'),
-(149, 148, '#', 'commons.button.query', 1, 'sys:ldap:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-20 16:38:18.118', NULL, '2024-03-20 16:38:18.118'),
-(150, 148, '#', 'commons.button.create', 2, 'sys:ldap:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-20 16:39:01.56', NULL, '2024-03-20 16:39:01.56'),
-(151, 148, '#', 'commons.button.edit', 3, 'sys:ldap:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-20 16:39:27.646', NULL, '2024-03-20 16:39:27.646'),
-(152, 148, '#', 'commons.button.delete', 4, 'sys:ldap:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-20 16:39:59.614', NULL, '2024-03-20 16:39:59.614'),
-(153, 148, '#', 'commons.button.test', 5, 'sys:ldap:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-20 16:39:27.646', NULL, '2024-03-20 16:39:27.646'),
-(154, 148, '#', 'commons.button.status', 6, 'sys:ldap:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-20 16:39:27.646', NULL, '2024-03-20 16:39:27.646'),
+(148, 1, '#', NULL, 'commons.menu.sys.ldap', 13, NULL, 'ldap', NULL, 'C', 'ldap', 'system/ldap/index', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(149, 148, '#', 'module_ldap', 'commons.button.query', 1, 'sys:ldap:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(150, 148, '#', 'module_ldap', 'commons.button.create', 2, 'sys:ldap:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(151, 148, '#', 'module_ldap', 'commons.button.edit', 3, 'sys:ldap:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(152, 148, '#', 'module_ldap', 'commons.button.delete', 4, 'sys:ldap:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(153, 148, '#', 'module_ldap', 'commons.button.test', 5, 'sys:ldap:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(154, 148, '#', 'module_ldap', 'commons.button.status', 6, 'sys:ldap:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- Oauth2配置
-(141, 1, '#', 'commons.menu.sys.oauth2.root', 13, NULL, 'oauth', NULL, 'M', 'vscope', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-02 23:08:01.779', NULL, '2024-03-02 23:08:01.779'),
+(141, 1, '#', NULL, 'commons.menu.sys.oauth2.root', 14, NULL, 'oauth', NULL, 'M', 'vscope', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
-(169, 141, '#', 'commons.menu.sys.oauth2.client', 1, 'oauth:client:query', 'client', NULL, 'C', 'app', 'system/oauth/client', 1, 1, 1, 1, 1, NULL, NULL, '2025-06-05 13:35:45.532', NULL, '2025-06-05 13:35:45.532'),
-(170, 169, '#', 'commons.button.query', 1, 'oauth:client:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-20 16:38:18.118', NULL, '2024-03-20 16:38:18.118'),
-(171, 169, '#', 'commons.button.create', 2, 'oauth:client:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-20 16:39:01.56', NULL, '2024-03-20 16:39:01.56'),
-(172, 169, '#', 'commons.button.delete', 3, 'oauth:client:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-20 16:39:59.614', NULL, '2024-03-20 16:39:59.614'),
+(169, 141, '#', NULL, 'commons.menu.sys.oauth2.client', 1, NULL, 'client', NULL, 'C', 'app', 'system/oauth/client', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(170, 169, '#', 'module_oauth', 'commons.button.query', 1, 'oauth:client:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(171, 169, '#', 'module_oauth', 'commons.button.create', 2, 'oauth:client:create', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(172, 169, '#', 'module_oauth', 'commons.button.delete', 3, 'oauth:client:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
-(142, 141, '#', 'commons.menu.sys.oauth2.gitlab', 2, 'sys:oauth:gitlab', 'gitlab', NULL, 'C', 'gitlab', 'system/oauth/gitlab', 1, 1, 1, 1, 1, NULL, NULL, '2024-03-02 23:10:39.323', NULL, '2024-03-03 07:20:04.089'),
-(143, 142, '#', 'commons.button.config', 1, 'oauth:gitlab:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-21 13:57:12.65', NULL, '2024-03-21 13:57:12.65'),
-(144, 142, '#', 'commons.button.query', 2, 'oauth:gitlab:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-21 13:57:12.65', NULL, '2024-03-21 13:57:12.65'),
-(145, 142, '#', 'commons.menu.sys.oauth2.userQuery', 3, 'oauth:gitlab:user:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-21 13:57:12.65', NULL, '2024-03-21 13:57:12.65'),
-(146, 142, '#', 'commons.menu.sys.oauth2.userEdit', 4, 'oauth:gitlab:user:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-21 13:57:12.65', NULL, '2024-03-21 13:57:12.65'),
-(147, 142, '#', 'commons.menu.sys.oauth2.userDelete', 5, 'oauth:gitlab:user:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-21 13:57:12.65', NULL, '2024-03-21 13:57:12.65'),
+(142, 141, '#', NULL, 'commons.menu.sys.oauth2.gitlab', 2, NULL, 'gitlab', NULL, 'C', 'gitlab', 'system/oauth/gitlab', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(143, 142, '#', 'module_oauth', 'commons.button.query', 1, 'oauth:gitlab:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(144, 142, '#', 'module_oauth', 'commons.button.config', 2, 'oauth:gitlab:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(145, 142, '#', 'module_oauth', 'commons.menu.sys.oauth2.userQuery', 3, 'oauth:gitlab:user:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(146, 142, '#', 'module_oauth', 'commons.menu.sys.oauth2.userEdit', 4, 'oauth:gitlab:user:edit', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(147, 142, '#', 'module_oauth', 'commons.menu.sys.oauth2.userDelete', 5, 'oauth:gitlab:user:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 系统监控
-(2, 0, '#', 'commons.menu.monitor.root', 6, NULL, 'monitor', NULL, 'M', 'monitor', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2023-08-09 07:02:51.069'),
+(2, 0, '#', NULL, 'commons.menu.monitor.root', 6, NULL, 'monitor', NULL, 'M', 'monitor', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 在线用户
-(14, 2, '#', 'commons.menu.monitor.online', 1, 'monitor:online:query', 'online', NULL, 'C', 'online', 'monitor/online/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(64, 14, '#', 'commons.button.query', 1, 'monitor:online:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(65, 14, '#', 'commons.button.quit', 2, 'monitor:online:force', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(14, 2, '#', NULL, 'commons.menu.monitor.online', 1, NULL, 'online', NULL, 'C', 'online', 'monitor/online/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(64, 14, '#', 'module_online', 'commons.button.query', 1, 'monitor:online:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(65, 14, '#', 'module_online', 'commons.button.quit', 2, 'monitor:online:force', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 操作日志
-(13, 2, '#', 'commons.menu.monitor.log', 2, 'monitor:log:query', 'log', NULL, 'C', 'log', 'monitor/operlog/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(79, 13, '#', 'commons.button.query', 1, 'monitor:log:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(80, 13, '#', 'commons.button.delete', 2, 'monitor:log:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
-(81, 13, '#', 'commons.button.export', 3, 'monitor:log:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(13, 2, '#', NULL, 'commons.menu.monitor.log', 2, NULL, 'log', NULL, 'C', 'log', 'monitor/operlog/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(79, 13, '#', 'module_oplog', 'commons.button.query', 1, 'monitor:log:query', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(80, 13, '#', 'module_oplog', 'commons.button.delete', 2, 'monitor:log:delete', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(81, 13, '#', 'module_oplog', 'commons.button.export', 3, 'monitor:log:export', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(82, 13, '#', 'module_oplog', 'commons.button.clean', 4, 'monitor:log:clean', '#', NULL, 'B', '#', NULL, 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 监控页面
-(165, 2, '#', 'commons.menu.monitor.nacos', 3, NULL, 'monitor-nacos', NULL, 'C', 'nacos', 'monitor/nacos/index', 1, 1, 1, 1, 0, NULL, NULL, '2025-04-08 11:04:22.486', NULL, '2025-04-08 11:04:22.486'),
-(164, 2, '#', 'commons.menu.monitor.actuator', 4, NULL, 'monitor-actuator', NULL, 'C', 'health', 'monitor/actuator/index', 1, 1, 1, 1, 0, NULL, NULL, '2025-04-08 11:04:22.486', NULL, '2025-04-08 11:04:22.486'),
-(130, 2, '#', 'commons.menu.monitor.alert', 5, NULL, 'monitor-alert', NULL, 'C', 'alert', 'monitor/alert/index', 1, 1, 1, 1, 1, NULL, NULL, '2023-08-10 08:10:04.878', NULL, '2023-08-10 08:33:56.584'),
-(166, 2, '#', 'commons.menu.monitor.grafana', 6, NULL, 'monitor-grafana', NULL, 'C', 'grafana', 'monitor/grafana/index', 1, 1, 1, 1, 1, NULL, NULL, '2025-04-09 19:46:29.889', NULL, '2025-04-09 19:56:08.975'),
-(167, 2, '#', 'commons.menu.monitor.prometheus', 7, NULL, 'monitor-prometheus', NULL, 'C', 'prometheus', 'monitor/prometheus/index', 1, 1, 1, 1, 1, NULL, NULL, '2025-04-09 19:46:29.889', NULL, '2025-04-09 19:56:08.975'),
+(165, 2, '#', NULL, 'commons.menu.monitor.nacos', 3, NULL, 'monitor-nacos', NULL, 'C', 'nacos', 'monitor/nacos/index', 1, 1, 1, 1, 0, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(164, 2, '#', NULL, 'commons.menu.monitor.actuator', 4, NULL, 'monitor-actuator', NULL, 'C', 'health', 'monitor/actuator/index', 1, 1, 1, 1, 0, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(130, 2, '#', NULL, 'commons.menu.monitor.alert', 5, NULL, 'monitor-alert', NULL, 'C', 'alert', 'monitor/alert/index', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(166, 2, '#', NULL, 'commons.menu.monitor.grafana', 6, NULL, 'monitor-grafana', NULL, 'C', 'grafana', 'monitor/grafana/index', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(167, 2, '#', NULL, 'commons.menu.monitor.prometheus', 7, NULL, 'monitor-prometheus', NULL, 'C', 'prometheus', 'monitor/prometheus/index', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 流程管理
-(159, 0, '#', 'commons.menu.flow.root', 2, NULL, 'flow', NULL, 'M', 'cascader', NULL, 1, 1, 1, 1, 0, NULL, NULL, '2023-08-10 06:43:00.55', NULL, '2023-08-10 07:32:09.243'),
-(160, 159, '#', 'commons.menu.flow.owner.task', 1, 'flow:task', 'task', NULL, 'C', 'task', 'flow/workbench/task', 1, 1, 1, 1, 0, NULL, NULL, '2024-03-02 23:10:39.323', NULL, '2024-03-03 07:20:04.089'),
-(161, 159, '#', 'commons.menu.flow.owner.leave', 2, 'flow:leave', 'leave', NULL, 'C', 'leave', 'flow/workbench/leave', 1, 1, 1, 1, 0, NULL, NULL, '2024-03-02 23:10:39.323', NULL, '2024-03-03 07:20:04.089'),
-(162, 159, '#', 'commons.menu.flow.owner.meeting', 3, 'flow:meeting', 'meeting', NULL, 'C', 'meeting', 'flow/workbench/meeting', 1, 1, 1, 1, 0, NULL, NULL, '2024-03-02 23:10:39.323', NULL, '2024-03-03 07:20:04.089'),
-(163, 159, '#', 'commons.menu.flow.owner.purchase', 4, 'flow:purchase', 'purchase', NULL, 'C', 'purchase', 'flow/workbench/purchase', 1, 1, 1, 1, 0, NULL, NULL, '2024-03-02 23:10:39.323', NULL, '2024-03-03 07:20:04.089'),
+(159, 0, '#', NULL, 'commons.menu.flow.root', 2, NULL, 'flow', NULL, 'M', 'cascader', NULL, 1, 1, 1, 1, 0, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(160, 159, '#', NULL, 'commons.menu.flow.owner.task', 1, 'flow:task', 'task', NULL, 'C', 'task', 'flow/workbench/task', 1, 1, 1, 1, 0, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(161, 159, '#', NULL, 'commons.menu.flow.owner.leave', 2, 'flow:leave', 'leave', NULL, 'C', 'leave', 'flow/workbench/leave', 1, 1, 1, 1, 0, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(162, 159, '#', NULL, 'commons.menu.flow.owner.meeting', 3, 'flow:meeting', 'meeting', NULL, 'C', 'meeting', 'flow/workbench/meeting', 1, 1, 1, 1, 0, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(163, 159, '#', NULL, 'commons.menu.flow.owner.purchase', 4, 'flow:purchase', 'purchase', NULL, 'C', 'purchase', 'flow/workbench/purchase', 1, 1, 1, 1, 0, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 流程配置
-(155, 159, '#', 'commons.menu.flow.manage', 12, NULL, 'manage', NULL, 'M', 'flow', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2024-03-02 23:08:01.779', NULL, '2024-03-02 23:08:01.779'),
-(157, 155, '#', 'commons.menu.flow.model', 1, 'flow:modeler', 'modeler', NULL, 'C', 'component', 'flow/modeler', 1, 1, 1, 1, 1, NULL, NULL, '2024-03-02 23:10:39.323', NULL, '2024-03-03 07:20:04.089'),
-(158, 155, '#', 'commons.menu.flow.deploy', 2, 'flow:deploy', 'deploy', NULL, 'C', 'deploy', 'flow/deploy', 1, 1, 1, 1, 1, NULL, NULL, '2024-03-02 23:10:39.323', NULL, '2024-03-03 07:20:04.089'),
-(156, 155, '#', 'commons.menu.flow.instance', 3, 'flow:instance', 'instance', NULL, 'C', 'flowinstance', 'flow/instance', 1, 1, 1, 1, 1, NULL, NULL, '2024-03-02 23:10:39.323', NULL, '2024-03-03 07:20:04.089'),
+(155, 159, '#', NULL, 'commons.menu.flow.manage', 12, NULL, 'manage', NULL, 'M', 'flow', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(157, 155, '#', NULL, 'commons.menu.flow.model', 1, 'flow:modeler', 'modeler', NULL, 'C', 'component', 'flow/modeler', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(158, 155, '#', NULL, 'commons.menu.flow.deploy', 2, 'flow:deploy', 'deploy', NULL, 'C', 'deploy', 'flow/deploy', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(156, 155, '#', NULL, 'commons.menu.flow.instance', 3, 'flow:instance', 'instance', NULL, 'C', 'flowinstance', 'flow/instance', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 软件测试
-(124, 0, '#', 'commons.menu.meter.root', 1, NULL, 'meter', NULL, 'M', 'meter', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2023-08-10 06:45:07.865', NULL, '2023-08-10 06:45:07.865'),
+(124, 0, '#', NULL, 'commons.menu.meter.root', 1, NULL, 'meter', NULL, 'M', 'meter', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
-(168, 124, '#', 'commons.menu.meter.ui', 1, NULL, 'meter-ui', NULL, 'C', 'meter_ui', 'meter/ui/index', 1, 1, 1, 1, 1, NULL, NULL, '2025-04-23 07:35:44.951', NULL, '2025-04-23 07:38:08.135'),
+(168, 124, '#', NULL, 'commons.menu.meter.ui', 1, NULL, 'meter-ui', NULL, 'C', 'meter_ui', 'meter/ui/index', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
-(19, 124, '#', 'commons.menu.meter.form', 2, NULL, 'form', NULL, 'C', 'build', 'meter/form/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(19, 124, '#', NULL, 'commons.menu.meter.form', 2, NULL, 'form', NULL, 'C', 'build', 'meter/form/index', 1, 1, 1, 1, 1, '', NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
 
 -- 代码模板
-(132, 124, '#', 'commons.menu.meter.template.root', 3, NULL, 'template', NULL, 'M', 'code', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2023-08-25 01:56:05.058', NULL, '2023-09-07 04:51:01.348'),
-(134, 132, '#', 'commons.menu.meter.template.application', 2, NULL, 'application', NULL, 'C', 'app', 'meter/template/application', 1, 1, 1, 1, 1, NULL, NULL, '2023-08-25 01:58:50.097', NULL, '2023-08-29 02:07:02.87'),
-(135, 132, '#', 'commons.menu.meter.template.model', 3, NULL, 'model', NULL, 'C', 'model', 'meter/template/model', 1, 1, 1, 1, 1, NULL, NULL, '2023-08-25 01:59:13.949', NULL, '2023-08-30 09:10:55.253'),
-(136, 132, '#', 'commons.menu.meter.template.database', 4, NULL, 'db', NULL, 'C', 'db', 'meter/template/db', 1, 1, 1, 1, 1, NULL, NULL, '2023-08-30 01:18:35.52', NULL, '2023-08-30 02:46:23.893'),
-(137, 132, '#', 'commons.menu.meter.template.table', 5, NULL, 'table', NULL, 'C', 'table', 'meter/template/table', 1, 1, 1, 1, 1, NULL, NULL, '2023-08-30 02:46:06.24', NULL, '2023-08-31 04:49:04.045');
+(132, 124, '#', NULL, 'commons.menu.meter.template.root', 3, NULL, 'template', NULL, 'M', 'code', NULL, 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(134, 132, '#', NULL, 'commons.menu.meter.template.application', 2, NULL, 'application', NULL, 'C', 'app', 'meter/template/application', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(135, 132, '#', NULL, 'commons.menu.meter.template.model', 3, NULL, 'model', NULL, 'C', 'model', 'meter/template/model', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(136, 132, '#', NULL, 'commons.menu.meter.template.database', 4, NULL, 'db', NULL, 'C', 'db', 'meter/template/db', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00'),
+(137, 132, '#', NULL, 'commons.menu.meter.template.table', 5, NULL, 'table', NULL, 'C', 'table', 'meter/template/table', 1, 1, 1, 1, 1, NULL, NULL, '2022-04-25 09:00:00', NULL, '2022-04-25 09:00:00');
 
 SELECT setval('sys_menu_menu_id_seq', (SELECT max(menu_id) FROM sys_menu));
 
@@ -388,6 +401,10 @@ INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 11);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 141);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 142);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 148);
+INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 169);
+INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 170);
+INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 195);
+INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 196);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 2);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 14);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 13);
@@ -404,7 +421,7 @@ INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 95);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 29);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 53);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 129);
-INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 144);
+INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 143);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 145);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 149);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 18);
@@ -427,3 +444,9 @@ INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 117);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 71);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 138);
 INSERT INTO "sys_role_menu" ("role_id", "menu_id") VALUES (3, 124);
+
+-- 数据权限
+INSERT INTO "sys_scope" ("tenant_id", "scope_name", "scope_module", "scope_status", "scope_content", "remark", "create_by", "create_time", "update_by", "update_time") VALUES
+('cowave', '仅本人数据', 'module_oplog', 1, '{"scope":"personal"}', NULL, NULL, '2023-08-25 01:58:50.097', NULL, '2023-08-29 02:07:02.87'),
+('cowave', '本部门数据', 'module_oplog', 1, '{"scope":"dept"}', NULL, NULL, '2023-08-25 01:58:50.097', NULL, '2023-08-29 02:07:02.87'),
+('cowave', '全部数据', 'module_oplog', 1, '{"scope":"all"}', NULL, NULL, '2023-08-25 01:58:50.097', NULL, '2023-08-29 02:07:02.87');

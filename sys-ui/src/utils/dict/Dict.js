@@ -37,7 +37,14 @@ export default class Dict {
       if (dictMeta.lazy) {
         return
       }
-      ps.push(loadDict(this, dictMeta))
+
+      // let dict = Dict._dictCache.get(type);
+      // if(dict == null){
+      //   dict = loadDict(this, dictMeta);
+      //   Dict._dictCache.set(type, dict)
+      // }
+      let dict = loadDict(this, dictMeta);
+      ps.push(dict)
     })
     return Promise.all(ps)
   }
@@ -54,6 +61,8 @@ export default class Dict {
     return loadDict(this, dictMeta)
   }
 }
+
+Dict._dictCache = new Map()
 
 /**
  * 加载字典

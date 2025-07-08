@@ -31,7 +31,10 @@ export default {
       create: "New",
       edit: "Edit",
       delete: "Delete",
+      clean: "Clean",
       remove: "Remove",
+      preview: "Preview",
+      download: "Download",
       publish: "Publish",
       recall: "Recall",
       exec: "Execute",
@@ -97,16 +100,18 @@ export default {
         user: 'User',
         role: "Role",
         menu: "Menu",
+        scope: "Data Scope",
+        attach: "Attachment",
         dept: "Dept",
         post: "Post",
-        dict: "Dict",
+        dict: "Dictionary",
         config: "Config",
         ldap: "Ldap",
         doc: {
           api: "Api Doc",
-          admin: "Admin Service",
-          quartz: "Schedule Service",
-          meter: "Meter Service"
+          admin: "System Manage",
+          job: "Schedule Job",
+          meter: "Meter Manage"
         },
         schedule: {
           root: "Schedule Task",
@@ -349,6 +354,7 @@ export default {
       root: "root",
       name: "Name",
       tenant: "Tenant",
+      module: "Module",
       status: "Status",
       icon: "Icon",
       order: "Order",
@@ -380,7 +386,8 @@ export default {
     rules: {
       name: "menu name can't be empty",
       path: "route path can't be empty",
-      order: "menu order can't be empty"
+      order: "menu order can't be empty",
+      tenant: "menu tenant can't be empty"
     },
     dialog: {
       new: "New Menu",
@@ -391,6 +398,7 @@ export default {
     },
     content: {
       name: "The name supports internationalization and can be defined as the key in internationalized resource",
+      module: "For menus and buttons, filter the data permission options",
       status: "The disabled route will not appear in the sidebar and can't be accessed",
       frame: "The external route needs to start with `http(s)://`",
       visible: "The hidden route will not appear in the sidebar but still can be accessed",
@@ -548,6 +556,11 @@ export default {
       public: "Public",
       protected: "Protected",
 
+      attach_type: "Attach Type",
+      avatar: "Avatar",
+      logo: "Logo",
+      image: "Image",
+
       flow: "Flow dict",
       leave: "Leave Type",
       annual: "Annual Leave",
@@ -598,9 +611,7 @@ export default {
       notice_notice: "notice",
       notice_press: "press",
 
-      op_log: "Operation log",
-      op_action: "log action",
-      op_admin: "system operation",
+      op_action: "OP Action",
       op_create: "create",
       op_delete: "delete",
       op_edit: "edit",
@@ -608,14 +619,36 @@ export default {
       op_passwd: "passwd change",
       op_grant: "role change",
       op_login: "login",
-      op_oauth: "OAuth Authorization",
+      op_login_oauth: "OAuth Authorization",
       op_logout: "logout",
       op_logout_force: "force logout",
-      op_auth: "Authorization log",
-      op_user: "User",
-      op_dept: "Dept",
-      op_role: "Role",
-      op_post: "Post",
+
+      domain_module: "Domain Module",
+
+      domain_system: "system",
+      module_auth: "Authorization",
+      module_tenant: "Tenant",
+      module_user: "User",
+      module_dept: "Dept",
+      module_role: "Role",
+      module_post: "Post",
+      module_menu: "Menu",
+      module_scope: "Data Scope",
+      module_dict: "Dictionary",
+      module_config: "Config",
+      module_task: "Task",
+      module_ldap: "Ldap",
+      module_oauth: "oAuth",
+      module_notice: "Notice",
+      module_attach: "Attach",
+
+      domain_monitor: "monitor",
+      module_online: "Online user",
+      module_oplog: "Operation log",
+
+      domain_flow: "flow",
+
+      domain_meter: "meter",
 
       menu: "Menu dict",
       menu_type: "Menu Type",
@@ -687,5 +720,49 @@ export default {
       type: "Select Type",
       status: "Select Status"
     }
+  },
+  attach: {
+    label: {
+      tenant: "Tenant",
+      type: "Attach Type",
+      module: "Module",
+      owner: "Owner",
+      name: "Attach Name",
+      size: "Attach Size",
+      private: "Private",
+      expire: "Expire Time",
+    },
+    placeholder: {
+      tenant: "Select Tenant",
+      type: "Select Attach Type",
+    },
+    confirm: {
+      delete_select: "Sure to delete the selected attach ?",
+    },
+  },
+  scope: {
+    label: {
+      module: "Scope Module",
+      name: "Scope name",
+    },
+    button: {
+      scope: "Scope",
+    },
+    placeholder: {
+      module: "Select Scope Module",
+    },
+    dialog: {
+      new: "New Data Scope",
+      edit: "Edit Data Scope"
+    },
+    rules: {
+      name: "scope name can't be empty",
+      module: "scope module can't be empty",
+    },
+    confirm: {
+      delete_select: "Sure to delete the selected scope ?",
+      status_enable: "Sure to enable data scope \"{arg1}\" ?",
+      status_disable: "Sure to disable date scope \"{arg1}\" ?",
+    },
   }
 }

@@ -59,10 +59,15 @@ public class SysMenu implements AccessInfoSetter {
      */
     private String tenantId;
 
+	/**
+	 * 菜单模块
+	 */
+	private String menuModule;
+
     /**
      * 菜单名称
      */
-    @NotBlank(message = "{admin.menu.name.notnull}")
+    @NotBlank(message = "{admin.menu.name.null}")
 	@ExcelProperty("菜单名称")
     private String menuName;
 
@@ -81,7 +86,7 @@ public class SysMenu implements AccessInfoSetter {
     /**
      * 菜单类型
      */
-    @NotBlank(message = "{admin.menu.type.notnull}")
+    @NotBlank(message = "{admin.menu.type.null}")
 	@ExcelProperty("菜单类型")
     private String menuType;
 

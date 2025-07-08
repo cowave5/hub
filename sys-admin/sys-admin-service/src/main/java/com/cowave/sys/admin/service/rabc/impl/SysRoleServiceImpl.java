@@ -82,7 +82,7 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public void edit(String tenantId, SysRole sysRole) {
-    	HttpAsserts.notNull(sysRole.getRoleId(), BAD_REQUEST, "{admin.role.id.notnull}");
+    	HttpAsserts.notNull(sysRole.getRoleId(), BAD_REQUEST, "{admin.role.id.null}");
 
     	long codeCount = sysRoleDao.countRoleCode(tenantId, sysRole.getRoleCode(), sysRole.getRoleId());
     	HttpAsserts.isTrue(codeCount == 0, BAD_REQUEST, "{admin.role.code.conflict}", sysRole.getRoleCode());
@@ -102,8 +102,8 @@ public class SysRoleServiceImpl implements SysRoleService {
         HttpAsserts.notNull(preRole, NOT_FOUND, "{admin.role.not.exist}", roleUpdate.getRoleId());
 
         sysRoleMenuDao.deleteByRoleId(roleUpdate.getRoleId());
-        sysRoleMenuDao.saveBatch(Collections.copyToList(
-                roleUpdate.getMenuIds(), mid -> new SysRoleMenu(roleUpdate.getRoleId(), mid)));
+        sysRoleMenuDao.saveBatch(Collections.copyToList(roleUpdate.getMenuScopes(),
+                ms -> new SysRoleMenu(roleUpdate.getRoleId(), ms.getMenuId(), ms.getScopeId())));
     }
 
     @Override

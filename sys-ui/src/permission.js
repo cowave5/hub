@@ -6,15 +6,17 @@ import cache from "@/plugins/cache";
 
 NProgress.configure({ showSpinner: false })
 
-const whiteList = ['/login', '/cowave/login', '/cowave/register', '/cowave/ldap', '/oauth/gitlab', '/bind']
+const whiteList = ['/login', '/tenant/login', '/cowave/login', '/cowave/register', '/cowave/ldap', '/oauth/gitlab', '/bind']
 
 // 路由跳转
 router.beforeEach((to, from, next) => {
   NProgress.start()
   // 检查AccessToken（本地持久化）
   if (cache.local.getAccessToken()) {
-    // 如果登录Url，直接将next置为首页
-    if (to.path === '/login'
+    // 直接将next置为首页
+    if (to.path === '/mfa'
+        || to.path === '/login'
+        || to.path === '/tenant/login'
         || to.path === '/cowave/login'
         || to.path === '/cowave/ldap'
         || to.path === '/oauth/gitlab') {
@@ -22,16 +24,17 @@ router.beforeEach((to, from, next) => {
       NProgress.done()
     } else {
       // 检查用户权限信息（缓存），没有就重新获取
-      if (store.getters.roles.length === 0) {
+      if (store.getters.userId == null) {
         store.dispatch('GetInfo').then(() => {
           // 重新获取路由菜单权限
           store.dispatch('GenerateRoutes').then(accessRoutes => {
-            router.addRoutes(accessRoutes) // 动态添加可访问路由表
-            next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
+            router.addRoutes(accessRoutes)
+            next({ ...to, replace: true })
           })
         }).catch(err => {
-          cache.local.removeAccessToken()
-          next({ path: '/cowave/login' })
+          cache.local.removeAccessToken();
+          const loginRoute = localStorage.getItem('tenant_login_route') || '/cowave/login';
+          next({ path: loginRoute });
         })
       } else {
         next()
@@ -40,9 +43,12 @@ router.beforeEach((to, from, next) => {
   } else {
     if (whiteList.indexOf(to.path) !== -1) {
       next()
+    } else if(to.path === '/mfa' && cache.local.getMfa()) {
+      next()
     } else {
       const redirect = encodeURIComponent(to.fullPath);
-      next(`/cowave/login?redirect=${redirect}`) // 否则全部重定向到登录页
+      const loginRoute = localStorage.getItem('tenant_login_route') || '/cowave/login';
+      next(`${loginRoute}?redirect=${redirect}`);
       NProgress.done()
     }
   }

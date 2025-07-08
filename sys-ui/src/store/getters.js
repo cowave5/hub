@@ -1,3 +1,4 @@
+import cache from "@/plugins/cache";
 
 const getters = {
   sidebar: state => state.app.sidebar,
@@ -13,6 +14,7 @@ const getters = {
   tenantId: state => state.user.tenantId,
   tenantTitle: state => state.user.tenantTitle,
   tenantLogo: state => state.user.tenantLogo,
+  tenantIndex: state => state.user.tenantIndex || cache.local.getTenantIndex(),
 
   userId: state => state.user.userId,
   name: state => state.user.name,

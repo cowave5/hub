@@ -14,19 +14,15 @@ import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.access.security.AccessTokenInfo;
 import com.cowave.commons.framework.access.security.AccessUserDetails;
 import com.cowave.commons.framework.access.security.BearerTokenService;
-import com.cowave.sys.admin.domain.auth.request.LdapRequest;
+import com.cowave.sys.admin.domain.auth.request.LdapLogin;
+import com.cowave.sys.admin.domain.auth.request.MfaLogin;
 import com.cowave.sys.admin.domain.auth.vo.AuthInfo;
 import com.cowave.sys.admin.domain.auth.vo.CaptchaInfo;
-import com.cowave.sys.admin.domain.auth.request.LoginRequest;
+import com.cowave.sys.admin.domain.auth.request.Login;
 import com.cowave.sys.admin.domain.auth.request.RegisterRequest;
-import com.cowave.sys.admin.domain.base.SysAttach;
-import com.cowave.sys.admin.domain.rabc.SysTenant;
-import com.cowave.sys.admin.infra.rabc.dao.SysTenantDao;
 import com.cowave.sys.admin.service.auth.*;
 import com.cowave.sys.admin.domain.base.request.OnlineQuery;
 import com.cowave.sys.admin.domain.rabc.vo.Route;
-import com.cowave.sys.admin.service.base.SysAttachService;
-import com.cowave.sys.admin.domain.auth.OAuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -37,39 +33,36 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.auth.AuthType.*;
-
 /**
  * 鉴权
  *
  * @author shanhuiming
- * @order 8
+ * @order 9
  */
 @RequiredArgsConstructor
+@Validated
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final BearerTokenService bearerTokenService;
-    private final SysAttachService attachService;
     private final CaptchaService captchaService;
     private final AuthService authService;
     private final LdapService ldapService;
     private final OAuthService oauthService;
-    private final SysTenantDao sysTenantDao;
 
     /**
      * 验证码
      */
     @GetMapping("/public/captcha")
-    public Response<CaptchaInfo> captcha() throws IOException {
-        return Response.success(captchaService.captcha());
+    public Response<CaptchaInfo> captcha(@NotNull(message = "{admin.tenant.id.null}") String tenantId) throws IOException {
+        return Response.success(captchaService.captcha(tenantId));
     }
 
     /**
      * 邮箱验证码
      */
     @GetMapping("/public/captcha/email")
-    public Response<Void> captchaEmail(@NotNull(message = "{admin.user.email.notnull}") String email) throws Exception {
+    public Response<Void> captchaEmail(@NotNull(message = "{admin.user.email.null}") String email) throws Exception {
         return Response.success(() -> captchaService.captchaEmail(email));
     }
 
@@ -78,7 +71,7 @@ public class AuthController {
      */
     @PostMapping("/public/register")
     public Response<String> register(@Validated @RequestBody RegisterRequest request) {
-        captchaService.validEmail(request);
+        captchaService.validEmail(request.getUserEmail(), request.getCaptcha());
         return Response.success(authService.register(request));
     }
 
@@ -86,40 +79,50 @@ public class AuthController {
      * 登录
      */
     @PostMapping("/public/logon")
-    public Response<AccessUserDetails> logon(@Validated @RequestBody LoginRequest request) {
-        return Response.success(authService.login(request.getTenantId(), request.getUserAccount(), request.getPassWord()));
+    public Response<AccessUserDetails> logon(@Validated @RequestBody Login login) {
+        return Response.success(authService.login(login.getTenantId(), login.getUserAccount(), login.getPassWord()));
     }
 
     /**
      * 登录（验证码）
      */
     @PostMapping("/public/login")
-    public Response<AccessUserDetails> login(@Validated @RequestBody LoginRequest request) {
-        captchaService.validCaptcha(request);
-        return Response.success(authService.login(request.getTenantId(), request.getUserAccount(), request.getPassWord()));
+    public Response<AccessUserDetails> login(@Validated @RequestBody Login login) {
+        captchaService.validCaptcha(login.getTenantId(), login.getCaptchaId(), login.getCaptcha());
+        return Response.success(authService.login(login.getTenantId(), login.getUserAccount(), login.getPassWord()));
+    }
+
+    /**
+     * MFA认证
+     */
+    @PostMapping("/public/mfa")
+    public Response<AccessUserDetails> mfa(@Validated @RequestBody MfaLogin mfaLogin) {
+        return Response.success(authService.mfa(mfaLogin.getMfaToken(), mfaLogin.getMfaCode()));
     }
 
     /**
      * Ldap认证
      */
     @PostMapping("/public/ldap")
-    public Response<AccessUserDetails> ldap(@Validated @RequestBody LdapRequest request) {
-        return Response.success(ldapService.authenticate(request.getUserAccount(), request.getPassWord()));
+    public Response<AccessUserDetails> ldap(@Validated @RequestBody LdapLogin login) {
+        return Response.success(ldapService.authenticate(login.getTenantId(), login.getUserAccount(), login.getPassWord()));
     }
 
     /**
      * Gitlab回调认证
      */
     @GetMapping("/public/gitlab")
-    public Response<AccessUserDetails> gitlabCallback(@RequestParam("code") String code) {
-        return Response.success(oauthService.gitlabCallback(code));
+    public Response<AccessUserDetails> gitlabCallback(
+            @RequestParam("tenantId") String tenantId, @RequestParam("code") String code) {
+        return Response.success(oauthService.gitlabCallback(tenantId, code));
     }
 
     /**
      * 令牌刷新
      */
     @GetMapping("/public/refresh")
-    public Response<AccessUserDetails> refresh(@NotNull(message = "{admin.refreshToken.notnull}") String refreshToken) throws Exception {
+    public Response<AccessUserDetails> refresh(
+            @NotNull(message = "{admin.refreshToken.null}") String refreshToken) throws Exception {
         return Response.success(authService.refresh(refreshToken));
     }
 
@@ -135,34 +138,8 @@ public class AuthController {
      * 登录信息
      */
     @GetMapping("/info")
-    public Response<AuthInfo> info() throws Exception {
-        AccessUserDetails userDetails = Access.userDetails();
-        Integer userId = userDetails.getUserId();
-
-        AuthInfo authInfo = new AuthInfo();
-        authInfo.setUserId(userId);
-        authInfo.setUserName(userDetails.getUserNick());
-        authInfo.setRoles(userDetails.getRoles());
-        authInfo.setPermissions(userDetails.getPermissions());
-
-        String tenantId = userDetails.getTenantId();
-        SysTenant sysTenant = sysTenantDao.getById(tenantId);
-        authInfo.setTenantId(tenantId);
-        authInfo.setTenantTitle(sysTenant.getTitle());
-        authInfo.setTenantLogo(sysTenant.getLogo());
-
-        if (GITLAB.equalsVal(userDetails.getAuthType())) {
-            OAuthUser oAuthUser = oauthService.infoUser(userId);
-            authInfo.setUserEmail(oAuthUser.getUserEmail());
-            authInfo.setAvatar(oAuthUser.getUserAvatar());
-        } else if (SYS.equalsVal(userDetails.getAuthType())) {
-            SysAttach avatar = attachService.latestOfOwner(
-                    String.valueOf(userId), "sys-user", "avatar");
-            if (avatar != null) {
-                authInfo.setAvatar(avatar.getViewUrl());
-            }
-        }
-        return Response.success(authInfo);
+    public Response<AuthInfo> getAuthInfo() throws Exception {
+        return Response.success(authService.getAuthInfo());
     }
 
     /**
@@ -179,7 +156,7 @@ public class AuthController {
     @PostMapping("/online")
     public Response<Response.Page<AccessTokenInfo>> onlineList(@RequestBody OnlineQuery login) {
         List<AccessTokenInfo> list = bearerTokenService.listAccessToken(
-                login.getUserAccount(), login.getBeginTime(), login.getEndTime());
+                Access.tenantId(), login.getUserAccount(), login.getBeginTime(), login.getEndTime());
         list.sort(Comparator.comparing(AccessTokenInfo::getAccessTime).reversed());
         return Response.page(list);
     }
@@ -187,9 +164,9 @@ public class AuthController {
     /**
      * 强退用户
      */
-    @PreAuthorize("@permit.hasPermit('monitor:online:force')")
+    @PreAuthorize("@permits.hasPermit('monitor:online:force')")
     @GetMapping("/outline/{accessId}")
     public Response<Void> forceLogout(@PathVariable String accessId) throws Exception {
-        return Response.success(() -> authService.forceLogout(accessId));
+        return Response.success(() -> authService.forceLogout(Access.tenantId(), accessId));
     }
 }

@@ -22,17 +22,17 @@ public interface LdapService {
     /**
      * Ldap认证
      */
-    AccessUserDetails authenticate(String userAccount, String passWord);
+    AccessUserDetails authenticate(String tenantId, String userAccount, String passWord);
 
     /**
      * 获取配置
      */
-    LdapConfig queryByName(String ldapName);
+    LdapConfig getConfig(String tenantId);
 
     /**
      * 修改配置
      */
-    void updateConfig(LdapConfig ldapConfig);
+    void updateConfig(String tenantId, LdapConfig ldapConfig);
 
     /**
      * 测试配置
@@ -42,15 +42,15 @@ public interface LdapService {
     /**
      * 用户列表
      */
-    Page<LdapUserDto> listUser(String ldapAccount);
+    Page<LdapUserDto> listUser(String tenantId, String ldapAccount);
 
     /**
      * 删除用户
      */
-    void deleteUser(Integer userId);
+    void deleteUser(String tenantId, Integer userId);
 
     /**
      * 修改用户角色
      */
-    void changeUserRole(Integer userId, String roleCode);
+    void changeUserRole(String tenantId, Integer userId, String roleCode);
 }

@@ -28,7 +28,8 @@ public interface OAuthUserDtoMapper {
     /**
      * 用户列表
      */
-    List<OAuthUserDto> listUser(Page<OAuthUserDto> page, @Param("query") OAuthUserQuery query);
+    List<OAuthUserDto> listUser(@Param("tenantId") String tenantId,
+                                @Param("query") OAuthUserQuery query, Page<OAuthUserDto> page);
 
     /**
      * 用户个人信息

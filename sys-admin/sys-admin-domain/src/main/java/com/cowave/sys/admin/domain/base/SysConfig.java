@@ -53,7 +53,7 @@ public class SysConfig implements AccessInfoSetter {
      * 配置名称
      */
     @ExcelProperty(value = "配置名称")
-    @NotBlank(message = "{admin.config.name.notnull}")
+    @NotBlank(message = "{admin.config.name.null}")
     private String configName;
 
     /**
@@ -61,14 +61,14 @@ public class SysConfig implements AccessInfoSetter {
      */
     @ColumnWidth(40)
     @ExcelProperty(value = "配置key")
-    @NotBlank(message = "{admin.config.key.notnull}")
+    @NotBlank(message = "{admin.config.key.null}")
     private String configKey;
 
     /**
      * 配置值
      */
     @ExcelProperty(value = "配置值")
-    @NotBlank(message = "{admin.config.value.notnull}")
+    @NotBlank(message = "{admin.config.value.null}")
     private String configValue;
 
     /**

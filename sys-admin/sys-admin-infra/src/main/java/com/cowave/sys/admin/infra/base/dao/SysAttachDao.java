@@ -9,7 +9,10 @@
  */
 package com.cowave.sys.admin.infra.base.dao;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cowave.commons.framework.access.Access;
+import com.cowave.sys.admin.domain.base.request.AttachQuery;
 import com.cowave.sys.admin.infra.base.dao.mapper.SysAttachMapper;
 import com.cowave.sys.admin.domain.base.SysAttach;
 import org.springframework.stereotype.Repository;
@@ -23,12 +26,26 @@ import java.util.List;
 public class SysAttachDao extends ServiceImpl<SysAttachMapper, SysAttach> {
 
     /**
-     * 附件列表
+     * 分页
      */
-    public List<SysAttach> queryList(String ownerId, String ownerType, String attachType){
+    public Page<SysAttach> page(AttachQuery query){
         return lambdaQuery()
-                .eq(ownerId != null, SysAttach::getOwnerId, ownerId)
-                .eq(ownerType != null, SysAttach::getOwnerType, ownerType)
+                .eq(query.getOwnerId() != null, SysAttach::getOwnerId, query.getOwnerId())
+                .eq(query.getOwnerModule() != null, SysAttach::getOwnerModule, query.getOwnerModule())
+                .eq(query.getAttachType() != null, SysAttach::getAttachType, query.getAttachType())
+                .ge(query.getBeginTime() != null, SysAttach::getCreateTime, query.getBeginTime())
+                .le(query.getEndTime() != null, SysAttach::getCreateTime, query.getEndTime())
+                .orderByDesc(SysAttach::getCreateTime)
+                .page(Access.page());
+    }
+
+    /**
+     * 列表
+     */
+    public List<SysAttach> listOfOwner(String ownerId, String ownerModule, String attachType){
+        return lambdaQuery()
+                .eq(SysAttach::getOwnerId, ownerId)
+                .eq(SysAttach::getOwnerModule, ownerModule)
                 .eq(attachType != null, SysAttach::getAttachType, attachType)
                 .orderByDesc(SysAttach::getCreateTime)
                 .list();
@@ -37,10 +54,10 @@ public class SysAttachDao extends ServiceImpl<SysAttachMapper, SysAttach> {
     /**
      * 最新的附件
      */
-    public SysAttach latestOfOwner(String ownerId, String ownerType, String attachType){
+    public SysAttach latestOfOwner(String ownerId, String ownerModule, String attachType){
         return lambdaQuery()
                 .eq(ownerId != null, SysAttach::getOwnerId, ownerId)
-                .eq(ownerType != null, SysAttach::getOwnerType, ownerType)
+                .eq(ownerModule != null, SysAttach::getOwnerModule, ownerModule)
                 .eq(attachType != null, SysAttach::getAttachType, attachType)
                 .orderByDesc(SysAttach::getCreateTime)
                 .last("LIMIT 1").one();
@@ -57,12 +74,12 @@ public class SysAttachDao extends ServiceImpl<SysAttachMapper, SysAttach> {
     }
 
     /**
-     * 清楚附件Owner
+     * 清除附件Owner
      */
-    public void clearWithOwner(String ownerId, String ownerType, String attachType, Long attachId){
+    public void clearOwner(String ownerId, String ownerModule, String attachType, Long attachId){
         lambdaUpdate()
                 .eq(SysAttach::getOwnerId, ownerId)
-                .eq(SysAttach::getOwnerType, ownerType)
+                .eq(SysAttach::getOwnerModule, ownerModule)
                 .eq(SysAttach::getAttachType, attachType)
                 .eq(attachId != null, SysAttach::getAttachId, attachId)
                 .set(SysAttach::getOwnerId, null)

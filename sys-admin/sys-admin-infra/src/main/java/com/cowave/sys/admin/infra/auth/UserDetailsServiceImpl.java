@@ -23,6 +23,7 @@ import com.cowave.sys.admin.infra.rabc.dao.mapper.dto.SysRoleDtoMapper;
 import com.cowave.sys.admin.domain.rabc.SysDept;
 import com.cowave.sys.admin.domain.rabc.SysUser;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -45,10 +46,11 @@ public class UserDetailsServiceImpl implements TenantUserDetailsService {
     private final SysDeptDtoMapper sysDeptDtoMapper;
     private final SysRoleDtoMapper sysRoleDtoMapper;
     private final SysMenuDtoMapper sysMenuDtoMapper;
+    private final MfaConfiguration mfaConfiguration;
 
     @Override
 	public UserDetails loadTenantUserByUsername(String tenantId, String userAccount) {
-        SysUser sysUser = sysUserDao.getByUserAccount(tenantId, userAccount);
+        SysUser sysUser = sysUserDao.getByAccount(tenantId, userAccount);
         if(sysUser == null){
             return null;
         }
@@ -63,6 +65,21 @@ public class UserDetailsServiceImpl implements TenantUserDetailsService {
                     "{admin.user.tenant.expired}", sysTenant.getTenantName());
         }
 
+        String mfaKey = sysUser.getMfa();
+        if(StringUtils.isBlank(mfaKey)){
+            return buildUserDetails(sysUser, sysTenant);
+        }else{
+            String mfaToken = mfaConfiguration.buildMfaToken(tenantId, userAccount);
+            AccessUserDetails userDetails = new AccessUserDetails();
+            userDetails.setUsername(userAccount);
+            userDetails.setUserPasswd(sysUser.getUserPasswd());
+            userDetails.setMfaRequired(true);
+            userDetails.setAccessToken(mfaToken);
+            return userDetails;
+        }
+	}
+
+    public AccessUserDetails buildUserDetails(SysUser sysUser, SysTenant sysTenant) {
         // 用户部门
         SysDept userDept = sysDeptDtoMapper.getPrimaryDeptByUserId(sysUser.getUserId());
         AccessUserDetails userDetails = sysUser.newUserDetails(userDept);
@@ -81,6 +98,8 @@ public class UserDetailsServiceImpl implements TenantUserDetailsService {
         userDetails.setClusterLevel(applicationProperties.getClusterLevel());
         userDetails.setClusterName(applicationProperties.getClusterName());
         bearerTokenService.assignAccessRefreshToken(userDetails);
+        // 租户首页
+        userDetails.setTenantIndex(sysTenant.getViewIndex());
         return userDetails;
-	}
+    }
 }

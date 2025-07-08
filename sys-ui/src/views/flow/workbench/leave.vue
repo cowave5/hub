@@ -3,7 +3,7 @@
     <el-tabs v-model="activeTab">
       <el-tab-pane label="所有请假" name="allLeave">
         <el-row>
-          <el-form ref="allForm" :model="allParams" size="small" :inline="true" v-show="showSearch" label-width="68px">
+          <el-form ref="allForm" :model="allParams" size="small" :inline="true" v-show="showSearch" label-width="auto">
             <el-form-item label="流程状态" prop="processStatus">
               <el-select v-model="allParams.processStatus" placeholder="选择流程状态">
                 <el-option :key="1" :value="1" label="审批中" />
@@ -81,7 +81,7 @@
 
       <el-tab-pane label="我的请假" name="myLeave">
         <el-row>
-          <el-form ref="myForm" :model="myParams" size="small" :inline="true" v-show="showSearch" label-width="68px">
+          <el-form ref="myForm" :model="myParams" size="small" :inline="true" v-show="showSearch" label-width="auto">
             <el-form-item label="流程状态" prop="processStatus">
               <el-select v-model="myParams.processStatus" placeholder="选择流程状态">
                 <el-option :key="1" :value="1" label="审批中" />

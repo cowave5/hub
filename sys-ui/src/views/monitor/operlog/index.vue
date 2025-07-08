@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!--  筛选栏  -->
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
       <el-form-item label="日志模块" prop="opModule">
         <el-select v-model="queryParams.opModule" @change="handleModuleChange">
           <el-option v-for="item in moduleOptions" :key="item.key" :value="item.key" :label="$t(item.label)"/>
@@ -29,7 +29,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="handleClean"
-                   :disabled="!checkPermit(['monitor:log:delete'])">清空</el-button>
+                   :disabled="!checkPermit(['monitor:log:clean'])">清空</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="handleDelete"
@@ -93,8 +93,9 @@
 </template>
 
 <script>
-import {getOpLogList, delOpLog, cleanOpLog, getOpLogOptions} from "@/api/monitor/operlog";
+import {listOpLog, delOpLog, cleanOpLog} from "@/api/monitor/operlog";
 import {checkPermit} from "@/utils/permission";
+import {listTypeByGroup} from "@/api/system/dict";
 export default {
   name: "Oplog",
   dicts: ['success_failed', 'op_action'],
@@ -137,7 +138,7 @@ export default {
   methods: {
     checkPermit,
     getOptions() {
-      getOpLogOptions().then(response => {
+      listTypeByGroup("domain_module").then(response => {
         this.moduleOptions = response.data;
       });
     },
@@ -154,7 +155,7 @@ export default {
     /** 查询登录日志 */
     getList() {
       this.loading = true;
-      getOpLogList(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      listOpLog(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
             this.list = response.data.list;
             this.total = response.data.total;
             this.loading = false;
@@ -207,8 +208,8 @@ export default {
       let types = this.moduleOptions.find(item => item.key === row.opModule).children;
       if (types !== undefined) {
         let viewName = types.find(item => item.key === row.opType).value;
-        if (viewName === undefined) {
-          viewName = "detail";
+        if (viewName === undefined || viewName === null) {
+          viewName = "log_view_" + row.opType;
         }
         this.infoView = this.getDialog(viewName)
         this.$nextTick(() => {

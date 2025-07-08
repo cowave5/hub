@@ -25,6 +25,11 @@ public interface SysMenuService{
 	List<SysMenu> listMenusByAdmin(String tenantId);
 
 	/**
+	 * 菜单权限（管理员）
+	 */
+	List<SysMenu> listMenusInPublic(String tenantId);
+
+	/**
 	 * 菜单权限（指定角色）
 	 */
 	List<SysMenu> listMenusByRoles(String tenantId, List<String> roleList);

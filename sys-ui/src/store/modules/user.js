@@ -1,4 +1,4 @@
-import {login, logout, getAuthInfo, ldapLogin, gitlabLogin, logon} from '@/api/auth'
+import {login, logout, getAuthInfo, ldapLogin, gitlabLogin, logon, mfaLogin} from '@/api/auth'
 import cache from "@/plugins/cache";
 
 const user = {
@@ -8,6 +8,7 @@ const user = {
     tenantId: null,
     tenantTitle: null,
     tenantLogo: null,
+    tenantIndex: null,
     userId: null,
     name: '',
     avatar: '',
@@ -16,6 +17,9 @@ const user = {
   },
 
   mutations: {
+    SET_MFA:  (state, data) => {
+      cache.local.setMfa(data.accessToken)
+    },
     SET_TOKEN: (state, token) => {
       cache.local.setToken(token);
     },
@@ -27,6 +31,10 @@ const user = {
     },
     SET_TENANT_LOGO: (state, tenantLogo) => {
       state.tenantLogo = tenantLogo
+    },
+    SET_TENANT_INDEX: (state, tenantIndex) => {
+      state.tenantIndex = tenantIndex;
+      cache.local.setTenantIndex(tenantIndex);
     },
     SET_USERID: (state, userId) => {
       state.userId = userId
@@ -52,8 +60,15 @@ const user = {
       const password = userInfo.password;
       return new Promise((resolve, reject) => {
         logon(tenantId, username, password).then(res => {
-          commit('SET_TOKEN', res.data);
-          resolve();
+          if (res.data.mfaRequired) {
+            commit('SET_MFA', res.data);
+            resolve({ mfaRequired: true });
+          }else{
+            cache.local.removeMfa();
+            commit('SET_TOKEN', res.data);
+            commit('SET_TENANT_INDEX', res.data.tenantIndex);
+            resolve({ mfaRequired: false });
+          }
         }).catch(error => {
           reject(error)
         })
@@ -68,7 +83,27 @@ const user = {
       const uuid = userInfo.uuid;
       return new Promise((resolve, reject) => {
         login(tenantId, username, password, code, uuid).then(res => {
+          if (res.data.mfaRequired) {
+            commit('SET_MFA', res.data);
+            resolve({ mfaRequired: true });
+          }else{
+            cache.local.removeMfa();
+            commit('SET_TOKEN', res.data);
+            commit('SET_TENANT_INDEX', res.data.tenantIndex);
+            resolve({ mfaRequired: false });
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    Mfa({ commit }, mfaInfo) {
+      return new Promise((resolve, reject) => {
+        mfaLogin(mfaInfo).then(res => {
+          cache.local.removeMfa();
           commit('SET_TOKEN', res.data);
+          commit('SET_TENANT_INDEX', res.data.tenantIndex);
           resolve();
         }).catch(error => {
           reject(error)
@@ -77,11 +112,14 @@ const user = {
     },
 
     Ldap({ commit }, ldapInfo) {
+      const tenantId = ldapInfo.tenantId;
       const username = ldapInfo.username.trim()
       const password = ldapInfo.password
       return new Promise((resolve, reject) => {
-        ldapLogin(username, password).then(res => {
+        ldapLogin(tenantId, username, password).then(res => {
+          cache.local.removeMfa();
           commit('SET_TOKEN', res.data);
+          commit('SET_TENANT_INDEX', res.data.tenantIndex);
           resolve();
         }).catch(error => {
           reject(error)
@@ -89,10 +127,12 @@ const user = {
       })
     },
 
-    OauthGitlab({ commit }, code) {
+    OauthGitlab({ commit }, query) {
       return new Promise((resolve, reject) => {
-        gitlabLogin(code).then(res => {
+        gitlabLogin(query.tenantId, query.code).then(res => {
+          cache.local.removeMfa();
           commit('SET_TOKEN', res.data);
+          commit('SET_TENANT_INDEX', res.data.tenantIndex);
           resolve();
         }).catch(error => {
           reject(error)
@@ -107,6 +147,7 @@ const user = {
           commit('SET_TENANT', '')
           commit('SET_TENANT_TITLE', '')
           commit('SET_TENANT_LOGO', null)
+          commit('SET_TENANT_TITLE', null)
           commit('SET_USERID', null)
           commit('SET_NAME', '')
           commit('SET_AVATAR', '')

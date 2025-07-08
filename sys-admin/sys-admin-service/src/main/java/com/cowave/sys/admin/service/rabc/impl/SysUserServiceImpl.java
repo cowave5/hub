@@ -78,9 +78,9 @@ public class SysUserServiceImpl implements SysUserService {
     public void create(String tenantId, UserCreate user) {
 		String userAccount = user.getUserAccount();
 		String userPasswd = user.getUserPasswd();
-    	HttpAsserts.notNull(userPasswd, BAD_REQUEST, "{admin.user.passwd.notnull}");
+    	HttpAsserts.notNull(userPasswd, BAD_REQUEST, "{admin.user.passwd.null}");
 
-		long accountCount = sysUserDao.countByUserAccount(tenantId, userAccount, null);
+		long accountCount = sysUserDao.countByAccount(tenantId, userAccount, null);
 		HttpAsserts.isTrue(accountCount == 0, BAD_REQUEST, "{admin.user.account.conflict}", userAccount);
 
 		// 创建用户
@@ -133,14 +133,14 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public void edit(String tenantId, UserCreate user) {
 		Integer userId = user.getUserId();
-		HttpAsserts.notNull(userId, BAD_REQUEST, "{admin.user.id.notnull}");
+		HttpAsserts.notNull(userId, BAD_REQUEST, "{admin.user.id.null}");
 
 		UserInfoDto preUser = sysUserDtoMapper.getById(tenantId, userId);
 		HttpAsserts.notNull(preUser, NOT_FOUND, "{admin.user.not.exist}", userId);
 
 		// 账号校验
 		String userAccount = user.getUserAccount();
-		long accountCount = sysUserDao.countByUserAccount(tenantId, userAccount, userId);
+		long accountCount = sysUserDao.countByAccount(tenantId, userAccount, userId);
 		HttpAsserts.isTrue(accountCount == 0, BAD_REQUEST, "{admin.user.account.conflict}", userAccount);
 
 		// 操作日志

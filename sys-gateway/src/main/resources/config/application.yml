@@ -16,9 +16,9 @@ spring:
         - /meter/favicon.ico
         - /meter/actuator/**
         - /meter/doc/**
-        - /quartz/favicon.ico
-        - /quartz/actuator/**
-        - /quartz/doc/**
+        - /job/favicon.ico
+        - /job/actuator/**
+        - /job/doc/**
   cloud:
     gateway:
       enabled: true
@@ -31,10 +31,10 @@ spring:
           uri: lb://sys-admin
           predicates:
             - Path=/admin/**
-        - id: quartz
-          uri: lb://sys-quartz
+        - id: job
+          uri: lb://sys-job
           predicates:
-            - Path=/quartz/**
+            - Path=/job/**
         - id: flow
           uri: lb://sys-flow
           predicates:

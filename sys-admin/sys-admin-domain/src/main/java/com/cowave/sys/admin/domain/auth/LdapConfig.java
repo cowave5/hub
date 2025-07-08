@@ -10,6 +10,7 @@
 package com.cowave.sys.admin.domain.auth;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cowave.commons.framework.access.security.AccessInfoSetter;
 import com.cowave.commons.framework.support.mybatis.pg.PgJsonHandler;
@@ -27,14 +28,10 @@ import java.util.Map;
 public class LdapConfig implements AccessInfoSetter {
 
     /**
-     * id
+     * 租户id
      */
-    private Integer id;
-
-    /**
-     * Ldap名称
-     */
-    private String ldapName;
+    @TableId
+    private String tenantId;
 
     /**
      * Ldap状态

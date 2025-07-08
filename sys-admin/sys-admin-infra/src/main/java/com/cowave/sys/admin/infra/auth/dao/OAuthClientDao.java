@@ -17,20 +17,39 @@ import com.cowave.sys.admin.infra.auth.dao.mapper.OAuthClientMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author shanhuiming
  */
 @Repository
 public class OAuthClientDao extends ServiceImpl<OAuthClientMapper, OAuthClient> {
 
-    public OAuthClient getByClientId(String clientId){
+    /**
+     * 查询客户端
+     */
+    public OAuthClient getByClientId(String clientId) {
         return lambdaQuery().eq(OAuthClient::getClientId, clientId).one();
     }
 
-    public Page<OAuthClient> queryPage(String clientName) {
+    /**
+     * 分页查询
+     */
+    public Page<OAuthClient> page(String tenantId, String clientName) {
         return lambdaQuery()
+                .eq(OAuthClient::getTenantId, tenantId)
                 .like(StringUtils.isNotBlank(clientName), OAuthClient::getClientName, clientName)
                 .orderByDesc(OAuthClient::getCreateTime)
                 .page(Access.page());
+    }
+
+    /**
+     * 删除客户端
+     */
+    public void removeByIds(String tenantId, List<Integer> ids) {
+        lambdaUpdate()
+                .eq(OAuthClient::getTenantId, tenantId)
+                .in(OAuthClient::getId, ids)
+                .remove();
     }
 }

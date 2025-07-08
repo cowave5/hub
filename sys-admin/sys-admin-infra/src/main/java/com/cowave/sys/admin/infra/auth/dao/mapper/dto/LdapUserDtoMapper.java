@@ -30,7 +30,8 @@ public interface LdapUserDtoMapper {
     /**
      * 用户列表
      */
-    Page<LdapUserDto> listUser(Page<LdapUserDto> page, @Param("userAccount") String userAccount);
+    Page<LdapUserDto> listUser(@Param("tenantId") String tenantId,
+                               @Param("userAccount") String userAccount, Page<LdapUserDto> page);
 
     /**
      * 用户个人信息

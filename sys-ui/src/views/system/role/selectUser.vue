@@ -119,12 +119,10 @@ export default {
         this.$modal.msgError(this.$t('user.text.unselect'));
         return;
       }
-      grantRoleUser({ roleId: roleId, userIds: userIds }).then(res => {
-        if (res.code === "200") {
-          this.$modal.msgSuccess(this.$t('role.msg.grant'));
-          this.visible = false;
-          this.$emit("ok");
-        }
+      grantRoleUser({roleId: roleId, userIds: userIds}).then(res => {
+        this.$modal.msgSuccess(this.$t('role.msg.grant'));
+        this.visible = false;
+        this.$emit("ok");
       });
     }
   }

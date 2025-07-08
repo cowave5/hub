@@ -43,12 +43,6 @@
           {{$t('commons.button.export')}}
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button type="danger" plain icon="el-icon-refresh" size="mini" @click="handleRefreshCache"
-                   :disabled="!checkPermit(['sys:dict:cache'])">
-          {{$t('dict.button.reset')}}
-        </el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :cols="cols"/>
     </el-row>
 
@@ -67,7 +61,6 @@
       <el-table-column v-if="cols[2].show" :label="$t('dict.label.value')" align="center" prop="dictValue"/>
       <el-table-column v-if="cols[3].show" :label="$t('dict.label.valueType')" align="center" prop="valueType"/>
       <el-table-column v-if="cols[4].show" :label="$t('dict.label.order')" align="center" prop="dictOrder"/>
-
       <el-table-column v-if="cols[5].show" :label="$t('dict.label.css')" align="center" prop="css"/>
       <el-table-column v-if="cols[6].show" :label="$t('commons.label.status')" align="center" prop="status">
         <template slot-scope="scope">
@@ -200,7 +193,6 @@ import {
   delDict,
   getDictInfo,
   getDictList,
-  refreshDict,
   updateDict,
 } from '@/api/system/dict'
 
@@ -373,12 +365,6 @@ export default {
     /** 导出 */
     handleExport() {
       this.download('/admin/api/v1/dict/export', {}, this.$t('dict.text.data') + `_${new Date().getTime()}.xlsx`)
-    },
-    /** 刷新缓存 */
-    handleRefreshCache() {
-      refreshDict().then(() => {
-        this.$modal.msgSuccess(this.$t('commons.msg.success.reset'));
-      });
     },
     /** 取消 */
     cancel() {

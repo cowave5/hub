@@ -18,7 +18,7 @@ import com.cowave.sys.admin.domain.rabc.SysUserRole;
 import com.cowave.sys.admin.domain.rabc.SysUserTree;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 

@@ -24,12 +24,12 @@ public class RoleUserUpdate {
     /**
      * 角色id
      */
-    @NotNull(message = "{admin.role.id.notnull}")
+    @NotNull(message = "{admin.role.id.null}")
     private Integer roleId;
 
     /**
      * 用户id列表
      */
-    @NotEmpty(message = "{admin.user.ids.notnull}")
+    @NotEmpty(message = "{admin.user.ids.null}")
     private List<Integer> userIds;
 }

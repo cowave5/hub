@@ -63,7 +63,7 @@ public class SysPost {
     /**
      * 岗位名称
      */
-    @NotBlank(message = "{admin.post.name.notnull}")
+    @NotBlank(message = "{admin.post.name.null}")
 	@ExcelProperty(value = "岗位名称")
     private String postName;
 

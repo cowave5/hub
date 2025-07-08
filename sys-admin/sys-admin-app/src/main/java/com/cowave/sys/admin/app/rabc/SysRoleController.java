@@ -31,6 +31,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static com.cowave.sys.admin.domain.base.constants.OpAction.*;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_ROLE;
+
 /**
  * 角色
  * @order 4
@@ -47,7 +51,7 @@ public class SysRoleController {
     /**
      * 列表
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:query')")
+    @PreAuthorize("@permits.hasPermit('sys:role:query')")
     @GetMapping
     public Response<Response.Page<SysRole>> list(RoleQuery query) {
         return Response.page(sysRoleService.list(Access.tenantId(), query));
@@ -58,7 +62,7 @@ public class SysRoleController {
      *
      * @param roleId 角色id
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:query')")
+    @PreAuthorize("@permits.hasPermit('sys:role:query')")
     @GetMapping("/{roleId}")
     public Response<RoleInfoDto> info(@PathVariable Integer roleId) {
         return Response.success(sysRoleService.info(Access.tenantId(), roleId));
@@ -67,8 +71,8 @@ public class SysRoleController {
     /**
      * 新增
      */
-    @Operation(module = "op_admin", type = "op_role", action = "op_create", desc = "新增角色：#{#sysRole.roleName}")
-    @PreAuthorize("@permit.hasPermit('sys:role:create')")
+    @Operation(module = SYSTEM, type = SYSTEM_ROLE, action = CREATE, desc = "新增角色：#{#sysRole.roleName}")
+    @PreAuthorize("@permits.hasPermit('sys:role:create')")
     @PostMapping
     public Response<Void> add(@Validated @RequestBody SysRole sysRole) throws Exception {
         return Response.success(() -> sysRoleService.add(Access.tenantId(), sysRole));
@@ -79,8 +83,8 @@ public class SysRoleController {
      *
      * @param roleIds 角色id列表
      */
-    @Operation(module = "op_admin", type = "op_role", action = "op_delete", desc = "删除角色")
-    @PreAuthorize("@permit.hasPermit('sys:role:delete')")
+    @Operation(module = SYSTEM, type = SYSTEM_ROLE, action = DELETE, desc = "删除角色")
+    @PreAuthorize("@permits.hasPermit('sys:role:delete')")
     @DeleteMapping("/{roleIds}")
     public Response<Void> delete(@PathVariable List<Integer> roleIds) throws Exception {
         return Response.success(() -> sysRoleService.delete(Access.tenantId(), roleIds));
@@ -89,8 +93,8 @@ public class SysRoleController {
     /**
      * 修改
      */
-    @Operation(module = "op_admin", type = "op_role", action = "op_edit", desc = "修改角色：#{#sysRole.roleName}")
-    @PreAuthorize("@permit.hasPermit('sys:role:edit')")
+    @Operation(module = SYSTEM, type = SYSTEM_ROLE, action = EDIT, desc = "修改角色：#{#sysRole.roleName}")
+    @PreAuthorize("@permits.hasPermit('sys:role:edit')")
     @PatchMapping
     public Response<Void> edit(@Validated @RequestBody SysRole sysRole) throws Exception {
         return Response.success(() -> sysRoleService.edit(Access.tenantId(), sysRole));
@@ -99,7 +103,7 @@ public class SysRoleController {
     /**
      * 修改菜单
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:menus')")
+    @PreAuthorize("@permits.hasPermit('sys:role:menus')")
     @PatchMapping("/menus")
     public Response<Void> updateMenus(@RequestBody RoleMenuUpdate roleUpdate) throws Exception {
         return Response.success(() -> sysRoleService.updateMenus(Access.tenantId(), roleUpdate));
@@ -108,7 +112,7 @@ public class SysRoleController {
     /**
      * 导出角色
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:export')")
+    @PreAuthorize("@permits.hasPermit('sys:role:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, RoleQuery query) throws IOException {
     	String fileName = URLEncoder.encode("角色数据", StandardCharsets.UTF_8).replace("\\+", "%20");
@@ -123,7 +127,7 @@ public class SysRoleController {
     /**
      * 授权用户
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:members:grant')")
+    @PreAuthorize("@permits.hasPermit('sys:role:members:grant')")
     @PostMapping("/user/grant")
     public Response<Void> grantUser(@Validated @RequestBody RoleUserUpdate roleUpdate) throws Exception {
     	return Response.success(() -> sysRoleService.grantUser(Access.tenantId(), roleUpdate));
@@ -132,7 +136,7 @@ public class SysRoleController {
     /**
      * 取消用户
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:members:cancel')")
+    @PreAuthorize("@permits.hasPermit('sys:role:members:cancel')")
     @PostMapping("/user/cancel")
     public Response<Void> cancelUser(@Validated @RequestBody RoleUserUpdate roleUpdate) throws Exception {
     	return Response.success(() -> sysRoleService.cancelUser(Access.tenantId(), roleUpdate));
@@ -141,7 +145,7 @@ public class SysRoleController {
     /**
      * 用户列表（已授权）
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:members:query')")
+    @PreAuthorize("@permits.hasPermit('sys:role:members:query')")
     @GetMapping("/users/authed")
     public Response<Response.Page<RoleUserDto>> getAuthedUser(@Valid RoleUserQuery query) {
     	return Response.page(sysRoleService.getAuthedUser(Access.tenantId(), query));
@@ -150,7 +154,7 @@ public class SysRoleController {
     /**
      * 用户列表（未授权）
      */
-    @PreAuthorize("@permit.hasPermit('sys:role:members:query')")
+    @PreAuthorize("@permits.hasPermit('sys:role:members:query')")
     @GetMapping("/users/unAuthed")
     public Response<Response.Page<RoleUserDto>> getUnAuthedUser(@Valid RoleUserQuery query) {
     	return Response.page(sysRoleService.getUnAuthedUser(Access.tenantId(), query));

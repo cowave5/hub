@@ -26,11 +26,17 @@ public class OAuthServerDao extends ServiceImpl<OAuthServerMapper, OAuthServer> 
         return lambdaQuery().eq(OAuthServer::getStatus, 1).list();
     }
 
-    public OAuthServer getByServerType(String serverType){
-        return lambdaQuery().eq(OAuthServer::getServerType, serverType).one();
+    /**
+     * 获取OAuth授权服务配置
+     */
+    public OAuthServer getByServerType(String tenantId, String serverType){
+        return lambdaQuery().eq(OAuthServer::getTenantId, tenantId).eq(OAuthServer::getServerType, serverType).one();
     }
 
-    public void removeByServerType(String serverType){
-        lambdaUpdate().eq(OAuthServer::getServerType, serverType).remove();
+    /**
+     * 删除OAuth授权服务配置
+     */
+    public void removeByServerType(String tenantId, String serverType){
+        lambdaUpdate().eq(OAuthServer::getTenantId, tenantId).eq(OAuthServer::getServerType, serverType).remove();
     }
 }

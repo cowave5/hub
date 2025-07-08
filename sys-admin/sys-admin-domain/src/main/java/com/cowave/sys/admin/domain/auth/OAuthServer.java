@@ -9,7 +9,6 @@
  */
 package com.cowave.sys.admin.domain.auth;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cowave.commons.framework.access.security.AccessInfoSetter;
@@ -28,8 +27,8 @@ public class OAuthServer implements AccessInfoSetter {
     /**
      * id
      */
-    @TableId(type = IdType.AUTO)
-    private Integer id;
+    @TableId
+    private String tenantId;
 
     /**
      * 状态

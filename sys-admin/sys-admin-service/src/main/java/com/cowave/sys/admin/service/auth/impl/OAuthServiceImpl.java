@@ -34,6 +34,7 @@ import com.cowave.sys.admin.domain.auth.request.OAuth2TokenRequest;
 import com.cowave.sys.admin.domain.auth.request.OAuthUserQuery;
 import com.cowave.sys.admin.domain.auth.vo.OAuth2CodeVo;
 import com.cowave.sys.admin.domain.base.SysOperation;
+import com.cowave.sys.admin.domain.rabc.SysTenant;
 import com.cowave.sys.admin.domain.rabc.SysUser;
 import com.cowave.sys.admin.infra.auth.dao.LdapUserDao;
 import com.cowave.sys.admin.infra.auth.dao.OAuthClientDao;
@@ -41,6 +42,7 @@ import com.cowave.sys.admin.infra.auth.dao.OAuthServerDao;
 import com.cowave.sys.admin.infra.auth.dao.OAuthUserDao;
 import com.cowave.sys.admin.infra.auth.dao.mapper.dto.OAuthUserDtoMapper;
 import com.cowave.sys.admin.infra.base.SysOperationHandler;
+import com.cowave.sys.admin.infra.rabc.dao.SysTenantDao;
 import com.cowave.sys.admin.infra.rabc.dao.SysUserDao;
 import com.cowave.sys.admin.infra.rabc.dao.mapper.dto.SysRoleDtoMapper;
 import com.cowave.sys.admin.service.auth.GitlabService;
@@ -58,10 +60,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
-import static com.cowave.commons.client.http.constants.HttpCode.INTERNAL_SERVER_ERROR;
+import static com.cowave.commons.client.http.constants.HttpCode.*;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_OAUTH;
 import static com.cowave.sys.admin.domain.auth.AuthType.*;
+import static com.cowave.sys.admin.domain.base.constants.OpAction.LOGIN;
+import static com.cowave.sys.admin.domain.base.constants.OpAction.LOGIN_OAUTH;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_AUTH;
 
 /**
  * @author shanhuiming
@@ -72,6 +77,7 @@ public class OAuthServiceImpl implements OAuthService {
     private final ApplicationProperties applicationProperties;
     private final BearerTokenService bearerTokenService;
     private final RedisHelper redisHelper;
+    private final SysTenantDao sysTenantDao;
     private final SysUserDao sysUserDao;
     private final LdapUserDao ldapUserDao;
     private final OAuthUserDao oauthUserDao;
@@ -83,9 +89,9 @@ public class OAuthServiceImpl implements OAuthService {
     private final GitlabService gitlabService;
 
     @Override
-    public AccessUserDetails gitlabCallback(String code) {
+    public AccessUserDetails gitlabCallback(String tenantId, String code) {
         // 根据授权码兑换令牌
-        OAuthServer oAuthServer = oauthServerDao.getByServerType(GITLAB.val());
+        OAuthServer oAuthServer = oauthServerDao.getByServerType(tenantId, GITLAB.val());
 
         HttpResponse<GitlabToken> tokenResponse = gitlabService.getGitlabToken(oAuthServer.getAuthUrl(),
                 oAuthServer.getAppId(), oAuthServer.getAppSecret(),
@@ -101,7 +107,7 @@ public class OAuthServiceImpl implements OAuthService {
 
         // 保存Gitlab用户
         assert gitlabUser != null;
-        OAuthUser oauthUser = oauthUserDao.getByAccount(gitlabUser.getUsername(), GITLAB.val());
+        OAuthUser oauthUser = oauthUserDao.getByAccount(tenantId, GITLAB.val(), gitlabUser.getUsername());
         if (oauthUser != null) {
             oauthUser.setUserName(gitlabUser.getName());
             oauthUser.setUserEmail(gitlabUser.getEmail());
@@ -114,7 +120,8 @@ public class OAuthServiceImpl implements OAuthService {
             oauthUserDao.updateById(oauthUser);
         } else {
             oauthUser = GitlabUser.oAuthUser(gitlabUser);
-            oauthUser.setUserCode(GITLAB.generateCode());
+            oauthUser.setTenantId(tenantId);
+            oauthUser.setUserCode(sysTenantDao.nextUserCode(tenantId, GITLAB.generateCode()));
             oauthUser.setRoleCode(oAuthServer.getRoleCode());
             oauthUserDao.save(oauthUser);
         }
@@ -135,80 +142,78 @@ public class OAuthServiceImpl implements OAuthService {
         userDetails.setPermissions(permits);
         userDetails.setRoles(List.of(roleCode));
         bearerTokenService.assignAccessRefreshToken(userDetails);
+        // 租户首页
+        SysTenant sysTenant = sysTenantDao.getById(tenantId);
+        userDetails.setTenantIndex(sysTenant.getViewIndex());
 
         // 登录日志
-        OperationInfo operationInfo = new OperationInfo();
-        operationInfo.setSuccess(true);
-        operationInfo.setOpModule("op_admin");
-        operationInfo.setOpType("op_auth");
-        operationInfo.setOpAction("op_login");
-        operationInfo.setDesc("Gitlab登录：" + oauthUser.getUserAccount());
+        OperationInfo operationInfo = OperationInfo.builder()
+                .success(true)
+                .opModule(SYSTEM)
+                .opType(SYSTEM_AUTH)
+                .opAction(LOGIN)
+                .desc("Gitlab登录：" + oauthUser.getUserAccount())
+                .build();
         sysOperationHandler.create(operationInfo, null);
         return userDetails;
     }
 
     @Override
-    public List<OAuthServer> getEnableServers() {
-        return oauthServerDao.getEnableServers();
-    }
-
-    @Override
-    public OAuthServer getServerConfig(String serverType) {
-        return oauthServerDao.getByServerType(serverType);
+    public OAuthServer getServerConfig(String tenantId, String serverType) {
+        return oauthServerDao.getByServerType(tenantId, serverType);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void updateServerConfig(OAuthServer oauthServer) {
-        oauthServerDao.removeByServerType(oauthServer.getServerType());
+    public void updateServerConfig(String tenantId, OAuthServer oauthServer) {
+        oauthServerDao.removeByServerType(tenantId, oauthServer.getServerType());
+        oauthServer.setTenantId(tenantId);
         oauthServerDao.save(oauthServer);
     }
 
     @Override
-    public List<OAuthUserDto> listUser(OAuthUserQuery query) {
-        return oauthUserDtoMapper.listUser(Access.page(), query);
+    public List<OAuthUserDto> listUser(String tenantId, OAuthUserQuery query) {
+        return oauthUserDtoMapper.listUser(tenantId, query, Access.page());
     }
 
     @Override
-    public OAuthUser infoUser(Integer id) {
-        return oauthUserDao.getById(id);
+    public void deleteUser(String tenantId, Integer userId) {
+        oauthUserDao.removeById(tenantId, userId);
     }
 
     @Override
-    public void deleteUser(Integer userId) {
-        oauthUserDao.removeById(userId);
+    public void updateUserRole(String tenantId, Integer userId, String roleCode) {
+        oauthUserDao.updateRoleCodeById(tenantId, userId, roleCode);
     }
 
     @Override
-    public void updateUserRole(Integer userId, String roleCode) {
-        oauthUserDao.updateRoleCodeById(userId, roleCode);
+    public Page<OAuthClient> listClient(String tenantId, String clientName) {
+        return oAuthClientDao.page(tenantId, clientName);
     }
 
     @Override
-    public Page<OAuthClient> listClient(String clientName) {
-        return oAuthClientDao.queryPage(clientName);
-    }
-
-    @Override
-    public OAuthClient createClient(OAuthClient oAuthClient) {
-        String clientId = UUID.randomUUID().toString().replace("-", "");
-        String clientSecret = UUID.randomUUID().toString().replace("-", "");
-        oAuthClient.setClientId(clientId);
-        oAuthClient.setClientSecret(clientSecret);
+    public OAuthClient createClient(String tenantId, OAuthClient oAuthClient) {
+        oAuthClient.setTenantId(tenantId);
+        oAuthClient.setClientId(UUID.randomUUID().toString().replace("-", ""));
+        oAuthClient.setClientSecret(UUID.randomUUID().toString().replace("-", ""));
         oAuthClientDao.save(oAuthClient);
         return oAuthClient;
     }
 
     @Override
-    public void deleteClient(List<Integer> ids) {
-        oAuthClientDao.removeByIds(ids);
+    public void deleteClient(String tenantId, List<Integer> ids) {
+        oAuthClientDao.removeByIds(tenantId, ids);
     }
 
     @Override
     public OAuth2CodeVo getClientCode(OAuth2CodeRequest request) {
         // 验证客户端id
         OAuthClient oAuthClient = oAuthClientDao.getByClientId(request.getClientId());
-        HttpAsserts.notNull(oAuthClient, BAD_REQUEST, "{admin.oauth.name.notexist}");
+        HttpAsserts.notNull(oAuthClient, BAD_REQUEST, "{admin.oauth.name.not.exist}");
+
+        // 用户是否允许授权这个客户端
+        HttpAsserts.equals(Access.tenantId(), oAuthClient.getTenantId(),
+                FORBIDDEN, "{admin.oauth.resp.forbidden}");
 
         // 校验返回类型
         HttpAsserts.isTrue(StringUtils.equalsIgnoreCase("code", request.getResponseType()),
@@ -259,7 +264,7 @@ public class OAuthServiceImpl implements OAuthService {
 
         // 验证客户端id
         OAuthClient oAuthClient = oAuthClientDao.getByClientId(request.getClientId());
-        HttpAsserts.notNull(oAuthClient, BAD_REQUEST, "{admin.oauth.name.notexist}");
+        HttpAsserts.notNull(oAuthClient, BAD_REQUEST, "{admin.oauth.name.not.exist}");
 
         // 验证回调地址
         HttpAsserts.isTrue(StringUtils.equalsIgnoreCase(oAuthClient.getRedirectUrl(), request.getRedirectUri()),
@@ -287,7 +292,7 @@ public class OAuthServiceImpl implements OAuthService {
             userDetails = ldapUser.newUserDetails();
             userDetails.setAuthType(OAUTH.val() + "/" + LDAP.val());
         } else {
-            SysUser sysUser = sysUserDao.getByUserCode(userCode);
+            SysUser sysUser = sysUserDao.getByCode(userCode);
             userDetails = sysUser.newUserDetails(null);
             userDetails.setAuthType(OAUTH.val() + "/" + SYS.val());
         }
@@ -300,9 +305,9 @@ public class OAuthServiceImpl implements OAuthService {
         // 授权日志
         SysOperation sysOperation = new SysOperation();
         sysOperation.setOpStatus(1);
-        sysOperation.setOpModule("op_admin");
-        sysOperation.setOpType("op_auth");
-        sysOperation.setOpAction("op_oauth");
+        sysOperation.setOpModule(SYSTEM);
+        sysOperation.setOpType(SYSTEM_AUTH);
+        sysOperation.setOpAction(LOGIN_OAUTH);
         sysOperation.setOpDesc("授权应用'" + oAuthClient.getClientName() + "'访问");
         sysOperation.setAccess(new AccessInfo(userDetails));
         sysOperation.setIp(Access.accessIp());

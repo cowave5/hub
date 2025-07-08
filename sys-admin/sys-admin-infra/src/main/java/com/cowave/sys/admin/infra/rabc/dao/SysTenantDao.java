@@ -12,6 +12,7 @@ package com.cowave.sys.admin.infra.rabc.dao;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cowave.commons.framework.access.Access;
+import com.cowave.sys.admin.domain.base.SysNotice;
 import com.cowave.sys.admin.domain.rabc.SysTenant;
 import com.cowave.sys.admin.domain.rabc.request.TenantQuery;
 import com.cowave.sys.admin.domain.rabc.request.TenantStatusUpdate;
@@ -67,6 +68,16 @@ public class SysTenantDao extends ServiceImpl<SysTenantMapper, SysTenant> {
                 .like(StringUtils.isNotBlank(query.getTenantId()), SysTenant::getTenantId, query.getTenantId())
                 .orderByAsc(SysTenant::getCreateTime)
                 .page(Access.page());
+    }
+
+    /**
+     * 查询名称（id）
+     */
+    public String queryNameById(String tenantId) {
+        return lambdaQuery()
+                .eq(SysTenant::getTenantId, tenantId)
+                .select(SysTenant::getTenantName)
+                .oneOpt().map(SysTenant::getTenantName).orElse(null);
     }
 
     /**

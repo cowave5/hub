@@ -26,13 +26,13 @@ public class AlarmHandles {
     /**
      * 告警id
      */
-    @NotNull(message = "{admin.alarm.id.notnull}")
+    @NotNull(message = "{admin.alarm.id.null}")
     private Long id;
 
     /**
      * 告警状态
      */
-    @NotNull(message = "{admin.alarm.status.notnull}")
+    @NotNull(message = "{admin.alarm.status.null}")
     private Integer alarmStatus;
 
     /**

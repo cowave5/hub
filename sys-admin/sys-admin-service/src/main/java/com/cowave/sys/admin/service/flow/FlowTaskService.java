@@ -83,7 +83,7 @@ public class FlowTaskService {
             task.setTaskName(t.getName());
             task.setExecutionId(t.getExecutionId());
             task.setAssignee(t.getAssignee());
-            task.setAssigneeName(sysUserDao.queryNameByUserId(Integer.valueOf(t.getAssignee())));
+            task.setAssigneeName(sysUserDao.queryNameById(Integer.valueOf(t.getAssignee())));
             task.setBeginTime(t.getCreateTime());
             task.setEndTime(t.getEndTime());
             task.setFormKey(t.getFormKey());
@@ -98,7 +98,7 @@ public class FlowTaskService {
                 task.setBusinessKey(process.getBusinessKey());
                 task.setProcessName(process.getProcessDefinitionName());
                 task.setStarter(process.getStartUserId());
-                task.setStarterName(sysUserDao.queryNameByUserId(Integer.valueOf(process.getStartUserId())));
+                task.setStarterName(sysUserDao.queryNameById(Integer.valueOf(process.getStartUserId())));
                 task.setStartTime(process.getStartTime());
             }else{
                 HistoricProcessInstance historyProcess =
@@ -106,7 +106,7 @@ public class FlowTaskService {
                 task.setBusinessKey(historyProcess.getBusinessKey());
                 task.setProcessName(historyProcess.getProcessDefinitionName());
                 task.setStarter(historyProcess.getStartUserId());
-                task.setStarterName(sysUserDao.queryNameByUserId(Integer.valueOf(historyProcess.getStartUserId())));
+                task.setStarterName(sysUserDao.queryNameById(Integer.valueOf(historyProcess.getStartUserId())));
                 task.setStartTime(historyProcess.getStartTime());
             }
             list.add(task);
@@ -168,7 +168,7 @@ public class FlowTaskService {
                 flowTask.setProcessInstanceId(processId);
                 flowTask.setTaskName(activity.getActivityName());
                 flowTask.setAssignee(activity.getAssignee());
-                flowTask.setAssigneeName(sysUserDao.queryNameByUserId(Integer.valueOf(activity.getAssignee())));
+                flowTask.setAssigneeName(sysUserDao.queryNameById(Integer.valueOf(activity.getAssignee())));
                 flowTask.setStartTime(activity.getStartTime());
                 flowTask.setEndTime(activity.getEndTime());
                 // 多次任务执行问题
@@ -210,7 +210,7 @@ public class FlowTaskService {
             task.setTaskName(t.getName());
             task.setExecutionId(t.getExecutionId());
             task.setAssignee(t.getAssignee());
-            task.setAssigneeName(sysUserDao.queryNameByUserId(Integer.valueOf(t.getAssignee())));
+            task.setAssigneeName(sysUserDao.queryNameById(Integer.valueOf(t.getAssignee())));
             task.setBeginTime(t.getCreateTime());
             task.setDueTime(t.getDueDate());
             ProcessInstance process =
@@ -218,7 +218,7 @@ public class FlowTaskService {
             task.setBusinessKey(process.getBusinessKey());
             task.setProcessName(process.getProcessDefinitionName());
             task.setStarter(process.getStartUserId());
-            task.setStarterName(sysUserDao.queryNameByUserId(Integer.valueOf(process.getStartUserId())));
+            task.setStarterName(sysUserDao.queryNameById(Integer.valueOf(process.getStartUserId())));
             task.setStartTime(process.getStartTime());
             task.setFormKey(formService.getTaskFormData(t.getId()).getFormKey());
             list.add(task);

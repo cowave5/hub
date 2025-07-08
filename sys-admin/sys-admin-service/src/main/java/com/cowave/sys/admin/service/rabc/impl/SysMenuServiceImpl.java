@@ -14,6 +14,7 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import com.cowave.commons.client.http.asserts.HttpAsserts;
 import com.cowave.commons.framework.access.Access;
 import com.cowave.sys.admin.domain.rabc.SysMenu;
+import com.cowave.sys.admin.domain.rabc.dto.SysMenuTree;
 import com.cowave.sys.admin.infra.rabc.dao.SysMenuDao;
 import com.cowave.sys.admin.infra.rabc.dao.mapper.dto.SysMenuDtoMapper;
 import com.cowave.sys.admin.service.rabc.SysMenuService;
@@ -46,19 +47,26 @@ public class SysMenuServiceImpl implements SysMenuService {
 	}
 
 	@Override
+	public List<SysMenu> listMenusInPublic(String tenantId) {
+		return sysMenuDao.listMenusInPublic(tenantId);
+	}
+
+	@Override
 	public List<SysMenu> listMenusByRoles(String tenantId, List<String> roleList) {
 		return sysMenuDtoMapper.listMenusByRoles(tenantId, roleList);
 	}
 
 	@Override
 	public List<Tree<Integer>> tree(String tenantId) {
-		List<SysMenu> list = sysMenuDao.listTree(tenantId);
+		List<SysMenuTree> list = sysMenuDtoMapper.listTree(tenantId);
 		List<Tree<Integer>> treeList = TreeUtil.build(list, 0, DIAGRAM_CONFIG, (menu, node) -> {
 			node.setId(menu.getMenuId());
 			node.setParentId(menu.getParentId());
 			node.setName(menu.getMenuName());
-			node.put("menuType", menu.getMenuType());
 			node.put("order", menu.getMenuOrder());
+			node.put("menuType", menu.getMenuType());
+			node.put("protected", menu.getIsProtected());
+			node.put("scopes", menu.getScopes());
 		});
 		treeList.sort(Comparator.comparingInt(node -> (Integer) node.get("order")));
 		return treeList;
@@ -113,7 +121,7 @@ public class SysMenuServiceImpl implements SysMenuService {
 
 	@Override
 	public void edit(SysMenu sysMenu) {
-		HttpAsserts.notNull(sysMenu.getMenuId(), BAD_REQUEST, "{admin.menu.id.notnull}");
+		HttpAsserts.notNull(sysMenu.getMenuId(), BAD_REQUEST, "{admin.menu.id.null}");
 
 		SysMenu preMenu = sysMenuDao.getById(sysMenu.getMenuId());
 		HttpAsserts.notNull(preMenu, NOT_FOUND, "{admin.menu.not.exist}", sysMenu.getMenuId());

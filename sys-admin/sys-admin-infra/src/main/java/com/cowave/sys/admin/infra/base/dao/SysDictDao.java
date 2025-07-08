@@ -17,12 +17,27 @@ import com.cowave.sys.admin.infra.base.dao.mapper.SysDictMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author shanhuiming
  */
 @Repository
 public class SysDictDao extends ServiceImpl<SysDictMapper, SysDict> {
+
+    /**
+     * 获取字典
+     */
+    public SysDict getByCode(String dictCode) {
+        return lambdaQuery().eq(SysDict::getDictCode, dictCode).one();
+    }
+
+    /**
+     * 获取类型字典
+     */
+    public List<SysDict> listByType(String typeCode) {
+        return lambdaQuery().eq(SysDict::getParentCode, typeCode).list();
+    }
 
     /**
      * 更新字典
@@ -55,9 +70,9 @@ public class SysDictDao extends ServiceImpl<SysDictMapper, SysDict> {
     }
 
     /**
-     * 删除子字典
+     * 删除类型字典
      */
-    public void removeChildrenByCode(String parentCode){
+    public void removeByType(String parentCode){
         lambdaUpdate().eq(SysDict::getParentCode, parentCode).remove();
     }
 }

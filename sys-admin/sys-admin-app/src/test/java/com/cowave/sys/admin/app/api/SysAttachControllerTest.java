@@ -24,6 +24,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import static com.cowave.sys.admin.domain.base.constants.AttachType.AVATAR;
+import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_USER;
+
 /**
  * @author shanhuiming
  */
@@ -47,8 +50,8 @@ public class SysAttachControllerTest extends SpringTest {
     public void upload() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("ownerId", "2");
-        params.set("ownerType", "sys-user");
-        params.set("attachType", "avatar");
+        params.set("ownerModule", SYSTEM_USER);
+        params.set("attachType",AVATAR);
         mockImport("/api/v1/attach/upload", params, "source/cw.jpg");
     }
 
@@ -59,8 +62,8 @@ public class SysAttachControllerTest extends SpringTest {
     public void download() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("ownerId", "2");
-        params.set("ownerType", "sys-user");
-        params.set("attachType", "avatar");
+        params.set("ownerModule", SYSTEM_USER);
+        params.set("attachType", AVATAR);
         mockImport("/api/v1/attach/upload", params, "source/cw.jpg");
         this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/attach/download?attachId=1")
                         .header("X-Request-ID", requestId())
@@ -77,8 +80,8 @@ public class SysAttachControllerTest extends SpringTest {
     public void preview() throws Exception {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("ownerId", "2");
-        params.set("ownerType", "sys-user");
-        params.set("attachType", "avatar");
+        params.set("ownerModule", SYSTEM_USER);
+        params.set("attachType", AVATAR);
         mockImport("/api/v1/attach/upload", params, "source/cw.jpg");
         mockGet("/api/v1/attach/preview?attachId=1");
     }
@@ -88,7 +91,7 @@ public class SysAttachControllerTest extends SpringTest {
      */
     @Test
     public void list() throws Exception {
-        mockGet("/api/v1/attach/list?ownerId=6&ownerType=sys-user&attachType=avatar");
+        mockGet("/api/v1/attach/list?ownerId=6&ownerModule=sys-user&attachType=avatar");
     }
 
     /**

@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cowave.commons.framework.access.Access;
 import com.cowave.sys.admin.domain.base.request.NoticeQuery;
+import com.cowave.sys.admin.domain.rabc.SysUser;
 import com.cowave.sys.admin.infra.base.dao.mapper.SysNoticeMapper;
 import com.cowave.sys.admin.domain.base.SysNotice;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +49,16 @@ public class SysNoticeDao extends ServiceImpl<SysNoticeMapper, SysNotice> {
                 .eq(SysNotice::getTenantId, tenantId)
                 .eq(SysNotice::getNoticeId, noticeId)
                 .one();
+    }
+
+    /**
+     * 查询名称（id）
+     */
+    public String queryNameById(Long noticeId) {
+        return lambdaQuery()
+                .eq(SysNotice::getNoticeId, noticeId)
+                .select(SysNotice::getNoticeTitle)
+                .oneOpt().map(SysNotice::getNoticeTitle).orElse(null);
     }
 
     /**

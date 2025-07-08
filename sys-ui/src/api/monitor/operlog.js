@@ -1,19 +1,9 @@
 import request from '@/utils/request'
 
 /**
- * 模块类型选项
- */
-export function getOpLogOptions() {
-  return request({
-    url: '/admin/api/v1/dict/group/types/op_log',
-    method: 'get'
-  })
-}
-
-/**
  * 列表
  */
-export function getOpLogList(params) {
+export function listOpLog(params) {
   return request({
     url: '/admin/api/v1/oplog',
     method: 'get',

@@ -75,17 +75,6 @@ export function getReads(params) {
 }
 
 /**
- * 上传附件
- */
-export function uploadAttach(data, attachUrl) {
-  return request({
-    url: attachUrl,
-    method: 'post',
-    data: data
-  })
-}
-
-/**
  * 消息列表
  */
 export function getNoticeMsg(params) {

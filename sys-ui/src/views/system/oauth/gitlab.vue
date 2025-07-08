@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!--  筛选栏  -->
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" @submit.native.prevent v-show="showSearch" label-width="auto">
       <el-form-item label="Gitlab账号" prop="userAccount" label-width="20">
         <el-input v-model="queryParams.userAccount" placeholder="请输入Gitlab账号"
                   clearable style="width: 180px" @keyup.enter.native="handleQuery"/>

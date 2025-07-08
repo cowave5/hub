@@ -14,26 +14,27 @@ import com.cowave.commons.client.http.response.Response;
 import com.cowave.commons.framework.access.Access;
 import com.cowave.sys.admin.domain.auth.dto.UserProfile;
 import com.cowave.sys.admin.domain.auth.request.ApiTokenRequest;
+import com.cowave.sys.admin.domain.auth.request.MfaBind;
 import com.cowave.sys.admin.domain.auth.request.PasswdReset;
 import com.cowave.sys.admin.domain.auth.request.ProfileUpdate;
 import com.cowave.sys.admin.domain.auth.vo.ApiTokenVo;
-import com.cowave.sys.admin.domain.base.request.AttachUpload;
+import com.cowave.sys.admin.domain.auth.vo.MfaVo;
 import com.cowave.sys.admin.service.auth.ApiTokenService;
 import com.cowave.sys.admin.service.auth.ProfileService;
 import com.cowave.sys.admin.service.rabc.SysMenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 /**
  * 个人信息
- * @order 9
+ * @order 12
  * @author shanhuiming
  */
 @RequiredArgsConstructor
+@Validated
 @RestController
 @RequestMapping("/api/v1/profile")
 public class ProfileController {
@@ -65,12 +66,28 @@ public class ProfileController {
         return Response.success(() -> profileService.resetPasswd(passwdReset));
     }
 
-    /**
-     * 头像上传
+	/**
+     * MFA获取
      */
-    @PatchMapping("/avatar")
-    public Response<String> uploadAvatar(@RequestParam("file") MultipartFile file, AttachUpload attachUpload) throws Exception {
-        return Response.success(profileService.uploadAvatar(file, attachUpload));
+    @GetMapping("/mfa")
+    public Response<MfaVo> generateMfa() {
+        return Response.success(profileService.generateMfa());
+    }
+
+    /**
+     * MFA绑定
+     */
+    @PatchMapping("/mfa/enable")
+    public Response<Void> enableMfa(@Validated @RequestBody MfaBind mfaBind) throws Exception {
+        return Response.success(() -> profileService.enableMfa(mfaBind));
+    }
+
+    /**
+     * MFA解除
+     */
+    @PatchMapping("/mfa/disable")
+    public Response<Void> disableMfa(@Validated @RequestBody MfaBind mfaBind) throws Exception {
+        return Response.success(() -> profileService.disableMfa(mfaBind));
     }
 
     /**

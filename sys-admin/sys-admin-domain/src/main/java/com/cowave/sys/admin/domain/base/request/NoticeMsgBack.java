@@ -22,7 +22,7 @@ public class NoticeMsgBack {
     /**
      * 公告id
      */
-    @NotNull(message = "{admin.notice.id.notnull}")
+    @NotNull(message = "{admin.notice.id.null}")
     private Long noticeId;
 
     private String readBack;

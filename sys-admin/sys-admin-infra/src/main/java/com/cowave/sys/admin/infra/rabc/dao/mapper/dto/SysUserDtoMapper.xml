@@ -270,6 +270,7 @@
         <result column="user_sex"      property="userSex"/>
         <result column="user_code"     property="userCode"/>
         <result column="create_time"   property="createTime"/>
+        <result column="mfa"           property="mfa"/>
         <collection property="roles" javaType="list" ofType="java.lang.String">
             <result column="role_name"/>
         </collection>
@@ -291,6 +292,7 @@
                u.user_sex,
                u.user_code,
                u.create_time,
+               u.mfa,
                r.role_name,
                d.dept_name || '/' || p.post_name deptName,
                pu.user_name                      parentName
