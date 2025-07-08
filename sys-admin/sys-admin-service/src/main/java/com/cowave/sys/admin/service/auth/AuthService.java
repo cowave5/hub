@@ -136,7 +136,7 @@ public class AuthService {
                 redisHelper.putExpire(LOGIN_LOCK.formatted(userAccount), "-", 1800, TimeUnit.SECONDS);
                 throw new HttpHintException(BAD_REQUEST, "{admin.login.locked}", 30);
             }
-            throw new HttpHintException("{admin.login.failed}", 5 - failCount);
+            throw new HttpHintException(BAD_REQUEST, "{admin.login.failed}", 5 - failCount);
         }
     }
 

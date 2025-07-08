@@ -1,6 +1,5 @@
 spring:
   access:
-    always-success: true
     filter:
       - /api/v1/*
     auth:

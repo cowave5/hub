@@ -37,7 +37,6 @@ service.interceptors.request.use(config => {
   }
 
   const notCheckRepeat = true; // 去掉限制，我们很多post是查询请求
-  //const notCheckRepeat = (config.headers || {}).checkRepeat === false
   if (!notCheckRepeat && (config.method === 'post' || config.method === 'put')) {
     const requestObj = {
       url: config.url,
@@ -72,78 +71,59 @@ let isRefreshing = false; // 是否正在刷新Token
 let requestsQueue = [];     // 等待Token刷新的请求
 
 service.interceptors.response.use(response => {
-    const code = response.data.code || "200";
-    const msg = response.data.msg || responseCode[code]
-    if(response.request.responseType ===  'blob' || response.request.responseType ===  'arraybuffer'){
-      return response.data
-    }
-
-    if (code === "498") {
-      if (!isRefreshing) {
-        isRefreshing = true;
-        return refresh(cache.local.getRefreshToken()).then(resp => {
-          isRefreshing = false;
-          store.commit('SET_TOKEN', resp.data);
-          requestsQueue.forEach(cb => cb(resp.data.accessToken));
-          store.dispatch('RefreshNoticeSocket');
-          requestsQueue = [];
-          return service(response.config); // 重新发送当前请求
-        }).catch(err => {
-          isRefreshing = false;
-          return Promise.reject(err);
-        });
-      }else{
-        return new Promise(resolve => {
-          requestsQueue.push(token => {
-            response.config.headers['Authorization'] = `Bearer ${token}`;
-            resolve(service(response.config));
+    return response.data
+  }, error => {
+    const response = error.response;
+    if (response) {
+      const status = response.status;
+      if (status === 498) {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          return refresh(cache.local.getRefreshToken()).then(resp => {
+            isRefreshing = false;
+            store.commit('SET_TOKEN', resp.data);
+            requestsQueue.forEach(cb => cb(resp.data.accessToken));
+            store.dispatch('RefreshNoticeSocket');
+            requestsQueue = [];
+            return service(response.config); // 重新发送当前请求
+          }).catch(err => {
+            isRefreshing = false;
+            return Promise.reject(err);
           });
-        });
-      }
-    } else if (code === '401') {
-      cache.local.removeAccessToken()
-      if (router.currentRoute.path !== '/cowave/login'
-          && router.currentRoute.path !== '/cowave/ldap'
-          && router.currentRoute.path !== '/login' ) {
-        MessageBox.alert(msg, { type: 'warning' }).then(() => {
-          router.push('/cowave/login')
-        })
+        } else {
+          return new Promise(resolve => {
+            requestsQueue.push(token => {
+              response.config.headers['Authorization'] = `Bearer ${token}`;
+              resolve(service(response.config));
+            });
+          });
+        }
+      } else if (status === 401) {
+        cache.local.removeAccessToken()
+        let msg = response.data.msg;
+        if (router.currentRoute.path !== '/cowave/login'
+            && router.currentRoute.path !== '/cowave/ldap'
+            && router.currentRoute.path !== '/login') {
+          MessageBox.alert(msg, {type: 'warning'}).then(() => {
+            router.push('/cowave/login')
+          })
+        } else {
+          Notification.error({
+            title: msg
+          })
+        }
+        return Promise.reject('认证失败')
       } else {
+        let msg = response.data.msg;
         Notification.error({
-          title: msg
-        })
+            title: msg
+          })
+        return Promise.reject(new Error(msg))
       }
-      return Promise.reject('认证失败')
-    } else if (code === "500") {
-      Message({
-        message: msg,
-        type: 'error'
-      })
-      return Promise.reject(new Error(msg))
-    } else if (code !== "200") {
-      Notification.error({
-        title: msg
-      })
-      return Promise.reject('error')
     } else {
-      return response.data
+      Message({message: '服务请求失败', type: 'error', duration: 5 * 1000});
+      return Promise.reject(error);
     }
-  },
-  error => {
-    console.log(error)
-    let message = '服务请求失败'
-    if (error.response) {
-      const msg = error.response.data.msg
-      if (msg) {
-        message = msg
-      }
-    }
-    Message({
-      message: message,
-      type: 'error',
-      duration: 5 * 1000
-    })
-    return Promise.reject(error)
   }
 )
 
