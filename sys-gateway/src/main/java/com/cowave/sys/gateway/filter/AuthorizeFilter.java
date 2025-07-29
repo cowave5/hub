@@ -13,6 +13,7 @@ import com.cowave.commons.client.http.asserts.I18Messages;
 import com.cowave.commons.client.http.response.Response;
 import com.cowave.commons.client.http.response.ResponseCode;
 import com.cowave.commons.framework.access.AccessProperties;
+import com.cowave.commons.framework.access.security.AccessTokenInfo;
 import com.cowave.commons.framework.helper.redis.RedisHelper;
 import com.cowave.commons.tools.NetUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -89,8 +90,10 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         }
 
         String tenantId = (String) claims.get(CLAIM_TENANT_ID);
-        String tokenType = (String) claims.get(CLAIM_TYPE);
         String accessId = (String) claims.get(CLAIM_ACCESS_ID);
+        String tokenType = (String) claims.get(CLAIM_TYPE);
+        String userAccount = (String) claims.get(CLAIM_USER_ACCOUNT);
+
 
         String accessIp = getAccessIp(httpRequest);
         if ("api".equals(tokenType)) {
@@ -122,14 +125,20 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         } else {
             // IP变化要求重新刷一下accessToken
             String userIp = (String) claims.get(CLAIM_ACCESS_IP);
-            String tokenConflict = (String) claims.get(CLAIM_CONFLICT);
-            if ("Y".equals(tokenConflict) && !Objects.equals(accessIp, userIp)) {
+            Integer multiple = (Integer) claims.get(CLAIM_MULTIPLE);
+            if (Objects.equals(0, multiple) && !Objects.equals(accessIp, userIp)) {
                 return writeResponse(exchange.getResponse(), INVALID_TOKEN, "frame.auth.access.changed.ip");
             }
 
             // 是否已注销
-            if(!redisHelper.existKey(AUTH_ACCESS_KEY.formatted("sys-admin", tenantId, accessId))){
-                return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.access.denied");
+            String accessKey = AUTH_ACCESS_KEY.formatted("sys-admin", tenantId, tokenType, userAccount, accessId);
+            AccessTokenInfo accessToken = redisHelper.getValue(accessKey);
+            if(accessToken == null){
+                return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.access.revoked");
+            } else if(Objects.equals(accessToken.getRevoked(), 1)) {
+                return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.access.revoked");
+            } else if(Objects.equals(accessToken.getRevoked(), 2)) {
+                return writeResponse(exchange.getResponse(), UNAUTHORIZED, "frame.auth.refresh.changed");
             }
         }
 

@@ -9,7 +9,7 @@
 
 > 开源项目参考：
 
-- 若依管理：https://github.com/yangzongzhuan/RuoYi-Vue
-- 博客： https://gitee.com/GiteeKey/ruoyi-blog
-- 工作流：https://gitee.com/shenzhanwang/Ruoyi-flowable
+- 若依管理系统：https://github.com/yangzongzhuan/RuoYi-Vue
+- 若依工作流：https://gitee.com/shenzhanwang/Ruoyi-flowable
+- 若依博客：https://gitee.com/GiteeKey/ruoyi-blog
 - xxl-job: https://github.com/xuxueli/xxl-job/

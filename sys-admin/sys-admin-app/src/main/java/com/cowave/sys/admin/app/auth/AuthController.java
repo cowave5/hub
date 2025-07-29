@@ -11,17 +11,15 @@ package com.cowave.sys.admin.app.auth;
 
 import com.cowave.commons.client.http.response.Response;
 import com.cowave.commons.framework.access.Access;
-import com.cowave.commons.framework.access.security.AccessTokenInfo;
 import com.cowave.commons.framework.access.security.AccessUserDetails;
-import com.cowave.commons.framework.access.security.BearerTokenService;
 import com.cowave.sys.admin.domain.auth.request.LdapLogin;
 import com.cowave.sys.admin.domain.auth.request.MfaLogin;
 import com.cowave.sys.admin.domain.auth.vo.AuthInfo;
 import com.cowave.sys.admin.domain.auth.vo.CaptchaInfo;
 import com.cowave.sys.admin.domain.auth.request.Login;
 import com.cowave.sys.admin.domain.auth.request.RegisterRequest;
+import com.cowave.sys.admin.domain.auth.vo.OnlineInfo;
 import com.cowave.sys.admin.service.auth.*;
-import com.cowave.sys.admin.domain.base.request.OnlineQuery;
 import com.cowave.sys.admin.domain.rabc.vo.Route;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -44,7 +41,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-    private final BearerTokenService bearerTokenService;
     private final CaptchaService captchaService;
     private final AuthService authService;
     private final LdapService ldapService;
@@ -154,19 +150,25 @@ public class AuthController {
      * 在线用户
      */
     @PostMapping("/online")
-    public Response<Response.Page<AccessTokenInfo>> onlineList(@RequestBody OnlineQuery login) {
-        List<AccessTokenInfo> list = bearerTokenService.listAccessToken(
-                Access.tenantId(), login.getUserAccount(), login.getBeginTime(), login.getEndTime());
-        list.sort(Comparator.comparing(AccessTokenInfo::getAccessTime).reversed());
-        return Response.page(list);
+    public Response<Response.Page<OnlineInfo>> onlineList() {
+        return Response.page(authService.onlineList());
     }
 
     /**
-     * 强退用户
+     * 撤销Access令牌
      */
     @PreAuthorize("@permits.hasPermit('monitor:online:force')")
-    @GetMapping("/outline/{accessId}")
-    public Response<Void> forceLogout(@PathVariable String accessId) throws Exception {
-        return Response.success(() -> authService.forceLogout(Access.tenantId(), accessId));
+    @DeleteMapping("/access")
+    public Response<Void> revokeAccess(String type, String account, String id) throws Exception {
+        return Response.success(() -> authService.revokeAccess(Access.tenantId(), type, account, id));
+    }
+
+    /**
+     * 撤销Refresh令牌
+     */
+    @PreAuthorize("@permits.hasPermit('monitor:online:force')")
+    @DeleteMapping("/refresh")
+    public Response<Void> revokeRefresh(String type, String account) throws Exception {
+        return Response.success(() -> authService.revokeRefresh(Access.tenantId(), type, account));
     }
 }

@@ -13,14 +13,12 @@ import com.cowave.commons.client.http.asserts.HttpAsserts;
 import com.cowave.commons.client.http.asserts.HttpHintException;
 import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.access.operation.OperationInfo;
-import com.cowave.commons.framework.access.security.AccessTokenInfo;
-import com.cowave.commons.framework.access.security.AccessUserDetails;
-import com.cowave.commons.framework.access.security.BearerTokenService;
-import com.cowave.commons.framework.access.security.TenantUsernamePasswordAuthenticationToken;
+import com.cowave.commons.framework.access.security.*;
 import com.cowave.commons.framework.helper.redis.RedisHelper;
 import com.cowave.sys.admin.domain.auth.OAuthUser;
 import com.cowave.sys.admin.domain.auth.request.RegisterRequest;
 import com.cowave.sys.admin.domain.auth.vo.AuthInfo;
+import com.cowave.sys.admin.domain.auth.vo.OnlineInfo;
 import com.cowave.sys.admin.domain.base.SysAttach;
 import com.cowave.sys.admin.domain.rabc.SysMenu;
 import com.cowave.sys.admin.domain.rabc.SysTenant;
@@ -53,10 +51,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
@@ -185,14 +180,41 @@ public class AuthService {
      * 退出
      */
     public void logout() throws IOException {
-        bearerTokenService.revokeAccessRefreshToken();
+        bearerTokenService.revoke();
     }
 
     /**
-     * 强制退出
+     * 在线用户
      */
-    public void forceLogout(String tenantId, String accessId) {
-        AccessTokenInfo accessTokenInfo = bearerTokenService.revokeAccessToken(tenantId, accessId);
+    public List<OnlineInfo> onlineList() {
+        List<AccessTokenInfo> list = bearerTokenService.listAccessToken(Access.tenantId());
+        Map<String, List<AccessTokenInfo>> accessMap = com.cowave.commons.tools.Collections.groupToMap(list,
+                access -> access.getAccessType() + access.getUserAccount());
+
+        List<OnlineInfo> onlineList = new ArrayList<>();
+        List<RefreshTokenInfo> refreshList = bearerTokenService.listRefreshToken(Access.tenantId());
+        refreshList.sort(Comparator.comparing(RefreshTokenInfo::getLoginTime).reversed());
+        for (RefreshTokenInfo refresh : refreshList) {
+            List<AccessTokenInfo> accessList = accessMap.get(refresh.getAuthType() + refresh.getUserAccount());
+            onlineList.add(OnlineInfo.builder()
+                    .refreshId(refresh.getRefreshId())
+                    .authType(refresh.getAuthType())
+                    .userAccount(refresh.getUserAccount())
+                    .userName(refresh.getUserName())
+                    .cluster(refresh.getClusterName())
+                    .loginIp(refresh.getLoginIp())
+                    .loginTime(refresh.getLoginTime())
+                    .accessList(accessList)
+                    .build());
+        }
+        return onlineList;
+    }
+
+    /**
+     * 撤销Access令牌
+     */
+    public void revokeAccess(String tenantId, String authType, String userAccount, String accessId) {
+        AccessTokenInfo accessTokenInfo = bearerTokenService.revokeAccessToken(tenantId, authType, userAccount, accessId);
         if(accessTokenInfo == null){
             return;
         }
@@ -205,6 +227,13 @@ public class AuthService {
                 .desc("强制退出：" + accessTokenInfo.getUserAccount())
                 .build();
         sysOperationHandler.create(operationInfo, null);
+    }
+
+    /**
+     * 撤销Refresh令牌
+     */
+    public void revokeRefresh(String tenantId, String authType, String userAccount) {
+        bearerTokenService.revokeRefreshToken(tenantId, authType, userAccount);
     }
 
     /**

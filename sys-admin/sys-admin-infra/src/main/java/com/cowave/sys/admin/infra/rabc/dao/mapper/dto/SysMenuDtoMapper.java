@@ -35,9 +35,14 @@ public interface SysMenuDtoMapper {
     List<SysMenu> listMenusByRoles(@Param("tenantId") String tenantId, @Param("list") List<String> roleList);
 
     /**
+     * Api令牌权限(管理员)
+     */
+    List<SysMenuTree>listApiPermitsByAdmin(String tenantId);
+
+    /**
      * Api令牌权限
      */
-    List<SysMenu> listApiPermitsByRoles(List<String> roleList);
+    List<SysMenuTree> listApiPermitsByRoles(@Param("tenantId") String tenantId, @Param("list") List<String> list);
 
     /**
      * 删除当前以及子菜单的角色关联

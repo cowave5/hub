@@ -10,9 +10,11 @@
 package com.cowave.sys.admin.domain.auth.request;
 
 import com.cowave.sys.admin.domain.auth.ApiToken;
+import com.cowave.sys.admin.domain.rabc.dto.SysMenuScope;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,5 +24,8 @@ import java.util.List;
 @Setter
 public class ApiTokenRequest extends ApiToken {
 
-    private List<Integer> menuIds;
+    /**
+	 * 菜单id列表
+	 */
+	private List<SysMenuScope> menuScopes = new ArrayList<>();
 }

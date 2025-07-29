@@ -23,5 +23,13 @@ import java.util.List;
 @Data
 public class SysMenuTree extends SysMenu {
 
+    /**
+     * 数据权限id
+     */
+    private Integer scopeId;
+
+    /**
+     * 数据权限列表
+     */
     private List<SysScope> scopes;
 }

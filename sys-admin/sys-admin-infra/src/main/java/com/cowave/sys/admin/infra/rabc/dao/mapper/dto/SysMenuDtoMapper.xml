@@ -64,24 +64,6 @@
 		  and m.menu_permit is not null
 	</select>
 
-	<select id="listApiPermitsByRoles" resultType="com.cowave.sys.admin.domain.rabc.SysMenu">
-		select <include refid="menuField"/>
-		from sys_menu m
-		where is_protected = 0 and m.menu_status = 1 and (m.menu_permit is not null or m.menu_type = 'M')
-		union
-		select <include refid="menuField"/>
-		from sys_role r, sys_role_menu rm, sys_menu m
-		where r.role_id = rm.role_id
-		  and rm.menu_id = m.menu_id
-		  and m.menu_status = 1
-		  and (m.menu_permit is not null or m.menu_type = 'M')
-		  and r.role_code in
-		<foreach collection="list" item="item" open="(" separator="," close=")">
-			#{item}
-		</foreach>
-		order by parentId, menuOrder
-	</select>
-
     <delete id="loopDeleteMenuRoles">
         with recursive tree (menu_id, parent_id) as
         (select m1.menu_id, m1.parent_id from sys_menu m1 where parent_id = #{menuId} or menu_id = #{menuId}
@@ -100,6 +82,7 @@
 
 	<resultMap id="menuTreeMap" type="com.cowave.sys.admin.domain.rabc.dto.SysMenuTree">
         <result column="menuId"       property="menuId"/>
+		<result column="menu_scope"   property="scopeId"/>
 		<result column="parentId"     property="parentId"/>
 		<result column="menuName"     property="menuName"/>
 		<result column="menuOrder"    property="menuOrder"/>
@@ -125,5 +108,45 @@
 		where m.tenant_id in ('#', #{tenantId})
 		  and m.menu_status = 1
 		order by m.parent_id, m.menu_order
+	</select>
+
+	<select id="listApiPermitsByAdmin" resultMap="menuTreeMap">
+		select s.scope_id     scopeId,
+			   s.scope_name   scopeName,
+			   m.menu_id      menuId,
+			   m.parent_id    parentId,
+			   m.menu_name    menuName,
+			   m.menu_order   menuOrder,
+			   m.menu_type    menuType,
+			   m.is_protected isProtected
+		from sys_menu m
+		left join sys_scope s on m.menu_module = s.scope_module and s.scope_status = 1 and s.tenant_id in ('#', #{tenantId})
+		where m.menu_status = 1
+		  and m.is_protected = 1
+		  and m.tenant_id in ('#', #{tenantId})
+		order by parentId, menuOrder
+	</select>
+
+	<select id="listApiPermitsByRoles" resultMap="menuTreeMap">
+		select s.scope_id     scopeId,
+			   s.scope_name   scopeName,
+			   rm.scope_id    menu_scope,
+			   m.menu_id      menuId,
+			   m.parent_id    parentId,
+			   m.menu_name    menuName,
+			   m.menu_order   menuOrder,
+			   m.menu_type    menuType,
+			   m.is_protected isProtected
+		from sys_role r, sys_role_menu rm, sys_menu m
+		left join sys_scope s on m.menu_module = s.scope_module and s.scope_status = 1 and s.tenant_id in ('#', #{tenantId})
+		where r.role_id = rm.role_id
+		  and rm.menu_id = m.menu_id
+		  and m.menu_status = 1
+		  and m.is_protected = 1
+		  and r.role_code in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		order by parentId, menuOrder
 	</select>
 </mapper>

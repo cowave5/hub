@@ -21,7 +21,18 @@ import lombok.NoArgsConstructor;
 @Data
 public class ApiTokenMenu {
 
+    /**
+     * 租户id
+     */
     private Integer tokenId;
 
+    /**
+     * 菜单id
+     */
     private Integer menuId;
+
+    /**
+     * 数据权限
+     */
+    private Integer scopeId;
 }

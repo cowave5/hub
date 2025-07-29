@@ -66,18 +66,6 @@ public class SysMenuDao extends ServiceImpl<SysMenuMapper, SysMenu> {
     }
 
     /**
-     * Api菜单权限
-     */
-    public List<SysMenu> listApiPermitsByAdmin(String tenantId) {
-        return lambdaQuery()
-                .in(SysMenu::getTenantId, List.of("#", tenantId))
-                .eq(SysMenu::getMenuStatus, 1)
-                .and(wrapper -> wrapper.isNotNull(SysMenu::getMenuPermit).or().eq(SysMenu::getMenuType, "M"))
-                .orderByAsc(SysMenu::getParentId, SysMenu::getMenuOrder)
-                .list();
-    }
-
-    /**
      * 修改菜单信息
      */
     public void updateMenu(SysMenu sysMenu) {

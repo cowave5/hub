@@ -365,6 +365,7 @@ drop table if exists api_token_menu;
 create table api_token_menu(
     token_id int4,
     menu_id int4,
+    scope_id int4,
     constraint api_token_menu_pkey primary key (token_id, menu_id)
 );
 comment on table api_token_menu is '用户ApiToken权限';

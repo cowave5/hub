@@ -79,14 +79,14 @@ public class SysMenuServiceImpl implements SysMenuService {
 
 	@Override
 	public List<Tree<Integer>> getApiPermitsByUser(String tenantId) {
-		List<SysMenu> list = new ArrayList<>();
+		List<SysMenuTree> list = new ArrayList<>();
 		// 系统管理员
 		if (Access.isAdminUser()) {
-			list = sysMenuDao.listApiPermitsByAdmin(tenantId);
+			list = sysMenuDtoMapper.listApiPermitsByAdmin(tenantId);
 		} else {
 			List<String> roleList = Access.userRoles();
 			if (!roleList.isEmpty()) {
-				list = sysMenuDtoMapper.listApiPermitsByRoles(roleList);
+				list = sysMenuDtoMapper.listApiPermitsByRoles(Access.tenantId(), roleList);
 			}
 		}
 		return TreeUtil.build(list, 0, DIAGRAM_CONFIG, (menu, node) -> {
@@ -94,6 +94,8 @@ public class SysMenuServiceImpl implements SysMenuService {
 			node.setParentId(menu.getParentId());
 			node.setName(menu.getMenuName());
 			node.put("menuType", menu.getMenuType());
+			node.put("scopeId", menu.getScopeId());
+			node.put("scopes", menu.getScopes());
 		});
 	}
 

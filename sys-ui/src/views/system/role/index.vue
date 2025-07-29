@@ -140,7 +140,8 @@
                    :check-strictly="!menuCheckStrictly" empty-text="..." :props="defaultProps">
             <span class="el-tree-node__label" slot-scope="{data}" style="display: flex; justify-content: space-between; width: 100%;">
               {{ $t(data.label) }}
-              <el-select v-if="data.menuType === 'B'" v-model="data.scopeId" placeholder="选择数据权限" size="small" class="tree-node-select">
+              <el-select v-if="data.menuType === 'B' && data.scopes && data.scopes.length > 0"
+                         v-model="data.scopeId" placeholder="全部数据" size="small" class="tree-node-select">
                 <el-option v-for="option in data.scopes" :key="option.scopeId" :label="option.scopeName" :value="option.scopeId"/>
               </el-select>
             </span>

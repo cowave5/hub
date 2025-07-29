@@ -21,6 +21,7 @@ import com.cowave.sys.admin.domain.auth.ApiToken;
 import com.cowave.sys.admin.domain.auth.ApiTokenMenu;
 import com.cowave.sys.admin.domain.auth.request.ApiTokenRequest;
 import com.cowave.sys.admin.domain.auth.vo.ApiTokenVo;
+import com.cowave.sys.admin.domain.rabc.dto.SysMenuScope;
 import com.cowave.sys.admin.infra.auth.dao.ApiTokenDao;
 import com.cowave.sys.admin.infra.auth.dao.ApiTokenMenuDao;
 import com.cowave.sys.admin.infra.rabc.dao.SysMenuDao;
@@ -116,9 +117,9 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 
         // 令牌菜单
         List<String> permits = new ArrayList<>();
-        List<Integer> menuIds = request.getMenuIds();
-        if(CollectionUtils.isNotEmpty(menuIds)){
-            permits = sysMenuDao.queryPermitsByIds(menuIds);
+        List<SysMenuScope> menuScopes = request.getMenuScopes();
+        if(CollectionUtils.isNotEmpty(menuScopes)){
+            permits = sysMenuDao.queryPermitsByIds(Collections.copyToList(menuScopes, SysMenuScope::getMenuId));
         }
 
         // 用户信息
@@ -146,7 +147,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
                 .claim(CLAIM_CLUSTER_NAME, applicationProperties.getClusterName())
                 .claim(CLAIM_USER_ROLE, roles)
                 .claim(CLAIM_USER_PERM, permits)
-                .claim(CLAIM_CONFLICT, "N")
+                .claim(CLAIM_MULTIPLE, 1)
                 .setIssuedAt(new Date())
                 .signWith(SignatureAlgorithm.HS512, accessProperties.accessSecret());
         if(request.getExpire() != null){
@@ -159,9 +160,9 @@ public class ApiTokenServiceImpl implements ApiTokenService {
         apiTokenDao.updateById(request);
 
         // 保存令牌权限
-        if(CollectionUtils.isNotEmpty(menuIds)){
-            List<ApiTokenMenu> tokenMenus =
-                    Collections.copyToList(menuIds, v -> new ApiTokenMenu(request.getTokenId(), v));
+        if(CollectionUtils.isNotEmpty(menuScopes)){
+            List<ApiTokenMenu> tokenMenus = Collections.copyToList(menuScopes,
+                    v -> new ApiTokenMenu(request.getTokenId(), v.getMenuId(), v.getScopeId()));
             apiTokenMenuDao.saveBatch(tokenMenus);
         }
 

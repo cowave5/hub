@@ -29,12 +29,11 @@
               </el-checkbox>
               <el-tree ref="menuTree" :data="menuOptions" node-key="id" class="tree-border" show-checkbox
                        :check-strictly="!menuCheckStrictly" empty-text="..." :props="defaultProps">
-                <span class="el-tree-node__label" slot-scope="{data}"
-                      style="display: flex; justify-content: space-between; width: 100%;">
+                <span class="el-tree-node__label" slot-scope="{data}" style="display: flex; justify-content: space-between; width: 100%;">
                   {{ $t(data.label) }}
-                  <el-select v-if="data.menuType === 'B'" v-model="data.scope"
-                             placeholder="选择数据权限" size="small" class="tree-node-select">
-                    <el-option v-for="option in dataPermits" :key="option.value" :label="option.label" :value="option.value"/>
+                  <el-select v-if="data.menuType === 'B' && data.scopes && data.scopes.length > 0" disabled="disabled"
+                             v-model="data.scopeId" placeholder="全部数据" size="small" class="tree-node-select">
+                    <el-option v-for="option in data.scopes" :key="option.scopeId" :label="option.scopeName" :value="option.scopeId"/>
                   </el-select>
                 </span>
               </el-tree>
@@ -56,7 +55,7 @@
             </el-table-column>
             <el-table-column label="到期时间" prop="expire" align="center" width="180">
               <template slot-scope="scope">
-                <span>{{ scope.row.expire ? parseTime(scope.row.expire) : '永久' }}</span>
+                <span>{{ scope.row.expire ? parseTime(scope.row.expire) : '永 久' }}</span>
               </template>
             </el-table-column>
             <el-table-column label="ip限制" prop="ipRule" align="center" :show-overflow-tooltip="true">
@@ -72,8 +71,8 @@
             <el-table-column label="最近访问ip" prop="accessIp" align="center" :show-overflow-tooltip="true"/>
             <el-table-column :label="$t('commons.label.options')" align="center" class-name="small-padding fixed-width">
               <template slot-scope="scope">
-                <el-button size="mini" type="text" @click="handlePermit(scope.row)">
-                  <svg-icon icon-class="pscope"/>权限
+                <el-button size="mini" type="text" @click="showPermits(scope.row)">
+                  <svg-icon icon-class="pscope"/> 权限
                 </el-button>
                 <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">
                   {{ $t('commons.button.delete') }}
@@ -105,10 +104,9 @@
                 <span class="el-tree-node__label" slot-scope="{data}"
                       style="display: flex; justify-content: space-between; width: 100%;">
                   {{ $t(data.label) }}
-                  <el-select v-if="data.menuType === 'B'" v-model="data.scope"
-                             placeholder="选择数据权限" size="small" class="tree-node-select">
-                    <el-option v-for="option in dataPermits" :key="option.value" :label="option.label"
-                               :value="option.value"/>
+                  <el-select v-if="data.menuType === 'B' && data.scopes && data.scopes.length > 0" disabled="disabled"
+                             v-model="data.scopeId" placeholder="全部数据" size="small" class="tree-node-select">
+                    <el-option v-for="option in data.scopes" :key="option.scopeId" :label="option.scopeName" :value="option.scopeId"/>
                   </el-select>
                 </span>
       </el-tree>
@@ -130,7 +128,7 @@ export default {
         ipRule: undefined,
         expire: undefined,
         userCode: undefined,
-        menuIds: [],
+        menuScopes: [],
       },
       menuOptions: [],
       menuExpand: false,
@@ -138,7 +136,10 @@ export default {
       menuCheckStrictly: true,
       defaultProps: {
         children: "children",
-        label: "label"
+        label: "label",
+        disabled: (data, node) => {
+          return data.menuType !== 'B';
+        }
       },
       dataPermits: [
         { value: 'option1', label: '数据权限1' },
@@ -185,7 +186,7 @@ export default {
         this.menuOptions = response.data;
       });
     },
-    /** 用户权限 */
+    /** 权限列表 */
     getList(){
       listApiToken().then(response => {
         this.list = response.data;
@@ -196,27 +197,46 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           this.token.userCode = this.user.userCode
-          this.token.menuIds = this.getCheckedMenus()
+          this.token.menuScopes = this.getCheckedMenus()
           creatApiToken(this.token).then((resp) => {
             this.getList();
             this.tokenValue = resp.data;
             this.token = {
               tokenName: undefined,
+              ipRule: undefined,
               expire: undefined,
               userCode: undefined,
-              menuIds: []
+              menuScopes: []
             };
             this.showToken = true;
+
+            this.menuExpand = false,
+            this.menuNodeAll = false,
+            this.handleCheckedTreeExpand(false);
+            this.handleCheckedTreeNodeAll(false);
           })
         }
       })
     },
-    handlePermit(row) {
+    showPermits(row) {
+      this.menuExpand2 = false;
       this.menuOptions2 = this.deepCopyWithDisabled(this.menuOptions);
       this.$nextTick(() => {
         this.$refs.menuTree2.setCheckedKeys(row.menuIds);
+        this.menuOptions2 = this.filterTreeData(this.menuOptions2, row.menuIds);
       });
       this.showPermit = true;
+    },
+    filterTreeData(nodes, checkedKeys) {
+      if (!nodes || !nodes.length) return [];
+      return nodes.map(node => {
+        if (node.children?.length) {
+          node.children = this.filterTreeData(node.children, checkedKeys);
+        }
+        return node;
+      }).filter(node => {
+        return checkedKeys.includes(node.id) || node.children?.length;
+      });
     },
     deepCopyWithDisabled(nodes) {
       return nodes.map(node => {
@@ -241,14 +261,23 @@ export default {
       // 半选中的节点
       let halfCheckedKeys = this.$refs.menuTree.getHalfCheckedKeys();
       checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
-      // let checkedMenus = checkedKeys.map(id => {
-      //   let node = this.findNodeById(id, this.menuOptions) // 查找对应节点
-      //   return {
-      //     id: id,
-      //     scope: node ? node.scope || '' : '' // 确保 scope 有值
-      //   }
-      // })
-      return checkedKeys;
+      return checkedKeys.map(id => {
+        let node = this.findNodeById(id, this.menuOptions);
+        return {
+          menuId: id,
+          scopeId: (node && node.scopeId) ? node.scopeId : null
+        };
+      });
+    },
+    findNodeById(id, nodes) {
+      for (let node of nodes) {
+        if (node.id === id) return node
+        if (node.children) {
+          let found = this.findNodeById(id, node.children)
+          if (found) return found
+        }
+      }
+      return null
     },
     /** 展开/折叠 */
     handleCheckedTreeExpand(value, type) {
@@ -285,3 +314,13 @@ export default {
   }
 };
 </script>
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+.tree-node-select {
+  ::v-deep .el-input__inner {
+    height: 20px;
+    border: none;
+    box-shadow: none;
+  }
+}
+</style>

@@ -301,6 +301,7 @@ export default {
       profile: "Profile",
       info: "User Info",
       basic: "Basic Info",
+      mfa: "MFA Config",
       data: "user",
       list: "Members",
       template: "user_template",

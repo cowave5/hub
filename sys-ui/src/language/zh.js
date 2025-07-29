@@ -301,6 +301,7 @@ export default {
       profile: "个人信息",
       info: "用户信息",
       basic: "基本信息",
+      mfa: "MFA认证",
       data: "用户数据",
       list: "成员列表",
       template: "用户数据模板",
