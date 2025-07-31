@@ -77,7 +77,7 @@
       <el-table-column label="操作人" align="center" prop="access.accessUserName"/>
       <el-table-column label="操作结果" align="center" prop="opStatus">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.success_failed" :value="scope.row.opStatus"/>
+          <dict-tag :options="success_failed" :value="scope.row.opStatus"/>
         </template>
       </el-table-column>
       <el-table-column label="详情" align="center" class-name="small-padding fixed-width">
@@ -96,11 +96,13 @@
 import {listOpLog, delOpLog, cleanOpLog} from "@/api/monitor/operlog";
 import {checkPermit} from "@/utils/permission";
 import {listTypeByGroup} from "@/api/system/dict";
+import { success_failed } from '@/utils/constants';
 export default {
   name: "Oplog",
-  dicts: ['success_failed', 'op_action'],
+  dicts: ['op_action'],
   data() {
     return {
+      success_failed: success_failed,
       // 遮罩层
       loading: true,
       // 选中数组

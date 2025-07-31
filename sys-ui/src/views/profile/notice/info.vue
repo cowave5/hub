@@ -1,12 +1,12 @@
 <template>
   <el-dialog :title="notice.noticeTitle" :visible.sync="visible" width="900px" top="5vh">
     <div style="position: absolute; left: 20px; top: 50px; color: #9b9595; font-size: small;">
-      <template v-for="item in dict.type.notice_type">
-        <span v-if="notice.noticeType === item.value">{{ $t(item.name) }}</span>
+      <template v-for="item in notice_type">
+        <span v-if="notice.noticeType === item.value">{{ $t(item.label) }}</span>
       </template>
       /
-      <template v-for="item in dict.type.notice_level">
-        <span v-if="notice.noticeLevel === item.value">{{ $t(item.name) }}</span>
+      <template v-for="item in notice_level">
+        <span v-if="notice.noticeLevel === item.value">{{ $t(item.label) }}</span>
       </template>
       <span style="padding-left: 40px;">创建人：{{ notice.createUserName }}</span>
       <span style="padding-left: 40px;">发布时间：{{ notice.publishTime }}</span>
@@ -31,10 +31,13 @@
 </template>
 <script>
 import {getNoticeInfo, getReads} from "@/api/system/notice";
+import { notice_level, notice_type } from '@/utils/constants';
 export default {
-  dicts: ['notice_type', 'notice_level'],
+  dicts: [],
   data() {
     return {
+      notice_level: notice_level,
+      notice_type: notice_type,
       visible: false,
       notice: {},
       reads: [],

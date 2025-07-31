@@ -15,8 +15,8 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="操作结果：">
-            <template v-for="item in dict.type.success_failed">
-              <span v-if="info.opStatus === item.value">{{ $t(item.name) }}</span>
+            <template v-for="item in success_failed">
+              <span v-if="info.opStatus === item.value">{{ $t(item.label) }}</span>
             </template>
           </el-form-item>
         </el-col>
@@ -106,10 +106,12 @@
 </template>
 
 <script>
+import { success_failed } from '@/utils/constants';
 export default {
-  dicts: ['success_failed'],
+  dicts: [],
   data() {
     return {
+      success_failed: success_failed,
       visible: false,
       info: {}
     };

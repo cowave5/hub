@@ -45,10 +45,10 @@ import java.util.Date;
 import java.util.List;
 
 import static com.cowave.commons.client.http.constants.HttpCode.*;
-import static com.cowave.sys.admin.domain.auth.AuthType.LDAP;
-import static com.cowave.sys.admin.domain.base.constants.OpAction.LOGIN;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_AUTH;
+import static com.cowave.sys.admin.domain.constants.AuthType.LDAP;
+import static com.cowave.sys.admin.domain.constants.OpAction.LOGIN;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM_AUTH;
 
 /**
  * @author shanhuiming
@@ -97,7 +97,7 @@ public class LdapServiceImpl implements LdapService {
             ldapUserDao.updateById(ldapUser);
         }else{
             ldapUser = newUser;
-            ldapUser.setUserCode(sysTenantDao.nextUserCode(tenantId, LDAP.val()));
+            ldapUser.setUserCode(sysTenantDao.nextUserCode(tenantId, LDAP.getVal()));
             ldapUser.setRoleCode(ldapConfig.getRoleCode());
             ldapUser.setUserPasswd(passWord);
             ldapUser.setTenantId(ldapConfig.getTenantId());

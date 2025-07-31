@@ -9,11 +9,14 @@
  */
 package com.cowave.sys.admin.domain.rabc.dto;
 
+import com.cowave.sys.admin.domain.constants.YesNo;
 import com.cowave.sys.admin.domain.rabc.SysUser;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.List;
+
+import static com.cowave.sys.admin.domain.constants.YesNo.NO;
 
 /**
  * @author shanhuiming
@@ -43,12 +46,12 @@ public class UserListDto extends SysUser {
         /**
          * 是否用户默认单位
          */
-        private Integer isDefault = 0;
+        private YesNo isDefault = NO;
 
         /**
          * 是否单位负责人
          */
-        private Integer isLeader = 0;
+        private YesNo isLeader = NO;
 
         /**
          * 岗位id

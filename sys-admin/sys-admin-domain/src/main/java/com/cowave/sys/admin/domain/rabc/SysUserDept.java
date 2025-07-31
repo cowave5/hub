@@ -9,10 +9,13 @@
  */
 package com.cowave.sys.admin.domain.rabc;
 
+import com.cowave.sys.admin.domain.constants.YesNo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+
+import static com.cowave.sys.admin.domain.constants.YesNo.NO;
 
 /**
  * @author shanhuiming
@@ -41,12 +44,12 @@ public class SysUserDept {
     /**
 	 * 用户默认单位
 	 */
-	private Integer isDefault = 0;
+	private YesNo isDefault = NO;
 
 	/**
 	 * 单位负责人
 	 */
-	private Integer isLeader = 0;
+	private YesNo isLeader = NO;
 
 	public SysUserDept(Integer userId, Integer deptId, Integer postId){
 		this.userId = userId;

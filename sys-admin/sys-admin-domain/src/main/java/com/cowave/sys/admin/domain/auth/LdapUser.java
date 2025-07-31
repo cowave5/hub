@@ -15,7 +15,7 @@ import com.cowave.commons.framework.access.security.AccessUserDetails;
 import lombok.Data;
 import java.util.Date;
 
-import static com.cowave.sys.admin.domain.auth.AuthType.LDAP;
+import static com.cowave.sys.admin.domain.constants.AuthType.LDAP;
 
 /**
  * Ldap用户信息
@@ -101,8 +101,8 @@ public class LdapUser {
 
     public AccessUserDetails newUserDetails(){
         AccessUserDetails userDetails = AccessUserDetails.newUserDetails();
-        userDetails.setAuthType(LDAP.val());
-        userDetails.setUserType(LDAP.val());
+        userDetails.setAuthType(LDAP.getVal());
+        userDetails.setUserType(LDAP.getVal());
         userDetails.setTenantId(tenantId);
         userDetails.setUserId(id);
         userDetails.setUserCode(userCode);

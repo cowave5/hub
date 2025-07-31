@@ -31,13 +31,13 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.base.constants.OpAction.*;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_ROLE;
+import static com.cowave.sys.admin.domain.constants.OpAction.*;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM_ROLE;
 
 /**
  * 角色
- * @order 4
+ * @order 5
  * @author shanhuiming
  */
 @Validated

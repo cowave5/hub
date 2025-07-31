@@ -10,6 +10,7 @@
 package com.cowave.sys.admin.service.rabc;
 
 import cn.hutool.core.lang.tree.Tree;
+import com.cowave.sys.admin.domain.constants.EnableStatus;
 import com.cowave.sys.admin.domain.rabc.SysMenu;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public interface SysMenuService{
 	/**
 	 * 列表
 	 */
-	List<SysMenu> list(String menuName, Integer menuStatus);
+	List<SysMenu> list(String menuName, EnableStatus menuStatus);
 
 	/**
 	 * Api令牌权限树

@@ -2,9 +2,9 @@
   <div>
     <template v-for="(item, index) in options">
       <template v-if="values.includes(item.value)">
-        <el-tag :disable-transitions="true" :key="item.code" :index="index"
-          :type="item.raw.css === undefined ? 'primary' : item.raw.css">
-          {{ $t(item.name) }}
+        <el-tag :disable-transitions="true" :index="index"
+          :type="item.css === undefined ? 'primary' : item.css">
+          {{ $t(item.label) }}
         </el-tag>
       </template>
     </template>

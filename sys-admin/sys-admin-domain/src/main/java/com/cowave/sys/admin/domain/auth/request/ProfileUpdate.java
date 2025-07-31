@@ -9,6 +9,7 @@
  */
 package com.cowave.sys.admin.domain.auth.request;
 
+import com.cowave.sys.admin.domain.constants.UserSex;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -29,7 +30,7 @@ public class ProfileUpdate {
     /**
      * 用户性别
      */
-    private Integer userSex;
+    private UserSex userSex;
 
     /**
      * 用户电话

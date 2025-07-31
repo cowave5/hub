@@ -53,16 +53,16 @@
           </el-table-column>
           <el-table-column align="center" width="100">
             <template slot-scope="scope">
-              <template v-for="item in dict.type.notice_level">
-                <span v-if="scope.row.noticeLevel === item.value">{{ $t(item.name) }}</span>
+              <template v-for="item in notice_level">
+                <span v-if="scope.row.noticeLevel === item.value">{{ $t(item.label) }}</span>
               </template>
             </template>
           </el-table-column>
           <el-table-column prop="createBy" align="center" width="120"/>
           <el-table-column align="center" width="100">
             <template slot-scope="scope">
-              <template v-for="item in dict.type.notice_type">
-                <span v-if="scope.row.noticeType === item.value">{{ $t(item.name) }}</span>
+              <template v-for="item in notice_type">
+                <span v-if="scope.row.noticeType === item.value">{{ $t(item.label) }}</span>
               </template>
             </template>
           </el-table-column>
@@ -89,7 +89,7 @@ import Search from '@/components/HeaderSearch'
 import RuoYiGit from '@/components/RuoYi/Git'
 import RuoYiDoc from '@/components/RuoYi/Doc'
 import { getNoticeMsg, readNoticeMsg } from '@/api/system/notice'
-
+import { notice_level, notice_type } from '@/utils/constants';
 export default {
   components: {
     Breadcrumb,
@@ -129,9 +129,11 @@ export default {
       }
     }
   },
-  dicts: ['notice_level', 'notice_type'],
+  dicts: [],
   data() {
     return {
+      notice_level: notice_level,
+      notice_type: notice_type,
       notifyOpen: false,
       msgList: [],
       total: 0,

@@ -9,6 +9,8 @@
  */
 package com.cowave.sys.admin.domain.base.request;
 
+import com.cowave.sys.admin.domain.constants.NoticeStatus;
+import com.cowave.sys.admin.domain.constants.NoticeType;
 import lombok.Data;
 
 /**
@@ -23,12 +25,12 @@ public class NoticeQuery {
 	private String noticeTitle;
 
     /**
-	 * 公告类型 0 公告 1 通知
+	 * 公告类型
 	 */
-	private Integer noticeType;
+	private NoticeType noticeType;
 
     /**
-	 * 公告状态 0草稿 1已发布 2已撤回
+	 * 公告状态
 	 */
-    private Integer noticeStatus;
+    private NoticeStatus noticeStatus;
 }

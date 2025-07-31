@@ -9,6 +9,7 @@
  */
 package com.cowave.sys.admin.domain.base.request;
 
+import com.cowave.sys.admin.domain.constants.YesNo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,5 +47,5 @@ public class AttachUpload {
     /**
      * 是否私有的
      */
-    private int isPrivate;
+    private YesNo isPrivate;
 }

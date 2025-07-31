@@ -10,10 +10,12 @@
 package com.cowave.sys.admin.domain.rabc.vo;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * @author shanhuiming
+ * @author ruoyi
  */
+@NoArgsConstructor
 @Data
 public class RouteMeta {
 
@@ -37,36 +39,21 @@ public class RouteMeta {
      */
     private String link;
 
-    public RouteMeta()
-    {
-    }
-
-    public RouteMeta(String title, String icon)
-    {
+    public RouteMeta(String title, String icon) {
         this.title = title;
         this.icon = icon;
     }
 
-    public RouteMeta(String title, String icon, boolean noCache)
-    {
-        this.title = title;
-        this.icon = icon;
-        this.noCache = noCache;
-    }
-
-    public RouteMeta(String title, String icon, String link)
-    {
+    public RouteMeta(String title, String icon, String link) {
         this.title = title;
         this.icon = icon;
         this.link = link;
     }
 
-    public RouteMeta(String title, String icon, boolean noCache, String link)
-    {
+    public RouteMeta(String title, String icon, boolean noCache, String link) {
         this.title = title;
         this.icon = icon;
         this.noCache = noCache;
         this.link = link;
     }
-
 }

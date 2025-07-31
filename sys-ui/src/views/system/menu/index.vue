@@ -8,7 +8,7 @@
       </el-form-item>
       <el-form-item :label="$t('menu.label.status')" prop="status">
         <el-select v-model="queryParams.menuStatus" :placeholder="$t('menu.placeholder.status')" clearable style="width: 240px">
-          <el-option v-for="dict in dict.type.enable_disable" :key="dict.value" :value="dict.value" :label="$t(dict.name)"/>
+          <el-option v-for="item in enable_disable" :key="item.value" :value="item.value" :label="$t(item.label)"/>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -51,7 +51,7 @@
       </el-table-column>
       <el-table-column v-if="cols[1].show" prop="menuType" :label="$t('menu.label.type')" align="center" width="100">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.menu_type" :value="scope.row.menuType"/>
+          <dict-tag :options="menu_type" :value="scope.row.menuType"/>
         </template>
       </el-table-column>
       <el-table-column v-if="cols[2].show" prop="menuOrder" :label="$t('menu.label.order')" align="center" width="100"/>
@@ -62,7 +62,7 @@
       </el-table-column>
       <el-table-column v-if="cols[4].show" prop="isProtected" :label="$t('menu.label.visibility')" align="center">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.public_protected" :value="scope.row.isProtected"/>
+          <dict-tag :options="public_protected" :value="scope.row.isProtected"/>
         </template>
       </el-table-column>
       <el-table-column v-if="cols[5].show" prop="menuPath" :label="$t('menu.label.path')" align="center" :show-overflow-tooltip="true"/>
@@ -85,8 +85,10 @@
         </template>
       </el-table-column>
       <el-table-column v-if="cols[8].show" prop="menuStatus" :label="$t('menu.label.status')" align="center">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.enable_disable" :value="scope.row.menuStatus"/>
+        <template slot-scope="{row: {menuStatus}}">
+          <template v-for="item in enable_disable">
+            <span v-if="menuStatus === item.value">{{ $t(item.label) }}</span>
+          </template>
         </template>
       </el-table-column>
       <el-table-column v-if="cols[9].show" prop="createTime" :label="$t('commons.label.createTime')" align="center" width="180">
@@ -131,7 +133,7 @@
           <el-col :span="24">
             <el-form-item :label="$t('menu.label.type')" prop="menuType">
               <el-radio-group v-model="form.menuType">
-                <el-radio v-for="dict in dict.type.menu_type" :key="dict.value" :label="dict.value">{{$t(dict.name)}}</el-radio>
+                <el-radio v-for="item in menu_type" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -197,9 +199,7 @@
                 {{$t('menu.label.status')}}
               </span>
               <el-radio-group v-model="form.menuStatus">
-                <el-radio v-for="dict in dict.type.enable_disable" :key="dict.value" :label="dict.value">
-                  {{$t(dict.name)}}
-                </el-radio>
+                <el-radio v-for="item in enable_disable" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -249,9 +249,7 @@
                 {{$t('menu.label.frame')}}
               </span>
               <el-radio-group v-model="form.isFrame">
-                <el-radio v-for="dict in dict.type.menu_frame" :key="dict.value" :label="dict.value">
-                  {{$t(dict.name)}}
-                </el-radio>
+                <el-radio v-for="item in menu_frame" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -264,9 +262,7 @@
                 {{$t('menu.label.visible')}}
               </span>
               <el-radio-group v-model="form.isVisible">
-                <el-radio v-for="dict in dict.type.show_hide" :key="dict.value" :label="dict.value">
-                  {{$t(dict.name)}}
-                </el-radio>
+                <el-radio v-for="item in show_hide" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -281,9 +277,7 @@
                 {{$t('menu.label.visibility')}}
               </span>
               <el-radio-group v-model="form.isProtected">
-                <el-radio v-for="dict in dict.type.public_protected" :key="dict.value" :label="dict.value">
-                  {{$t(dict.name)}}
-                </el-radio>
+                <el-radio v-for="item in public_protected" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -296,9 +290,7 @@
                 {{$t('menu.label.cacheable')}}
               </span>
               <el-radio-group v-model="form.isCache">
-                <el-radio v-for="dict in dict.type.menu_cache" :key="dict.value" :label="dict.value">
-                  {{$t(dict.name)}}
-                </el-radio>
+                <el-radio v-for="item in menu_cache" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -333,13 +325,19 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import {checkPermit} from "@/utils/permission";
 import {listTenantOptions} from "@/api/system/tenant";
 import {listTypeByGroup} from "@/api/system/dict";
-
+import { enable_disable, show_hide, menu_type, menu_cache, menu_frame, public_protected } from '@/utils/constants';
 export default {
   name: "Menu",
-  dicts: ['show_hide', 'enable_disable', 'public_protected', 'menu_frame', 'menu_cache', 'menu_type'],
+  dicts: [],
   components: { Treeselect, IconSelect },
   data() {
     return {
+      enable_disable: enable_disable,
+      show_hide: show_hide,
+      menu_type: menu_type,
+      menu_cache: menu_cache,
+      menu_frame: menu_frame,
+      public_protected: public_protected,
       // 遮罩层
       loading: true,
       // 显示搜索条件

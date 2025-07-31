@@ -14,6 +14,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cowave.commons.framework.support.mybatis.pg.PgListHandler;
+import com.cowave.sys.admin.domain.constants.NoticeLevel;
+import com.cowave.sys.admin.domain.constants.NoticeStatus;
+import com.cowave.sys.admin.domain.constants.NoticeType;
+import com.cowave.sys.admin.domain.constants.YesNo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -21,7 +25,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.base.constants.NoticeStatus.DRAFT;
+import static com.cowave.sys.admin.domain.constants.NoticeStatus.DRAFT;
 
 /**
  * @author shanhuiming
@@ -50,17 +54,17 @@ public class SysNotice {
     /**
      * 公告状态
      */
-    private Integer noticeStatus = DRAFT.val();
+    private NoticeStatus noticeStatus = DRAFT;
 
     /**
      * 公告类型
      */
-    private Integer noticeType;
+    private NoticeType noticeType;
 
     /**
      * 公告等级
      */
-    private Integer noticeLevel;
+    private NoticeLevel noticeLevel;
 
     /**
      * 公告内容
@@ -70,7 +74,7 @@ public class SysNotice {
     /**
      * 是否系统公告
      */
-    private Integer isSystem;
+    private YesNo isSystem;
 
     /**
      * 总人数
@@ -85,7 +89,7 @@ public class SysNotice {
     /**
      * 是否全员
      */
-    private Integer goalsAll;
+    private YesNo goalsAll;
 
     /**
      * 目标单位

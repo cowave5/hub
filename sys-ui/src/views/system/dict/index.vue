@@ -63,8 +63,10 @@
       <el-table-column v-if="cols[4].show" :label="$t('dict.label.order')" align="center" prop="dictOrder"/>
       <el-table-column v-if="cols[5].show" :label="$t('dict.label.css')" align="center" prop="css"/>
       <el-table-column v-if="cols[6].show" :label="$t('commons.label.status')" align="center" prop="status">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.enable_disable" :value="scope.row.status"/>
+        <template slot-scope="{row: {status}}">
+          <template v-for="item in enable_disable">
+            <span v-if="status === item.value">{{ $t(item.label) }}</span>
+          </template>
         </template>
       </el-table-column>
       <el-table-column v-if="cols[7].show" :label="$t('commons.label.createTime')" align="center" prop="createTime" width="180">
@@ -157,18 +159,14 @@
           <el-col :span="12">
             <el-form-item :label="$t('commons.label.status')" prop="status">
               <el-radio-group v-model="form.status">
-                <el-radio v-for="dict in dict.type.enable_disable" :key="dict.value" :label="dict.value">
-                  {{$t(dict.name)}}
-                </el-radio>
+                <el-radio v-for="item in enable_disable" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item :label="$t('dict.label.default')" prop="isDefault">
               <el-radio-group v-model="form.isDefault">
-                <el-radio v-for="dict in dict.type.yes_no" :key="dict.value" :label="dict.value">
-                  {{$t(dict.name)}}
-                </el-radio>
+                <el-radio v-for="item in yes_no" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -195,12 +193,14 @@ import {
   getDictList,
   updateDict,
 } from '@/api/system/dict'
-
+import { yes_no, enable_disable } from '@/utils/constants';
 export default {
   name: "Dict",
-  dicts: ['enable_disable', 'yes_no'],
+  dicts: [],
   data() {
     return {
+      yes_no: yes_no,
+      enable_disable: enable_disable,
       // 遮罩层
       loading: true,
       // 选中数组

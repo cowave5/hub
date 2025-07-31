@@ -76,19 +76,15 @@
       <el-table-column :label="$t('user.label.post')" align="center" prop="postName"/>
       <el-table-column :label="$t('dept.text.default_user_post')" align="center">
         <template slot-scope="{row: {isDefault}}">
-          <template v-for="item in dict.type.yes_no">
-            <span v-if="isDefault === item.value">
-              <el-tag :type="item.css">{{ $t(item.name) }}</el-tag>
-            </span>
+          <template v-for="item in yes_no">
+            <span v-if="isDefault === item.value">{{ $t(item.label) }}</span>
           </template>
         </template>
       </el-table-column>
       <el-table-column :label="$t('dept.text.leader')" align="center">
         <template slot-scope="{row: {isLeader}}">
-          <template v-for="item in dict.type.yes_no">
-            <span v-if="isLeader === item.value">
-              <el-tag :type="item.css">{{ $t(item.name) }}</el-tag>
-            </span>
+          <template v-for="item in yes_no">
+            <span v-if="isLeader === item.value">{{ $t(item.label) }}</span>
           </template>
         </template>
       </el-table-column>
@@ -107,16 +103,17 @@
 </template>
 
 <script>
-import { getDeptInfo, getJoinedMembers, removeDeptMembers, removeDeptPosts } from '@/api/system/dept'
+import { getDeptInfo, getJoinedMembers, removeDeptMembers } from '@/api/system/dept'
 import { checkPermit } from '@/utils/permission'
 import selectUser from '@/views/system/dept/selectUser.vue'
-
+import { yes_no } from '@/utils/constants';
 export default {
   name: 'DeptPost',
   components: { selectUser },
-  dicts: ['post_level', 'yes_no'],
+  dicts: ['post_level'],
   data() {
     return {
+      yes_no: yes_no,
       // 遮罩层
       loading: false,
       // 非多个禁用

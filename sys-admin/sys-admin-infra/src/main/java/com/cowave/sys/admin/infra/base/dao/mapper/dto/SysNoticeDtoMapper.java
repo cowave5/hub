@@ -10,6 +10,7 @@
 package com.cowave.sys.admin.infra.base.dao.mapper.dto;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cowave.sys.admin.domain.constants.NoticeStatus;
 import com.cowave.sys.admin.domain.base.dto.NoticeMsgDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -54,7 +55,7 @@ public interface SysNoticeDtoMapper {
      * 更新待读总数
      */
     void updateMsgStat(@Param("noticeId") Long noticeId,
-                       @Param("noticeStatus") Integer noticeStatus,
+                       @Param("noticeStatus") NoticeStatus noticeStatus,
                        @Param("publishTime") Date publishTime);
 
     /**

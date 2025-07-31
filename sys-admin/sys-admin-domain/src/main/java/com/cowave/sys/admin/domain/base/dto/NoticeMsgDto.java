@@ -9,6 +9,10 @@
  */
 package com.cowave.sys.admin.domain.base.dto;
 
+import com.cowave.sys.admin.domain.constants.NoticeLevel;
+import com.cowave.sys.admin.domain.constants.NoticeStatus;
+import com.cowave.sys.admin.domain.constants.NoticeType;
+import com.cowave.sys.admin.domain.constants.YesNo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -43,22 +47,22 @@ public class NoticeMsgDto {
     /**
      * 公告状态
      */
-    private Integer noticeStatus;
+    private NoticeStatus noticeStatus;
 
     /**
      * 公告类型
      */
-    private Integer noticeType;
+    private NoticeType noticeType;
 
     /**
      * 公告等级
      */
-    private Integer noticeLevel;
+    private NoticeLevel noticeLevel;
 
     /**
      * 是否系统公告
      */
-    private Integer isSystem;
+    private YesNo isSystem;
 
     /**
      * 发布时间

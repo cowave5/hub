@@ -68,8 +68,10 @@
       <el-table-column v-if="cols[3].show" :label="$t('dict.label.valueType')" align="center" prop="valueType" />
       <el-table-column v-if="cols[4].show" :label="$t('config.label.remark')" align="left" prop="remark" :show-overflow-tooltip="true" />
       <el-table-column v-if="cols[5].show" :label="$t('config.label.default')" align="center" prop="isDefault">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.yes_no" :value="scope.row.isDefault"/>
+        <template slot-scope="{row: {isDefault}}">
+          <template v-for="item in yes_no">
+            <span v-if="isDefault === item.value">{{ $t(item.label) }}</span>
+          </template>
         </template>
       </el-table-column>
       <el-table-column v-if="cols[6].show" :label="$t('commons.label.createTime')" align="center" prop="createTime" width="180">
@@ -110,7 +112,7 @@
         </el-form-item>
         <el-form-item :label="$t('config.label.default')" prop="configType">
           <el-radio-group v-model="form.isDefault">
-            <el-radio v-for="dict in dict.type.yes_no" :key="dict.value" :label="dict.value">{{$t(dict.name)}}</el-radio>
+            <el-radio v-for="item in yes_no" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('dict.label.valueType')" prop="valueType">
@@ -143,12 +145,13 @@
 <script>
 import { getConfigList, getConfigInfo, delConfig, addConfig, updateConfig, refreshConfig } from "@/api/system/config";
 import {checkPermit} from "@/utils/permission";
-
+import { yes_no } from '@/utils/constants';
 export default {
   name: "Config",
-  dicts: ['yes_no'],
+  dicts: [],
   data() {
     return {
+      yes_no: yes_no,
       // 遮罩层
       loading: true,
       // 选中数组

@@ -9,14 +9,18 @@
  */
 package com.cowave.sys.admin.infra.rabc.dao;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.tools.Collections;
 import com.cowave.sys.admin.domain.auth.request.ProfileUpdate;
+import com.cowave.sys.admin.domain.constants.EnableStatus;
 import com.cowave.sys.admin.domain.rabc.SysUser;
 import com.cowave.sys.admin.domain.rabc.request.UserCreate;
 import com.cowave.sys.admin.domain.rabc.request.UserExportQuery;
+import com.cowave.sys.admin.domain.rabc.request.UserMemberQuery;
 import com.cowave.sys.admin.infra.rabc.dao.mapper.SysUserMapper;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
@@ -126,7 +130,7 @@ public class SysUserDao extends ServiceImpl<SysUserMapper, SysUser> {
     /**
      * 修改状态
      */
-    public void updateStatusById(Integer userId, Integer status){
+    public void updateStatusById(Integer userId, EnableStatus status){
         lambdaUpdate().eq(SysUser::getUserId, userId)
                 .set(SysUser::getUpdateBy, Access.userCode())
                 .set(SysUser::getUpdateTime, new Date())
@@ -173,6 +177,9 @@ public class SysUserDao extends ServiceImpl<SysUserMapper, SysUser> {
                 .update();
     }
 
+    /**
+     * 查询姓名（用户编码列表）
+     */
     public Map<String, String> queryCodeNameMap(List<String> userCodes){
         if(userCodes.isEmpty()){
             return new HashMap<>();
@@ -183,5 +190,15 @@ public class SysUserDao extends ServiceImpl<SysUserMapper, SysUser> {
                 .select(SysUser::getUserCode, SysUser::getUserName)
                 .list();
         return Collections.copyToMap(list, SysUser::getUserCode, SysUser::getUserName);
+    }
+
+    /**
+     * 用户选项列表
+     */
+    public Page<SysUser> getUserOptions(String tenantId, UserMemberQuery query) {
+        return lambdaQuery().eq(SysUser::getTenantId, tenantId)
+                .like(StringUtils.isNotBlank(query.getUserName()), SysUser::getUserName, query.getUserName())
+                .notIn(CollectionUtils.isNotEmpty(query.getUserCodes()), SysUser::getUserCode, query.getUserCodes())
+                .page(Access.page());
     }
 }

@@ -244,7 +244,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'table/:tableId(\\d+)',
-        component: () => import('@/views/meter/template/column.vue'),
+        component: () => import('@/views/meter/develop/column.vue'),
         name: 'tableColumn',
         meta: { title: '库表字段', activeMenu: '/meter/template/table' }
       }
@@ -257,7 +257,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'model/:modelId(\\d+)',
-        component: () => import('@/views/meter/template/field.vue'),
+        component: () => import('@/views/meter/develop/field.vue'),
         name: 'ModelField',
         meta: { title: '模型字段', activeMenu: '/meter/template/model' }
       }

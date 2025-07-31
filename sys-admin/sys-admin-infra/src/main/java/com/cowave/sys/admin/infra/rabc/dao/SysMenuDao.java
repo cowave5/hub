@@ -12,6 +12,7 @@ package com.cowave.sys.admin.infra.rabc.dao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.tools.Collections;
+import com.cowave.sys.admin.domain.constants.EnableStatus;
 import com.cowave.sys.admin.domain.rabc.SysMenu;
 import com.cowave.sys.admin.infra.rabc.dao.mapper.SysMenuMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +58,7 @@ public class SysMenuDao extends ServiceImpl<SysMenuMapper, SysMenu> {
     /**
      * 列表查询
      */
-    public List<SysMenu> list(String menuName, Integer menuStatus) {
+    public List<SysMenu> list(String menuName, EnableStatus menuStatus) {
         return lambdaQuery()
                 .eq(menuStatus != null, SysMenu::getMenuStatus, menuStatus)
                 .like(StringUtils.isNotBlank(menuName), SysMenu::getMenuName, menuName)

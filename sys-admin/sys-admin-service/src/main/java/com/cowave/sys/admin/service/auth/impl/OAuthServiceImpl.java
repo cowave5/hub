@@ -34,6 +34,7 @@ import com.cowave.sys.admin.domain.auth.request.OAuth2TokenRequest;
 import com.cowave.sys.admin.domain.auth.request.OAuthUserQuery;
 import com.cowave.sys.admin.domain.auth.vo.OAuth2CodeVo;
 import com.cowave.sys.admin.domain.base.SysOperation;
+import com.cowave.sys.admin.domain.constants.SuccessStatus;
 import com.cowave.sys.admin.domain.rabc.SysTenant;
 import com.cowave.sys.admin.domain.rabc.SysUser;
 import com.cowave.sys.admin.infra.auth.dao.LdapUserDao;
@@ -62,11 +63,11 @@ import java.util.concurrent.TimeUnit;
 
 import static com.cowave.commons.client.http.constants.HttpCode.*;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_OAUTH;
-import static com.cowave.sys.admin.domain.auth.AuthType.*;
-import static com.cowave.sys.admin.domain.base.constants.OpAction.LOGIN;
-import static com.cowave.sys.admin.domain.base.constants.OpAction.LOGIN_OAUTH;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_AUTH;
+import static com.cowave.sys.admin.domain.constants.AuthType.*;
+import static com.cowave.sys.admin.domain.constants.OpAction.LOGIN;
+import static com.cowave.sys.admin.domain.constants.OpAction.LOGIN_OAUTH;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM_AUTH;
 
 /**
  * @author shanhuiming
@@ -91,7 +92,7 @@ public class OAuthServiceImpl implements OAuthService {
     @Override
     public AccessUserDetails gitlabCallback(String tenantId, String code) {
         // 根据授权码兑换令牌
-        OAuthServer oAuthServer = oauthServerDao.getByServerType(tenantId, GITLAB.val());
+        OAuthServer oAuthServer = oauthServerDao.getByServerType(tenantId, GITLAB.getVal());
 
         HttpResponse<GitlabToken> tokenResponse = gitlabService.getGitlabToken(oAuthServer.getAuthUrl(),
                 oAuthServer.getAppId(), oAuthServer.getAppSecret(),
@@ -107,7 +108,7 @@ public class OAuthServiceImpl implements OAuthService {
 
         // 保存Gitlab用户
         assert gitlabUser != null;
-        OAuthUser oauthUser = oauthUserDao.getByAccount(tenantId, GITLAB.val(), gitlabUser.getUsername());
+        OAuthUser oauthUser = oauthUserDao.getByAccount(tenantId, GITLAB.getVal(), gitlabUser.getUsername());
         if (oauthUser != null) {
             oauthUser.setUserName(gitlabUser.getName());
             oauthUser.setUserEmail(gitlabUser.getEmail());
@@ -286,15 +287,15 @@ public class OAuthServiceImpl implements OAuthService {
         if (GITLAB.equalsType(userCode)) {
             OAuthUser oAuthUser = oauthUserDao.getByUserCode(userCode);
             userDetails = oAuthUser.newUserDetails();
-            userDetails.setAuthType(OAUTH.val() + "/" + GITLAB.val());
+            userDetails.setAuthType(OAUTH.getVal() + "/" + GITLAB.getVal());
         } else if (LDAP.equalsType(userCode)) {
             LdapUser ldapUser = ldapUserDao.getByUserCode(userCode);
             userDetails = ldapUser.newUserDetails();
-            userDetails.setAuthType(OAUTH.val() + "/" + LDAP.val());
+            userDetails.setAuthType(OAUTH.getVal() + "/" + LDAP.getVal());
         } else {
             SysUser sysUser = sysUserDao.getByCode(userCode);
             userDetails = sysUser.newUserDetails(null);
-            userDetails.setAuthType(OAUTH.val() + "/" + SYS.val());
+            userDetails.setAuthType(OAUTH.getVal() + "/" + SYS.getVal());
         }
         // 根据scope设置permits，这里就省略了（当前登录的用户信息直接可以获取）
         userDetails.setClusterId(applicationProperties.getClusterId());
@@ -304,7 +305,7 @@ public class OAuthServiceImpl implements OAuthService {
 
         // 授权日志
         SysOperation sysOperation = new SysOperation();
-        sysOperation.setOpStatus(1);
+        sysOperation.setOpStatus(SuccessStatus.SUCCESS);
         sysOperation.setOpModule(SYSTEM);
         sysOperation.setOpType(SYSTEM_AUTH);
         sysOperation.setOpAction(LOGIN_OAUTH);

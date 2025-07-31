@@ -11,7 +11,7 @@
     </el-form-item>
     <el-form-item :label="$t('user.label.sex')">
       <el-radio-group v-model="user.userSex">
-        <el-radio v-for="dict in dict.type.sex" :key="dict.value" :label="dict.value">{{$t(dict.name)}}</el-radio>
+        <el-radio v-for="item in user_sex" :key="item.value" :label="item.value">{{$t(item.name)}}</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item>
@@ -23,14 +23,14 @@
 
 <script>
 import { updateUserProfile } from "@/api/profile";
-
+import { user_sex } from '@/utils/constants';
 export default {
   props: {
     user: {
       type: Object
     }
   },
-  dicts: ['sex'],
+  dicts: [],
   watch:{
     "$i18n.locale": function () {
       this.$nextTick(() => {
@@ -51,6 +51,11 @@ export default {
           { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: this.$t('user.rules.phone'), trigger: "blur" }
         ]
       }
+    }
+  },
+  data() {
+    return {
+      user_sex: user_sex
     }
   },
   methods: {

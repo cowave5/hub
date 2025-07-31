@@ -7,12 +7,12 @@
       </el-form-item>
       <el-form-item :label="$t('notice.label.type')" prop="noticeType">
         <el-select v-model="queryParams.noticeType" :placeholder="$t('notice.placeholder.type')" clearable>
-          <el-option v-for="dict in dict.type.notice_type" :key="dict.value" :value="dict.value" :label="$t(dict.name)"/>
+          <el-option v-for="item in notice_type" :key="item.value" :value="item.value" :label="$t(item.label)"/>
         </el-select>
       </el-form-item>
       <el-form-item :label="$t('commons.label.status')" prop="noticeStatus">
         <el-select v-model="queryParams.noticeStatus" :placeholder="$t('notice.placeholder.status')" clearable>
-          <el-option v-for="dict in dict.type.notice_status" :key="dict.value" :value="dict.value" :label="$t(dict.name)"/>
+          <el-option v-for="item in notice_status" :key="item.value" :value="item.value" :label="$t(item.label)"/>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -54,20 +54,22 @@
       <el-table-column :label="$t('notice.label.title')" align="center" prop="noticeTitle" width="240" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('notice.label.type')" align="center" prop="noticeType">
         <template slot-scope="{row: {noticeType}}">
-          <template v-for="item in dict.type.notice_type">
-            <span v-if="noticeType === item.value">{{ $t(item.name) }}</span>
+          <template v-for="item in notice_type">
+            <span v-if="noticeType === item.value">{{ $t(item.label) }}</span>
           </template>
         </template>
       </el-table-column>
       <el-table-column :label="$t('notice.label.level')" align="center" prop="noticeLevel">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.notice_level" :value="scope.row.noticeLevel"/>
+        <template slot-scope="{row: {noticeLevel}}">
+          <template v-for="item in notice_level">
+            <span v-if="noticeLevel === item.value">{{ $t(item.label) }}</span>
+          </template>
         </template>
       </el-table-column>
       <el-table-column :label="$t('commons.label.status')" align="center" prop="noticeStatus">
         <template slot-scope="{row: {noticeStatus}}">
-          <template v-for="item in dict.type.notice_status">
-            <span v-if="noticeStatus === item.value">{{ $t(item.name) }}</span>
+          <template v-for="item in notice_status">
+            <span v-if="noticeStatus === item.value">{{ $t(item.label) }}</span>
           </template>
         </template>
       </el-table-column>
@@ -123,21 +125,21 @@
           <el-col :span="12">
             <el-form-item label="公告类型" prop="noticeType">
               <el-select v-model="form.noticeType" placeholder="请选择公告类型" style="width: 230px;">
-                <el-option v-for="dict in dict.type.notice_type" :key="dict.value" :value="dict.value" :label="$t(dict.name)"/>
+                <el-option v-for="item in notice_type" :key="item.value" :value="item.value" :label="$t(item.label)"/>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="公告级别">
               <el-select v-model="form.noticeLevel" placeholder="请选择公告级别" style="width: 230px;">
-                <el-option v-for="dict in dict.type.notice_level" :key="dict.value" :value="dict.value" :label="$t(dict.name)"/>
+                <el-option v-for="item in notice_level" :key="item.value" :value="item.value" :label="$t(item.label)"/>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="全员发送">
               <el-radio-group v-model="form.goalsAll">
-                <el-radio v-for="dict in dict.type.yes_no" :key="dict.value" :label="dict.value">{{$t(dict.name)}}</el-radio>
+                <el-radio v-for="item in yes_no" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -184,13 +186,17 @@
 import {getNoticeList, getNoticeInfo, delNotice, addNotice, updateNotice, publishNotice} from "@/api/system/notice";
 import {getDeptDiagramById, getDeptUserDiagram} from "@/api/system/dept";
 import { getRoleList } from '@/api/system/role'
-
+import { notice_status, notice_level, notice_type, yes_no } from '@/utils/constants';
 export default {
   name: "Notice",
-  dicts: ['notice_status', 'notice_level', 'notice_type', 'yes_no'],
+  dicts: [],
   components: { noticeInfo: ()=> import('./info.vue')},
   data() {
     return {
+      notice_status: notice_status,
+      notice_level: notice_level,
+      notice_type: notice_type,
+      yes_no: yes_no,
       // 遮罩层
       loading: true,
       // 选中数组

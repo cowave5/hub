@@ -60,12 +60,13 @@ import static com.cowave.commons.framework.access.security.BearerTokenService.CL
 import static com.cowave.commons.framework.access.security.BearerTokenService.CLAIM_USER_ACCOUNT;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.LOGIN_FAILS;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.LOGIN_LOCK;
-import static com.cowave.sys.admin.domain.auth.AuthType.GITLAB;
-import static com.cowave.sys.admin.domain.auth.AuthType.SYS;
-import static com.cowave.sys.admin.domain.base.constants.AttachType.AVATAR;
-import static com.cowave.sys.admin.domain.base.constants.OpAction.LOGIN;
-import static com.cowave.sys.admin.domain.base.constants.OpAction.LOGOUT_FORCE;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.*;
+import static com.cowave.sys.admin.domain.constants.AuthType.GITLAB;
+import static com.cowave.sys.admin.domain.constants.AuthType.SYS;
+import static com.cowave.sys.admin.domain.constants.AttachType.AVATAR;
+import static com.cowave.sys.admin.domain.constants.EnableStatus.ENABLE;
+import static com.cowave.sys.admin.domain.constants.OpAction.LOGIN;
+import static com.cowave.sys.admin.domain.constants.OpAction.LOGOUT_FORCE;
+import static com.cowave.sys.admin.domain.constants.OpModule.*;
 
 /**
  * @author shanhuiming
@@ -100,12 +101,12 @@ public class AuthService {
         boolean registerOnOff = sysConfigDao.getConfigValue(tenantId, "sys.registerOnOff");
         HttpAsserts.isTrue(registerOnOff, FORBIDDEN, "{admin.register.disable}");
 
-        String userCode = sysTenantDao.nextUserCode(tenantId, SYS.val());
+        String userCode = sysTenantDao.nextUserCode(tenantId, SYS.getVal());
         String initPasswd = sysConfigDao.getConfigValue(tenantId, "sys.initPassword");
         SysUser sysUser = SysUser.builder()
                 .tenantId(tenantId)
-                .userType(SYS.val())
-                .userStatus(1)
+                .userType(SYS.getVal())
+                .userStatus(ENABLE)
                 .userCode(userCode)
                 .userEmail(request.getUserEmail())
                 .userName(request.getUserName())

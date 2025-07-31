@@ -32,6 +32,7 @@ import java.util.List;
 
 import static com.cowave.commons.client.http.constants.HttpCode.FORBIDDEN;
 import static com.cowave.commons.framework.access.security.Permission.*;
+import static com.cowave.sys.admin.domain.constants.EnableStatus.ENABLE;
 
 /**
  * @author shanhuiming
@@ -54,15 +55,15 @@ public class UserDetailsServiceImpl implements TenantUserDetailsService {
         if(sysUser == null){
             return null;
         }
-        HttpAsserts.equals(1, sysUser.getUserStatus(), FORBIDDEN, "{admin.user.account.disable}", userAccount);
+        HttpAsserts.equals(ENABLE, sysUser.getUserStatus(), FORBIDDEN, "{admin.user.account.disable}", userAccount);
 
         // 租户
         SysTenant sysTenant = sysTenantDao.getById(sysUser.getTenantId());
-        HttpAsserts.equals(1, sysTenant.getStatus(), FORBIDDEN,
-                "{admin.user.tenant.disable}", sysTenant.getTenantName());
+        HttpAsserts.equals(ENABLE, sysTenant.getStatus(),
+                FORBIDDEN, "{admin.user.tenant.disable}", sysTenant.getTenantName());
         if(sysTenant.getExpireTime() != null){
-            HttpAsserts.isTrue(sysTenant.getExpireTime().after(new Date()), FORBIDDEN,
-                    "{admin.user.tenant.expired}", sysTenant.getTenantName());
+            HttpAsserts.isTrue(sysTenant.getExpireTime().after(new Date()),
+                    FORBIDDEN, "{admin.user.tenant.expired}", sysTenant.getTenantName());
         }
 
         String mfaKey = sysUser.getMfa();

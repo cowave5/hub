@@ -59,11 +59,28 @@ export default {
       cowave: "Cowave",
       dashboard: "Dashboard",
       meter: {
-        root: "Metersphere",
-        ui: "Ui Test",
-        form: "Form Builder",
-        template: {
+        root: "CI/CD",
+        env: {
+          root: "Environment",
+          credential: "Credentials",
+
+        },
+        build: {
+          root: "Build",
+
+        },
+        test: {
+          root: "Test",
+          ui: "Ui Test",
+
+        },
+        archive: {
+          root: "Archive",
+
+        },
+        develop: {
           root: "Code Template",
+          form: "Form Builder",
           application: "Application",
           model: "Model",
           database: "Database",
@@ -667,6 +684,13 @@ export default {
       quartz_group: "task group",
       quartz_default: "quartz default",
       quartz_test: "quartz test",
+
+      credential_username: "Username with password",
+      credential_secret: "Secret text",
+
+      credential_personal: "Personal",
+      credential_specified: "Specified",
+      credential_everyone: "Everyone"
     }
   },
   config: {

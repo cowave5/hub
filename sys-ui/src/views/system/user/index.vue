@@ -92,8 +92,8 @@
           <el-table-column v-if="cols[1].show" :label="$t('user.label.account')" prop="userAccount" align="center" width="100" :show-overflow-tooltip="true"/>
           <el-table-column v-if="cols[2].show" :label="$t('user.label.sex')" align="center" width="80">
             <template slot-scope="{row: {userSex}}">
-              <template v-for="item in dict.type.sex">
-                <span v-if="userSex === item.value">{{$t(item.name)}}</span>
+              <template v-for="item in user_sex">
+                <span v-if="userSex === item.value">{{$t(item.label)}}</span>
               </template>
             </template>
           </el-table-column>
@@ -199,7 +199,7 @@
               <el-col :span="12">
                 <el-form-item v-if="form.userId === undefined" :label="$t('user.label.status')">
                   <el-radio-group v-model="form.userStatus">
-                    <el-radio v-for="dict in dict.type.enable_disable" :key="dict.value" :label="dict.value">{{$t(dict.name)}}</el-radio>
+                    <el-radio v-for="item in enable_disable" :key="item.value" :label="item.value">{{$t(item.name)}}</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-col>
@@ -227,7 +227,7 @@
               <el-col :span="12">
                 <el-form-item :label="$t('user.label.sex')">
                   <el-select v-model="form.userSex" :placeholder="$t('user.placeholder.sex')" style="width: 100%;">
-                    <el-option v-for="dict in dict.type.sex" :key="dict.value" :value="dict.value" :label="$t(dict.name)"/>
+                    <el-option v-for="item in user_sex" :key="item.value" :value="item.value" :label="$t(item.label)"/>
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -353,13 +353,15 @@ import {checkPermit} from "@/utils/permission";
 import cache from "@/plugins/cache";
 import { getRoleList } from '@/api/system/role'
 import {getConfigValue} from "@/api/system/config";
-
+import { enable_disable, user_sex } from '@/utils/constants';
 export default {
   name: "User",
-  dicts: ['enable_disable', 'sex', 'post_level'],
+  dicts: ['post_level'],
   components: { Treeselect },
   data() {
     return {
+      enable_disable: enable_disable,
+      user_sex: user_sex,
       activeTab: 'basic',
       // 遮罩层
       loading: true,

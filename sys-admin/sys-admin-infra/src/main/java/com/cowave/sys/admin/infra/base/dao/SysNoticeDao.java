@@ -12,8 +12,8 @@ package com.cowave.sys.admin.infra.base.dao;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cowave.commons.framework.access.Access;
+import com.cowave.sys.admin.domain.constants.NoticeStatus;
 import com.cowave.sys.admin.domain.base.request.NoticeQuery;
-import com.cowave.sys.admin.domain.rabc.SysUser;
 import com.cowave.sys.admin.infra.base.dao.mapper.SysNoticeMapper;
 import com.cowave.sys.admin.domain.base.SysNotice;
 import org.apache.commons.lang3.StringUtils;
@@ -64,7 +64,7 @@ public class SysNoticeDao extends ServiceImpl<SysNoticeMapper, SysNotice> {
     /**
      * 更新状态
      */
-    public void updateStatus(Long noticeId, Integer noticeStatus) {
+    public void updateStatus(Long noticeId, NoticeStatus noticeStatus) {
         lambdaUpdate().eq(SysNotice::getNoticeId, noticeId).set(SysNotice::getNoticeStatus, noticeStatus).update();
     }
 

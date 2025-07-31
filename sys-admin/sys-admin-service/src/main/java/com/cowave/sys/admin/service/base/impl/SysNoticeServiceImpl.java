@@ -20,6 +20,7 @@ import com.cowave.sys.admin.domain.base.SysNotice;
 import com.cowave.sys.admin.domain.base.SysNoticeUser;
 import com.cowave.sys.admin.domain.base.dto.*;
 import com.cowave.sys.admin.domain.base.request.*;
+import com.cowave.sys.admin.domain.constants.NoticeStatus;
 import com.cowave.sys.admin.infra.auth.dao.LdapUserDao;
 import com.cowave.sys.admin.infra.auth.dao.OAuthUserDao;
 import com.cowave.sys.admin.infra.base.dao.SysAttachDao;
@@ -36,9 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 import static com.cowave.commons.client.http.constants.HttpCode.*;
-import static com.cowave.sys.admin.domain.base.constants.NoticeStatus.*;
-import static com.cowave.sys.admin.domain.auth.AuthType.*;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_NOTICE;
+import static com.cowave.sys.admin.domain.constants.NoticeLevel.COMMON;
+import static com.cowave.sys.admin.domain.constants.NoticeStatus.*;
+import static com.cowave.sys.admin.domain.constants.AuthType.*;
+import static com.cowave.sys.admin.domain.constants.NoticeType.PRESS;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM_NOTICE;
+import static com.cowave.sys.admin.domain.constants.YesNo.NO;
+import static com.cowave.sys.admin.domain.constants.YesNo.YES;
 import static com.cowave.sys.admin.infra.base.socketio.SysSocketConfiguration.EVENT_SERVER_NOTICE_NEW;
 import static com.cowave.sys.admin.infra.base.socketio.SysSocketConfiguration.SPACE_NOTICE;
 
@@ -128,18 +133,18 @@ public class SysNoticeServiceImpl implements SysNoticeService {
         }
 
         List<SysAttach> attachList = sysAttachDao.listOfOwner(String.valueOf(noticeId), SYSTEM_NOTICE, null);
-
-        // 删除草稿
-        if (DRAFT.equalsVal(notice.getNoticeStatus())) {
+        NoticeStatus noticeStatus = notice.getNoticeStatus();
+        if (DRAFT == noticeStatus) {
+            // 草稿 -> 直接删除
             sysNoticeDao.removeById(noticeId);
             for (SysAttach attach : attachList) {
                 sysAttachService.remove(attach);
             }
-        } else if (PUBLISH.equalsVal(notice.getNoticeStatus())) {
-            // 撤回已发布
-            sysNoticeDao.updateStatus(noticeId, RECALL.val());
-        } else if (RECALL.equalsVal(notice.getNoticeStatus())) {
-            // 删除已撤回
+        } else if (PUBLISH == noticeStatus) {
+            // 已发布 -> 改为撤回
+            sysNoticeDao.updateStatus(noticeId, RECALL);
+        } else if (RECALL == noticeStatus) {
+            // 已撤回 -> 直接删除
             sysNoticeDao.removeById(noticeId);
             for (SysAttach attach : attachList) {
                 sysAttachService.remove(attach);
@@ -154,7 +159,7 @@ public class SysNoticeServiceImpl implements SysNoticeService {
 
         SysNotice notice = sysNoticeDao.getById(tenantId, sysNotice.getNoticeId());
         HttpAsserts.notNull(notice, NOT_FOUND, "{admin.notice.not.exist}", sysNotice.getNoticeId());
-        HttpAsserts.isTrue(DRAFT.equalsVal(notice.getNoticeStatus()), BAD_REQUEST, "{admin.notice.edit.unpublish}");
+        HttpAsserts.equals(DRAFT, notice.getNoticeStatus(), BAD_REQUEST, "{admin.notice.edit.unpublish}");
 
         if (!Access.isAdminUser()) {
             HttpAsserts.equals(notice.getCreateBy(), FORBIDDEN, Access.userCode(), "{admin.notice.edit.self}");
@@ -183,12 +188,12 @@ public class SysNoticeServiceImpl implements SysNoticeService {
         if (!Access.isAdminUser()) {
             HttpAsserts.equals(notice.getCreateBy(), Access.userCode(), FORBIDDEN, "{admin.notice.publish.self}");
         }
-        if (!DRAFT.equalsVal(notice.getNoticeStatus())) {
+        if (DRAFT != notice.getNoticeStatus()) {
             return;
         }
 
         // 转换read信息
-        if (Objects.equals(notice.getGoalsAll(), 1)) {
+        if (YES == notice.getGoalsAll()) {
             sysNoticeDtoMapper.insertReadOfAll(tenantId, noticeId);
             sysNoticeDtoMapper.insertReadOfLdap(noticeId);
             sysNoticeDtoMapper.insertReadOfOauth(noticeId);
@@ -197,7 +202,7 @@ public class SysNoticeServiceImpl implements SysNoticeService {
             sysNoticeDtoMapper.insertReadOfRole(tenantId, noticeId, notice.getGoalsRole());
             sysNoticeDtoMapper.insertReadOfUser(tenantId, noticeId, notice.getGoalsUser());
         }
-        sysNoticeDtoMapper.updateMsgStat(noticeId, PUBLISH.val(), new Date());
+        sysNoticeDtoMapper.updateMsgStat(noticeId, PUBLISH, new Date());
         // 推送
         List<String> userCodes = sysNoticeUserDao.getUserCodesByNoticeId(noticeId);
         socketIoHelper.sendClientsOfNamespace(SPACE_NOTICE, userCodes, EVENT_SERVER_NOTICE_NEW, notice.getNoticeTitle());
@@ -291,11 +296,11 @@ public class SysNoticeServiceImpl implements SysNoticeService {
     public void sendFlowNotice(String processName, String taskName, Integer startUser, Integer assigneeUser) {
         String startUserName = sysUserDao.queryNameById(startUser);
         SysNotice notice = new SysNotice();
-        notice.setNoticeStatus(PUBLISH.val());
+        notice.setNoticeStatus(PUBLISH);
         notice.setCreateBy(Access.userCode());
-        notice.setNoticeType(3);
-        notice.setNoticeLevel(0);
-        notice.setIsSystem(0);
+        notice.setNoticeType(PRESS);
+        notice.setNoticeLevel(COMMON);
+        notice.setIsSystem(NO);
         notice.setStatTotal(1);
         notice.setStatRead(0);
         notice.setCreateTime(new Date());

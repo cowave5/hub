@@ -10,6 +10,7 @@
 package com.cowave.sys.admin.service.rabc;
 
 import cn.hutool.core.lang.tree.Tree;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cowave.commons.client.http.response.Response;
 import com.cowave.sys.admin.domain.rabc.SysUser;
 import com.cowave.sys.admin.domain.rabc.dto.UserInfoDto;
@@ -88,4 +89,9 @@ public interface SysUserService {
      * 用户名称查询
      */
     List<String> getNamesById(String tenantId, List<Integer> userIds);
+
+    /**
+     * 成员列表选项
+     */
+    Page<SysUser> getUserOptions(String tenantId, UserMemberQuery query);
 }

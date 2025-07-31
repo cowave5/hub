@@ -11,6 +11,7 @@ package com.cowave.sys.admin.domain.base;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.cowave.sys.admin.domain.constants.NoticeReadStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -41,7 +42,7 @@ public class SysNoticeUser {
     /**
      * 已读状态
      */
-    private Integer readStatus;
+    private NoticeReadStatus readStatus;
 
     /**
      * 已读反馈

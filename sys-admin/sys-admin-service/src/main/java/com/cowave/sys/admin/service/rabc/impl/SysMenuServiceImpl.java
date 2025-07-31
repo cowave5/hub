@@ -13,6 +13,7 @@ import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeUtil;
 import com.cowave.commons.client.http.asserts.HttpAsserts;
 import com.cowave.commons.framework.access.Access;
+import com.cowave.sys.admin.domain.constants.EnableStatus;
 import com.cowave.sys.admin.domain.rabc.SysMenu;
 import com.cowave.sys.admin.domain.rabc.dto.SysMenuTree;
 import com.cowave.sys.admin.infra.rabc.dao.SysMenuDao;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static com.cowave.commons.client.http.constants.HttpCode.*;
@@ -59,21 +59,20 @@ public class SysMenuServiceImpl implements SysMenuService {
 	@Override
 	public List<Tree<Integer>> tree(String tenantId) {
 		List<SysMenuTree> list = sysMenuDtoMapper.listTree(tenantId);
-		List<Tree<Integer>> treeList = TreeUtil.build(list, 0, DIAGRAM_CONFIG, (menu, node) -> {
+		return TreeUtil.build(list, 0, DIAGRAM_CONFIG, (menu, node) -> {
 			node.setId(menu.getMenuId());
 			node.setParentId(menu.getParentId());
 			node.setName(menu.getMenuName());
+			node.setWeight(menu.getMenuOrder());
 			node.put("order", menu.getMenuOrder());
 			node.put("menuType", menu.getMenuType());
 			node.put("protected", menu.getIsProtected());
 			node.put("scopes", menu.getScopes());
 		});
-		treeList.sort(Comparator.comparingInt(node -> (Integer) node.get("order")));
-		return treeList;
 	}
 
 	@Override
-	public List<SysMenu> list(String menuName, Integer menuStatus) {
+	public List<SysMenu> list(String menuName, EnableStatus menuStatus) {
 		return sysMenuDao.list(menuName, menuStatus);
 	}
 

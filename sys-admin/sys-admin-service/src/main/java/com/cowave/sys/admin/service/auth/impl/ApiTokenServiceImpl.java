@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 import static com.cowave.commons.framework.access.security.BearerTokenService.*;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_API;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.AUTH_API_CURRENT;
-import static com.cowave.sys.admin.domain.auth.AuthType.API;
+import static com.cowave.sys.admin.domain.constants.AuthType.API;
 
 /**
  * @author shanhuiming
@@ -133,7 +133,7 @@ public class ApiTokenServiceImpl implements ApiTokenService {
         // 构造令牌
         JwtBuilder jwtBuilder = Jwts.builder()
                 .claim(CLAIM_ACCESS_ID, String.valueOf(request.getTokenId()))
-                .claim(CLAIM_TYPE, API.val())
+                .claim(CLAIM_TYPE, API.getVal())
                 .claim(CLAIM_USER_ID, userDetails.getUserId())
                 .claim(CLAIM_USER_CODE, userDetails.getUserCode())
                 .claim(CLAIM_USER_PROPERTIES, userDetails.getUserProperties())

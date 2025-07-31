@@ -30,7 +30,7 @@ import java.util.*;
 import static com.cowave.commons.client.http.constants.HttpCode.*;
 import static com.cowave.commons.framework.access.security.Permission.TENANT_SYSTEM;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.*;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.*;
+import static com.cowave.sys.admin.domain.constants.OpModule.*;
 
 /**
  * @author shanhuiming

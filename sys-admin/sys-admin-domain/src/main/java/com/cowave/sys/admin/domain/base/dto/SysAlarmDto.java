@@ -78,7 +78,6 @@ public class SysAlarmDto {
     /**
      * 告警等级
      */
-	@ExcelProperty(value = "告警等级", converter = AlarmLevelConverter.class)
     private Integer alarmLevel;
 
 	/**
@@ -116,7 +115,6 @@ public class SysAlarmDto {
 	/**
      * 告警状态
      */
-    @ExcelProperty(value = "告警状态", converter = AlarmStatusConverter.class)
     private Integer alarmStatus;
 
     /**
@@ -134,7 +132,6 @@ public class SysAlarmDto {
     /**
      * 处理方式
      */
-	@ExcelProperty(value = "处理方式", converter = AlarmHandlerConverter.class)
     private Integer resolveType;
 
 	/**

@@ -38,9 +38,9 @@ import java.util.List;
 import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.DEPT_USER_DIAGRAM;
 import static com.cowave.sys.admin.domain.AdminRedisKeys.USER_DIAGRAM;
-import static com.cowave.sys.admin.domain.auth.AuthType.SYS;
-import static com.cowave.sys.admin.domain.base.constants.AttachType.LOGO;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_TENANT;
+import static com.cowave.sys.admin.domain.constants.AuthType.SYS;
+import static com.cowave.sys.admin.domain.constants.AttachType.LOGO;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM_TENANT;
 
 /**
  * @author shanhuiming
@@ -103,7 +103,7 @@ public class SysTenantServiceImpl implements SysTenantService {
                 BAD_REQUEST, "{admin.user.account.conflict}", managerCreate.getUserAccount());
 
         SysUser sysUser = managerCreate.newSysUser();
-        sysUser.setUserCode(sysTenantDao.nextUserCode(managerCreate.getTenantId(), SYS.val()));
+        sysUser.setUserCode(sysTenantDao.nextUserCode(managerCreate.getTenantId(), SYS.getVal()));
         sysUser.setUserPasswd(passwordEncoder.encode(managerCreate.getUserPasswd()));
         sysUserDao.save(sysUser);
         // sysAdmin

@@ -20,12 +20,16 @@ import com.cowave.commons.framework.access.operation.OperationInfo;
 import com.cowave.commons.framework.access.security.AccessInfo;
 import com.cowave.commons.framework.helper.es.HitEntity;
 import com.cowave.commons.framework.support.excel.DateConverter;
-import com.cowave.commons.framework.support.excel.StatusConverter;
+import com.cowave.sys.admin.domain.constants.SuccessStatus;
+import com.cowave.sys.admin.domain.constants.converter.SuccessStatusConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+
+import static com.cowave.sys.admin.domain.constants.SuccessStatus.FAILED;
+import static com.cowave.sys.admin.domain.constants.SuccessStatus.SUCCESS;
 
 /**
  * @author shanhuiming
@@ -74,8 +78,8 @@ public class SysOperation implements HitEntity {
     /**
      * 操作状态
      */
-    @ExcelProperty(value = "操作状态", converter = StatusConverter.class)
-    private Integer opStatus;
+    @ExcelProperty(value = "操作状态", converter = SuccessStatusConverter.class)
+    private SuccessStatus opStatus;
 
     /**
      * 访问ip
@@ -121,6 +125,6 @@ public class SysOperation implements HitEntity {
         this.opAction = opInfo.getOpAction();
         this.opDesc = opInfo.getDesc();
         this.opContent = opInfo.getOpContent();
-        this.opStatus = opInfo.isSuccess() ? 1 : 0;
+        this.opStatus = opInfo.isSuccess() ? SUCCESS : FAILED;
     }
 }

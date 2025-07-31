@@ -20,8 +20,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.cowave.commons.framework.access.security.AccessInfoSetter;
-import com.cowave.commons.framework.support.excel.StatusConverter;
-import com.cowave.commons.framework.support.excel.YesNoConverter;
+import com.cowave.sys.admin.domain.constants.EnableStatus;
+import com.cowave.sys.admin.domain.constants.converter.EnableStatusConverter;
+import com.cowave.sys.admin.domain.constants.YesNo;
+import com.cowave.sys.admin.domain.constants.converter.YesNoConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,8 @@ import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.cowave.sys.admin.domain.constants.YesNo.YES;
 
 /**
  * @author shanhuiming
@@ -74,8 +78,8 @@ public class SysMenu implements AccessInfoSetter {
     /**
      * 菜单状态
      */
-    @ExcelProperty(value = "菜单状态", converter = StatusConverter.class)
-    private Integer menuStatus;
+    @ExcelProperty(value = "菜单状态", converter = EnableStatusConverter.class)
+    private EnableStatus menuStatus;
 
     /**
      * 菜单排序
@@ -127,25 +131,25 @@ public class SysMenu implements AccessInfoSetter {
      * 是否内部链接
      */
     @ExcelProperty(value = "是否内部链接", converter = YesNoConverter.class)
-    private Integer isFrame;
+    private YesNo isFrame;
 
     /**
      * 是否缓存
      */
     @ExcelProperty(value = "是否缓存", converter = YesNoConverter.class)
-    private Integer isCache;
+    private YesNo isCache;
 
     /**
      * 是否显示
      */
     @ExcelProperty(value = "是否显示", converter = YesNoConverter.class)
-    private Integer isVisible;
+    private YesNo isVisible;
 
     /**
      * 是否受保护
      */
     @ExcelProperty(value = "是否受保护的", converter = YesNoConverter.class)
-    private Integer isProtected;
+    private YesNo isProtected;
 
     /**
      * 备注
@@ -185,14 +189,14 @@ public class SysMenu implements AccessInfoSetter {
 	 * 是否为内链组件
 	 */
 	public boolean ifInnerLink() {
-		return 1 == isFrame && StringUtils.startsWithAny(menuPath, "http://", "https://");
+		return YES == isFrame && StringUtils.startsWithAny(menuPath, "http://", "https://");
 	}
 
 	/**
 	 * 是否为菜单内部跳转
 	 */
 	public boolean ifMenuFrame(){
-		return parentId == 0L && "C".equals(menuType) && 1 == isFrame;
+		return parentId == 0L && "C".equals(menuType) && YES == isFrame;
 	}
 
 	/**
@@ -224,7 +228,7 @@ public class SysMenu implements AccessInfoSetter {
 			routerPath = routerPath.replace("https://", "");
 		}
 		// 非外链并且是一级目录
-		if (parentId == 0L && "M".equals(menuType) && 1 == isFrame) {
+		if (parentId == 0L && "M".equals(menuType) && YES == isFrame) {
 			routerPath = "/" + menuPath;
 		} else if (ifMenuFrame()) {
 			routerPath = "/";

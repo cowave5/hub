@@ -9,7 +9,10 @@
  */
 package com.cowave.sys.admin.domain.rabc.dto;
 
+import com.cowave.sys.admin.domain.constants.YesNo;
 import lombok.Data;
+
+import static com.cowave.sys.admin.domain.constants.YesNo.NO;
 
 /**
  * 部门岗位
@@ -38,5 +41,5 @@ public class DeptPostDto {
     /**
      * 是否部门默认岗位
      */
-    private Integer isDefault = 0;
+    private YesNo isDefault = NO;
 }

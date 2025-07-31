@@ -78,7 +78,7 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio v-for="dict in dict.type.enable_disable" :key="dict.value" :label="dict.value">{{$t(dict.name)}}</el-radio>
+            <el-radio v-for="item in enable_disable" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -142,12 +142,13 @@
 import {changeGitlabRole, deleteGitlabUser, getConfig, listUser, saveConfig} from "@/api/system/oauth";
 import {checkPermit} from "@/utils/permission";
 import { getRoleList } from '@/api/system/role'
-
+import { enable_disable } from '@/utils/constants';
 export default {
   name: "oauth_gitlab",
-  dicts: ['enable_disable'],
+  dicts: [],
   data() {
     return {
+      enable_disable: enable_disable,
       // 遮罩层
       loading: true,
       // 显示搜索条件

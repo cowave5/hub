@@ -9,6 +9,7 @@
  */
 package com.cowave.sys.admin.domain.rabc;
 
+import com.cowave.sys.admin.domain.constants.YesNo;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -34,5 +35,5 @@ public class SysDeptPost {
     /**
 	 * 用户默认单位
 	 */
-	private int isDefault;
+	private YesNo isDefault;
 }

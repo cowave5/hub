@@ -9,6 +9,7 @@
  */
 package com.cowave.sys.admin.domain.rabc.dto;
 
+import com.cowave.sys.admin.domain.constants.YesNo;
 import lombok.Data;
 
 /**
@@ -45,10 +46,10 @@ public class DeptUserDto {
     /**
      * 用户默认岗位
      */
-    private Integer isDefault;
+    private YesNo isDefault;
 
     /**
      * 部门负责人
      */
-    private Integer isLeader;
+    private YesNo isLeader;
 }

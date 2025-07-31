@@ -7,7 +7,7 @@
       </el-form-item>
       <el-form-item label="执行结果" prop="status">
         <el-select v-model="queryParams.status" placeholder="请选择执行结果" clearable style="width: 180px">
-          <el-option v-for="dict in dict.type.success_failed" :key="dict.value" :value="dict.value" :label="$t(dict.name)"/>
+          <el-option v-for="item in success_failed" :key="item.value" :value="item.value" :label="$t(item.label)"/>
         </el-select>
       </el-form-item>
       <el-form-item label="执行时间">
@@ -89,8 +89,8 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="执行结果：">
-              <template v-for="item in dict.type.success_failed">
-                <span v-if="form.status === item.value">{{ $t(item.name) }}</span>
+              <template v-for="item in success_failed">
+                <span v-if="form.status === item.value">{{ $t(item.label) }}</span>
               </template>
             </el-form-item>
           </el-col>
@@ -103,7 +103,7 @@
             <el-form-item label="调用目标：">{{ form.invokeTarget }}</el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="异常信息：" v-if="form.status == 1">{{ form.exceptionInfo }}</el-form-item>
+            <el-form-item label="异常信息：" v-if="form.status === 1">{{ form.exceptionInfo }}</el-form-item>
           </el-col>
         </el-row>
       </el-form>
@@ -117,12 +117,13 @@
 <script>
 import { listJobLog, delJobLog, cleanJobLog } from "@/api/system/jobLog";
 import {checkPermit} from "@/utils/permission";
-
+import { success_failed } from '@/utils/constants';
 export default {
   name: "JobLog",
-  dicts: ['success_failed', 'quartz_group'],
+  dicts: ['quartz_group'],
   data() {
     return {
+      success_failed: success_failed,
       // 遮罩层
       loading: true,
       // 选中数组

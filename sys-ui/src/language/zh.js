@@ -59,11 +59,28 @@ export default {
       cowave: "控维官网",
       dashboard: "首页",
       meter: {
-        root: "软件测试",
-        ui: "Ui测试",
-        form: "表单构建",
-        template: {
-          root: "代码模板",
+        root: "持续集成",
+        env: {
+          root: "环境资源",
+          credential: "凭据管理",
+
+        },
+        build: {
+          root: "构建管理",
+
+        },
+        test: {
+          root: "测试管理",
+          ui: "Ui测试",
+
+        },
+        archive: {
+          root: "版本归档",
+
+        },
+        develop: {
+          root: "开发设计",
+          form: "表单构建",
           application: "应用管理",
           model: "模型管理",
           database: "数据库",
@@ -111,7 +128,7 @@ export default {
           api: "Api文档",
           admin: "系统管理",
           job: "定时任务",
-          meter: "测试管理"
+          meter: "持续集成"
         },
         schedule: {
           root: "定时任务",
@@ -667,6 +684,13 @@ export default {
       quartz_group: "任务分组",
       quartz_default: "默认分组",
       quartz_test: "测试分组",
+
+      credential_username: "用户名/密码",
+      credential_secret: "密文",
+
+      credential_personal: "个人的",
+      credential_specified: "指定人员",
+      credential_everyone: "所有人"
     }
   },
   config: {

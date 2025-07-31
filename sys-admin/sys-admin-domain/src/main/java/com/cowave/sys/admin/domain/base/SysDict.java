@@ -18,13 +18,17 @@ import com.alibaba.excel.annotation.write.style.HeadRowHeight;
 import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.cowave.commons.framework.support.excel.StatusConverter;
 import com.cowave.commons.framework.support.excel.StringConverter;
-import com.cowave.commons.framework.support.excel.YesNoConverter;
+import com.cowave.sys.admin.domain.constants.EnableStatus;
+import com.cowave.sys.admin.domain.constants.converter.EnableStatusConverter;
+import com.cowave.sys.admin.domain.constants.YesNo;
+import com.cowave.sys.admin.domain.constants.converter.YesNoConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
+
+import static com.cowave.sys.admin.domain.constants.YesNo.NO;
 
 /**
  * @author shanhuiming
@@ -94,13 +98,13 @@ public class SysDict {
      * 是否默认值
      */
 	@ExcelProperty(value = "是否默认值", converter = YesNoConverter.class)
-    private Integer isDefault = 0;
+    private YesNo isDefault = NO;
 
 	/**
      * 状态
      */
-	@ExcelProperty(value = "字典状态", converter = StatusConverter.class)
-    private Integer status;
+	@ExcelProperty(value = "字典状态", converter = EnableStatusConverter.class)
+    private EnableStatus status;
 
     /**
 	 * 备注

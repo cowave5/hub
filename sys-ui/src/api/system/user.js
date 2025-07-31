@@ -136,3 +136,14 @@ export function getUserNames(userIds) {
     method: 'get'
   })
 }
+
+/**
+ * 查询用户选项
+ */
+export function getUserMemberOptions(data) {
+  return request({
+    url: '/admin/api/v1/user/options',
+    method: 'post',
+    data: data
+  })
+}

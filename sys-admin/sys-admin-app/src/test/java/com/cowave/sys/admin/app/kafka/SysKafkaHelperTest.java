@@ -19,7 +19,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.HashMap;
 
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_USER;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM_USER;
 
 /**
  * @author shanhuiming

@@ -9,6 +9,7 @@
  */
 package com.cowave.sys.admin.domain.rabc.request;
 
+import com.cowave.sys.admin.domain.constants.EnableStatus;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -36,5 +37,5 @@ public class UserStatusUpdate {
      * 用户状态
      */
     @NotNull(message = "{admin.user.status.null}")
-    private Integer userStatus;
+    private EnableStatus userStatus;
 }

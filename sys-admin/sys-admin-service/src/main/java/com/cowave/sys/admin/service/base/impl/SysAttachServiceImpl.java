@@ -36,7 +36,8 @@ import java.util.List;
 
 import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
 import static com.cowave.commons.client.http.constants.HttpCode.NOT_FOUND;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.*;
+import static com.cowave.sys.admin.domain.constants.OpModule.*;
+import static com.cowave.sys.admin.domain.constants.YesNo.YES;
 
 /**
  * @author shanhuiming
@@ -99,7 +100,7 @@ public class SysAttachServiceImpl implements SysAttachService {
         sysAttach.setAttachPath(filePath);
         sysAttachDao.save(sysAttach);
 
-        minioHelper.upload(file, sysAttach.getTenantId(), filePath, upload.getIsPrivate() == 1);
+        minioHelper.upload(file, sysAttach.getTenantId(), filePath, YES == upload.getIsPrivate());
         sysAttach.setViewUrl(preview(sysAttach));
         return sysAttach;
     }
@@ -120,7 +121,7 @@ public class SysAttachServiceImpl implements SysAttachService {
 
     @Override
     public String preview(SysAttach sysAttach) throws Exception {
-        if (sysAttach.getIsPrivate() == 1) {
+        if (YES == sysAttach.getIsPrivate()) {
             return minioHelper.preview(sysAttach.getTenantId(), sysAttach.getAttachPath());
         } else {
             return minioProperties.getEndpoint() + File.separator + sysAttach.getTenantId() + File.separator + sysAttach.getAttachPath();

@@ -34,15 +34,14 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.base.constants.OpAction.*;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_DEPT;
+import static com.cowave.sys.admin.domain.constants.OpAction.*;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM_DEPT;
 
 /**
  * 部门
- *
+ * @order 2
  * @author shanhuiming
- * @order 1
  */
 @Validated
 @RequiredArgsConstructor

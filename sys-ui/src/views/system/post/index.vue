@@ -85,8 +85,10 @@
             </template>
           </el-table-column>
           <el-table-column v-if="cols[2].show" :label="$t('commons.label.status')" align="center" prop="postStatus">
-            <template slot-scope="scope">
-              <dict-tag :options="dict.type.enable_disable" :value="scope.row.postStatus"/>
+            <template slot-scope="{row: {postStatus}}">
+              <template v-for="item in enable_disable">
+                <span v-if="postStatus === item.value">{{ $t(item.label) }}</span>
+              </template>
             </template>
           </el-table-column>
           <el-table-column v-if="cols[3].show" :label="$t('commons.label.remark')" align="center" prop="remark"/>
@@ -136,8 +138,7 @@
         </el-form-item>
         <el-form-item :label="$t('post.label.status')" prop="status">
           <el-radio-group v-model="form.postStatus">
-            <el-radio v-for="dict in dict.type.enable_disable"
-                      :key="dict.value" :label="dict.value">{{$t(dict.name)}}</el-radio>
+            <el-radio v-for="item in enable_disable" :key="item.value" :label="item.value">{{$t(item.label)}}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('commons.label.remark')" prop="remark">
@@ -186,13 +187,14 @@ import {getDeptDiagram} from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import {checkPermit} from "@/utils/permission";
-
+import { enable_disable } from '@/utils/constants';
 export default {
   name: "Post",
-  dicts: ['enable_disable', 'post_type'],
+  dicts: ['post_type'],
   components: {Treeselect},
   data() {
     return {
+      enable_disable: enable_disable,
       // 遮罩层
       loading: true,
       // 选中数组

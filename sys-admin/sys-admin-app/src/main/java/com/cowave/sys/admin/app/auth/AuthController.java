@@ -32,9 +32,8 @@ import java.util.List;
 
 /**
  * 鉴权
- *
- * @author shanhuiming
  * @order 9
+ * @author shanhuiming
  */
 @RequiredArgsConstructor
 @Validated

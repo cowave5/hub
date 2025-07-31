@@ -18,7 +18,8 @@ import com.alibaba.excel.annotation.write.style.HeadRowHeight;
 import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.cowave.commons.framework.support.excel.StatusConverter;
+import com.cowave.sys.admin.domain.constants.EnableStatus;
+import com.cowave.sys.admin.domain.constants.converter.EnableStatusConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -75,8 +76,8 @@ public class SysPost {
     /**
      * 岗位状态
      */
-    @ExcelProperty(value = "岗位状态", converter = StatusConverter.class)
-    private Integer postStatus;
+    @ExcelProperty(value = "岗位状态", converter = EnableStatusConverter.class)
+    private EnableStatus postStatus;
 
     /**
      * 备注

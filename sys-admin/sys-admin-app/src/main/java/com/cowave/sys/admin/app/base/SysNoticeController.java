@@ -11,7 +11,6 @@ package com.cowave.sys.admin.app.base;
 
 import com.cowave.commons.client.http.response.Response;
 import com.cowave.commons.framework.access.Access;
-import com.cowave.sys.admin.domain.base.SysAttach;
 import com.cowave.sys.admin.domain.base.dto.*;
 import com.cowave.sys.admin.domain.base.request.NoticeCreate;
 import com.cowave.sys.admin.domain.base.request.NoticeMsgBack;
@@ -20,14 +19,13 @@ import com.cowave.sys.admin.service.base.SysNoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * 通知公告
- * @order 16
+ * @order 17
  * @author shanhuiming
  */
 @Validated

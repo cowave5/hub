@@ -9,6 +9,7 @@
  */
 package com.cowave.sys.admin.domain.auth.dto;
 
+import com.cowave.sys.admin.domain.constants.UserSex;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -60,7 +61,7 @@ public class UserProfile {
     /**
      * 用户性别
      */
-    private Integer userSex;
+    private UserSex userSex;
 
     /**
      * 用户头像

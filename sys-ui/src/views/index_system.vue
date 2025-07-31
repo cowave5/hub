@@ -94,7 +94,7 @@
           <li>监控部署：Grafana/Loki/Promtail/Prometheus/Exporter...</li>
           <li>实现文件管理、数据权限（支持对不同的数据定义不同的权限）</li>
           <li>支持租户、支持MFA二次认证、用户访问令牌设置</li>
-          <li>引入xxl-job进行定制，替换Quartz</li>
+          <li>引入xxl-job定制开发，替换Quartz</li>
         </ul>
         <h4>1.0.2</h4>
         <hr style="margin: 3px 0;">
@@ -111,7 +111,7 @@
         <ul style="list-style-type: disc; padding-left: 15px;">
           <li>登录/注册/验证码/国际化</li>
           <li>用户/部门/岗位/角色/菜单/操作权限/操作日志/字典/系统参数/系统消息</li>
-          <li>代码模板、工程模板、SQL转换(Mysql/Postgres)、定时任务(Quartz)</li>
+          <li>代码模板/SQL转换(Mysql/Postgres)/定时任务(Quartz)</li>
         </ul>
       </el-col>
 

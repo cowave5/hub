@@ -12,6 +12,7 @@ package com.cowave.sys.admin.domain.rabc;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.cowave.commons.framework.access.security.AccessInfoSetter;
+import com.cowave.sys.admin.domain.constants.EnableStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -91,7 +92,7 @@ public class SysTenant implements AccessInfoSetter {
     /**
      * 租户状态
      */
-    private Integer status;
+    private EnableStatus status;
 
     /**
      * 租户到期时间

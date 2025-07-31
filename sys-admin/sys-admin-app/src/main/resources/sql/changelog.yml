@@ -8,19 +8,19 @@ databaseChangeLog:
         - sqlFile:
             splitStatements: true
             stripComments: false
-            path: sql/1.0.0/rabc.sql
+            path: sql/1.0.0/rabc.ddl.sql
         - sqlFile:
             splitStatements: true
             stripComments: false
-            path: sql/1.0.0/rabc.init.sql
+            path: sql/1.0.0/rabc.dml.sql
         - sqlFile:
             splitStatements: true
             stripComments: false
-            path: sql/1.0.0/sys.sql
+            path: sql/1.0.0/sys.ddl.sql
         - sqlFile:
             splitStatements: true
             stripComments: false
-            path: sql/1.0.0/sys.init.sql
+            path: sql/1.0.0/sys.dml.sql
         - tagDatabase:
             tag: 1.0.0
   - changeSet:
@@ -32,11 +32,11 @@ databaseChangeLog:
         - sqlFile:
             splitStatements: true
             stripComments: false
-            path: sql/1.0.1/oauth.sql
+            path: sql/1.0.1/oauth.ddl.sql
         - sqlFile:
             splitStatements: true
             stripComments: false
-            path: sql/1.0.1/oauth.init.sql
+            path: sql/1.0.1/oauth.dml.sql
         - tagDatabase:
             tag: 1.0.1
   - changeSet:
@@ -48,11 +48,11 @@ databaseChangeLog:
         - sqlFile:
             splitStatements: true
             stripComments: false
-            path: sql/1.0.2/ldap.sql
+            path: sql/1.0.2/ldap.ddl.sql
         - sqlFile:
             splitStatements: true
             stripComments: false
-            path: sql/1.0.2/ldap.init.sql
+            path: sql/1.0.2/ldap.dml.sql
         - tagDatabase:
             tag: 1.0.2
   - changeSet:
@@ -64,10 +64,10 @@ databaseChangeLog:
         - sqlFile:
             splitStatements: true
             stripComments: false
-            path: sql/1.0.3/flow.sql
+            path: sql/1.0.3/flow.ddl.sql
         - sqlFile:
             splitStatements: true
             stripComments: false
-            path: sql/1.0.3/flow.init.sql
+            path: sql/1.0.3/flow.dml.sql
         - tagDatabase:
             tag: 1.0.3

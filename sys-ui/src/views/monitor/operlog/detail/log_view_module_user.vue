@@ -15,8 +15,8 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="操作结果：">
-            <template v-for="item in dict.type.success_failed">
-              <span v-if="info.opStatus === item.value">{{ $t(item.name) }}</span>
+            <template v-for="item in success_failed">
+              <span v-if="info.opStatus === item.value">{{ $t(item.label) }}</span>
             </template>
           </el-form-item>
         </el-col>
@@ -68,8 +68,8 @@
                 </el-col>
                 <el-col :span="10">
                   <el-form-item label="性别：">
-                    <template v-for="item in dict.type.sex">
-                      <span v-if="info.request.body.userSex === item.value">{{$t(item.name)}}</span>
+                    <template v-for="item in user_sex">
+                      <span v-if="info.request.body.userSex === item.value">{{$t(item.label)}}</span>
                     </template>
                   </el-form-item>
                 </el-col>
@@ -126,8 +126,8 @@
                 </el-col>
                 <el-col :span="10">
                   <el-form-item label="性别：">
-                    <template v-for="item in dict.type.sex">
-                      <span v-if="info.opContent.userSex === item.value">{{$t(item.name)}}</span>
+                    <template v-for="item in user_sex">
+                      <span v-if="info.opContent.userSex === item.value">{{$t(item.label)}}</span>
                     </template>
                   </el-form-item>
                 </el-col>
@@ -184,8 +184,8 @@
                 </el-col>
                 <el-col :span="10">
                   <el-form-item label="性别：">
-                    <template v-for="item in dict.type.sex">
-                      <span v-if="info.request.body.userSex === item.value">{{$t(item.name)}}</span>
+                    <template v-for="item in user_sex">
+                      <span v-if="info.request.body.userSex === item.value">{{$t(item.label)}}</span>
                     </template>
                   </el-form-item>
                 </el-col>
@@ -222,8 +222,8 @@
           <el-table-column :label="$t('user.label.account')" align="center" key="userAccount" prop="userAccount" :show-overflow-tooltip="true"/>
           <el-table-column :label="$t('user.label.sex')" align="center">
             <template slot-scope="{row: {userSex}}">
-              <template v-for="item in dict.type.sex">
-                <span v-if="userSex === item.value">{{$t(item.name)}}</span>
+              <template v-for="item in user_sex">
+                <span v-if="userSex === item.value">{{$t(item.label)}}</span>
               </template>
             </template>
           </el-table-column>
@@ -245,10 +245,13 @@
 import {getUserNames} from "@/api/system/user";
 import {getRoleNames} from "@/api/system/role";
 import {getDeptPostNames} from "@/api/system/post";
+import { success_failed, user_sex } from '@/utils/constants';
 export default {
-  dicts: ['success_failed', 'sex', 'post_level'],
+  dicts: ['post_level'],
   data() {
     return {
+      success_failed: success_failed,
+      user_sex: user_sex,
       visible: false,
       info: {},
       req: {

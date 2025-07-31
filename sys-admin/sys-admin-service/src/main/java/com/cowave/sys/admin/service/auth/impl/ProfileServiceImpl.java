@@ -33,9 +33,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import static com.cowave.commons.client.http.constants.HttpCode.BAD_REQUEST;
-import static com.cowave.sys.admin.domain.auth.AuthType.*;
-import static com.cowave.sys.admin.domain.base.constants.AttachType.AVATAR;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_USER;
+import static com.cowave.sys.admin.domain.constants.AuthType.*;
+import static com.cowave.sys.admin.domain.constants.AttachType.AVATAR;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM_USER;
 
 /**
  * @author shanhuiming

@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.cowave.commons.framework.access.security.AccessInfoSetter;
+import com.cowave.sys.admin.domain.constants.YesNo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+
+import static com.cowave.sys.admin.domain.constants.YesNo.NO;
 
 /**
  * @author shanhuiming
@@ -74,7 +77,7 @@ public class SysAttach implements AccessInfoSetter {
     /**
      * 是否私有的
      */
-    private int isPrivate;
+    private YesNo isPrivate = NO;
 
     /**
      * 过期时间

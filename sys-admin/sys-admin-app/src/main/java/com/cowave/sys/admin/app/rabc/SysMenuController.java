@@ -14,6 +14,7 @@ import com.alibaba.excel.EasyExcel;
 import com.cowave.commons.client.http.response.Response;
 import com.cowave.commons.framework.access.Access;
 import com.cowave.commons.framework.support.excel.write.ExcelIgnoreStyle;
+import com.cowave.sys.admin.domain.constants.EnableStatus;
 import com.cowave.sys.admin.domain.rabc.SysMenu;
 import com.cowave.sys.admin.service.rabc.SysMenuService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ import java.util.List;
 
 /**
  * 菜单
- * @order 5
+ * @order 6
  * @author shanhuiming
  */
 @Validated
@@ -50,10 +51,12 @@ public class SysMenuController{
 
 	/**
 	 * 列表
+	 * @param menuName 菜单名称
+	 * @param menuStatus 菜单状态
 	 */
 	@PreAuthorize("@permits.hasPermit('sys:menu:query')")
 	@GetMapping
-	public Response<Response.Page<SysMenu>> list(String menuName, Integer menuStatus){
+	public Response<Response.Page<SysMenu>> list(String menuName, EnableStatus menuStatus){
 		return Response.page(sysMenuService.list(menuName, menuStatus));
 	}
 

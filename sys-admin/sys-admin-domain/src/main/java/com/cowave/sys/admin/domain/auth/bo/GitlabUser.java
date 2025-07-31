@@ -16,7 +16,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.auth.AuthType.GITLAB;
+import static com.cowave.sys.admin.domain.constants.AuthType.GITLAB;
 
 /**
  * @author shanhuiming
@@ -61,7 +61,7 @@ public class GitlabUser {
 
     public static OAuthUser oAuthUser(GitlabUser gitlabUser){
         OAuthUser oauthUser = new OAuthUser();
-        oauthUser.setServerType(GITLAB.val());
+        oauthUser.setServerType(GITLAB.getVal());
         oauthUser.setUserName(gitlabUser.name);
         oauthUser.setUserAccount(gitlabUser.username);
         oauthUser.setUserEmail(gitlabUser.email);

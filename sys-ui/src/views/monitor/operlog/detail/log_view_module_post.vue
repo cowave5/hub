@@ -15,8 +15,8 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="操作结果：">
-            <template v-for="item in dict.type.success_failed">
-              <span v-if="info.opStatus === item.value">{{ $t(item.name) }}</span>
+            <template v-for="item in success_failed">
+              <span v-if="info.opStatus === item.value">{{ $t(item.label) }}</span>
             </template>
           </el-form-item>
         </el-col>
@@ -55,8 +55,8 @@
                 </el-col>
                 <el-col :span="10">
                   <el-form-item label="岗位状态：">
-                    <template v-for="item in dict.type.enable_disable">
-                      <span v-if="info.request.body.postStatus === item.value">{{ $t(item.name) }}</span>
+                    <template v-for="item in enable_disable">
+                      <span v-if="info.request.body.postStatus === item.value">{{ $t(item.label) }}</span>
                     </template>
                   </el-form-item>
                 </el-col>
@@ -90,8 +90,8 @@
                 </el-col>
                 <el-col :span="10">
                   <el-form-item label="岗位状态：">
-                    <template v-for="item in dict.type.enable_disable">
-                      <span v-if="info.opContent.postStatus === item.value">{{ $t(item.name) }}</span>
+                    <template v-for="item in enable_disable">
+                      <span v-if="info.opContent.postStatus === item.value">{{ $t(item.label) }}</span>
                     </template>
                   </el-form-item>
                 </el-col>
@@ -125,8 +125,8 @@
                 </el-col>
                 <el-col :span="10">
                   <el-form-item label="岗位状态：">
-                    <template v-for="item in dict.type.enable_disable">
-                      <span v-if="info.request.body.postStatus === item.value">{{ $t(item.name) }}</span>
+                    <template v-for="item in enable_disable">
+                      <span v-if="info.request.body.postStatus === item.value">{{ $t(item.label) }}</span>
                     </template>
                   </el-form-item>
                 </el-col>
@@ -154,8 +154,8 @@
           </el-table-column>
           <el-table-column prop="postStatus" align="center" label="岗位状态">
             <template slot-scope="{row: {postStatus}}">
-              <template v-for="item in dict.type.enable_disable">
-                <span v-if="postStatus === item.value">{{ $t(item.name) }}</span>
+              <template v-for="item in enable_disable">
+                <span v-if="postStatus === item.value">{{ $t(item.label) }}</span>
               </template>
             </template>
           </el-table-column>
@@ -167,11 +167,13 @@
 
 <script>
 import { getPostName } from '@/api/system/post'
-
+import { enable_disable, success_failed } from '@/utils/constants';
 export default {
-  dicts: ['success_failed', 'enable_disable', 'post_type'],
+  dicts: ['post_type'],
   data() {
     return {
+      enable_disable: enable_disable,
+      success_failed: success_failed,
       visible: false,
       info: {},
       req: {

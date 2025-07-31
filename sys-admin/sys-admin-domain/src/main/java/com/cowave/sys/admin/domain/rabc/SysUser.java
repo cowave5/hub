@@ -19,8 +19,10 @@ import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.cowave.commons.framework.access.security.AccessUserDetails;
-import com.cowave.commons.framework.support.excel.SexConverter;
-import com.cowave.commons.framework.support.excel.StatusConverter;
+import com.cowave.sys.admin.domain.constants.EnableStatus;
+import com.cowave.sys.admin.domain.constants.converter.EnableStatusConverter;
+import com.cowave.sys.admin.domain.constants.UserSex;
+import com.cowave.sys.admin.domain.constants.converter.UserSexConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -32,7 +34,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
 
-import static com.cowave.sys.admin.domain.auth.AuthType.SYS;
+import static com.cowave.sys.admin.domain.constants.AuthType.SYS;
 
 /**
  * @author shanhuiming
@@ -94,8 +96,8 @@ public class SysUser {
     /**
      * 用户性别
      */
-    @ExcelProperty(value = "用户性别", converter = SexConverter.class)
-    private Integer userSex;
+    @ExcelProperty(value = "用户性别", converter = UserSexConverter.class)
+    private UserSex userSex;
 
     /**
      * 用户电话
@@ -119,8 +121,8 @@ public class SysUser {
     /**
      * 用户状态
      */
-    @ExcelProperty(value = "用户状态", converter = StatusConverter.class)
-    private Integer userStatus;
+    @ExcelProperty(value = "用户状态", converter = EnableStatusConverter.class)
+    private EnableStatus userStatus;
 
     /**
      * 二次认证
@@ -157,7 +159,7 @@ public class SysUser {
 
     public AccessUserDetails newUserDetails(SysDept userDept) {
         AccessUserDetails userDetails = AccessUserDetails.newUserDetails();
-        userDetails.setAuthType(SYS.val());
+        userDetails.setAuthType(SYS.getVal());
         userDetails.setUserType(userType);
         userDetails.setTenantId(tenantId);
         userDetails.setUserId(userId);

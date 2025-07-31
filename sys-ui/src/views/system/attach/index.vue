@@ -75,8 +75,8 @@
       </el-table-column>
       <el-table-column :label="$t('attach.label.private')" align="center">
         <template slot-scope="{row: {isPrivate}}">
-          <template v-for="item in dict.type.yes_no">
-            <span v-if="isPrivate === item.value">{{ $t(item.name) }}</span>
+          <template v-for="item in yes_no">
+            <span v-if="isPrivate === item.value">{{ $t(item.label) }}</span>
           </template>
         </template>
       </el-table-column>
@@ -117,13 +117,14 @@ import {listTenantOptions} from "@/api/system/tenant";
 import {listTypeByGroup} from "@/api/system/dict";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-
+import { yes_no } from '@/utils/constants';
 export default {
   name: "Attach",
   components: {Treeselect},
-  dicts: ['yes_no', 'attach_type'],
+  dicts: ['attach_type'],
   data() {
     return {
+      yes_no: yes_no,
       // 遮罩层
       loading: true,
       // 选中数组

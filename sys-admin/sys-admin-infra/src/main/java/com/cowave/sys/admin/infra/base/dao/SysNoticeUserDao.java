@@ -20,8 +20,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.base.constants.NoticeReadStatus.READ_PUBLISH;
-import static com.cowave.sys.admin.domain.base.constants.NoticeReadStatus.UNREAD_PUBLISH;
+import static com.cowave.sys.admin.domain.constants.NoticeReadStatus.READ_PUBLISH;
+import static com.cowave.sys.admin.domain.constants.NoticeReadStatus.UNREAD_PUBLISH;
 
 /**
  * @author shanhuiming
@@ -43,7 +43,7 @@ public class SysNoticeUserDao extends ServiceImpl<SysNoticeUserMapper, SysNotice
     public Long countUnReadByUserId(String userCode) {
         return lambdaQuery()
                 .eq(SysNoticeUser::getUserCode, userCode)
-                .eq(SysNoticeUser::getReadStatus, UNREAD_PUBLISH.val())
+                .eq(SysNoticeUser::getReadStatus, UNREAD_PUBLISH)
                 .count();
     }
 
@@ -51,8 +51,8 @@ public class SysNoticeUserDao extends ServiceImpl<SysNoticeUserMapper, SysNotice
         return lambdaUpdate()
                 .eq(SysNoticeUser::getUserCode, userCode)
                 .eq(SysNoticeUser::getNoticeId, noticeId)
-                .eq(SysNoticeUser::getReadStatus, UNREAD_PUBLISH.val())
-                .set(SysNoticeUser::getReadStatus, READ_PUBLISH.val())
+                .eq(SysNoticeUser::getReadStatus, UNREAD_PUBLISH)
+                .set(SysNoticeUser::getReadStatus, READ_PUBLISH)
                 .set(SysNoticeUser::getReadTime, readTime)
                 .update();
     }

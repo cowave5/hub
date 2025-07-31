@@ -22,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import static com.cowave.sys.admin.domain.base.constants.AttachType.AVATAR;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_USER;
+import static com.cowave.sys.admin.domain.constants.AttachType.AVATAR;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM_USER;
 
 /**
  * @author shanhuiming

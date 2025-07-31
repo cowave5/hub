@@ -21,6 +21,7 @@ import com.cowave.sys.admin.domain.rabc.SysUser;
 import com.cowave.sys.admin.domain.rabc.dto.UserInfoDto;
 import com.cowave.sys.admin.domain.rabc.dto.UserListDto;
 import com.cowave.sys.admin.domain.rabc.dto.UserNameDto;
+import com.cowave.sys.admin.domain.rabc.vo.UserMemberOption;
 import com.cowave.sys.admin.service.rabc.SysUserService;
 import com.cowave.sys.admin.domain.rabc.request.*;
 import lombok.RequiredArgsConstructor;
@@ -36,15 +37,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.cowave.sys.admin.domain.base.constants.OpAction.*;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM;
-import static com.cowave.sys.admin.domain.base.constants.OpModule.SYSTEM_USER;
+import static com.cowave.sys.admin.domain.constants.OpAction.*;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM;
+import static com.cowave.sys.admin.domain.constants.OpModule.SYSTEM_USER;
 
 /**
  * 用户
- *
+ * @order 4
  * @author shanhuiming
- * @order 3
  */
 @RequiredArgsConstructor
 @Validated
@@ -210,5 +210,13 @@ public class SysUserController {
     @GetMapping("/name/{userIds}")
     public Response<List<String>> getNamesById(@PathVariable List<Integer> userIds) {
         return Response.success(sysUserService.getNamesById(Access.tenantId(), userIds));
+    }
+
+    /**
+     * 用户成员选项
+     */
+    @PostMapping("/options")
+    public Response<Response.Page<UserMemberOption>> getUserOptions(@RequestBody UserMemberQuery query) {
+        return Response.page(sysUserService.getUserOptions(Access.tenantId(), query), UserMemberOption.class);
     }
 }

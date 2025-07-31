@@ -2,9 +2,6 @@ spring:
   messages:
     basename: i18n/messages-admin
 
-logging:
-  sql-enabled: false
-
 mybatis-plus:
   global-config:
     banner: false

@@ -19,7 +19,8 @@ import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.cowave.commons.framework.access.security.AccessInfoSetter;
-import com.cowave.commons.framework.support.excel.YesNoConverter;
+import com.cowave.sys.admin.domain.constants.YesNo;
+import com.cowave.sys.admin.domain.constants.converter.YesNoConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -88,7 +89,7 @@ public class SysConfig implements AccessInfoSetter {
      * 是否默认
      */
     @ExcelProperty(value = "系统内置", converter = YesNoConverter.class)
-    private Integer isDefault;
+    private YesNo isDefault;
 
     /**
      * 备注

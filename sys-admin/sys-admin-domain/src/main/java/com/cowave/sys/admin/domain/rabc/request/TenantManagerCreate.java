@@ -15,7 +15,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 
-import static com.cowave.sys.admin.domain.auth.AuthType.SYS;
+import static com.cowave.sys.admin.domain.constants.AuthType.SYS;
 
 /**
  * @author shanhuiming
@@ -50,7 +50,7 @@ public class TenantManagerCreate {
 
     public SysUser newSysUser() {
         SysUser sysUser = new SysUser();
-        sysUser.setUserType(SYS.val());
+        sysUser.setUserType(SYS.getVal());
         sysUser.setTenantId(tenantId);
         sysUser.setUserName(userName);
         sysUser.setUserAccount(userAccount);

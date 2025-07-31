@@ -75,10 +75,8 @@
       </el-table-column>
       <el-table-column :label="$t('dept.text.default_post')" align="center">
         <template slot-scope="{row: {isDefault}}">
-          <template v-for="item in dict.type.yes_no">
-            <span v-if="isDefault === item.value">
-              <el-tag :type="item.css">{{ $t(item.name) }}</el-tag>
-            </span>
+          <template v-for="item in yes_no">
+            <span v-if="isDefault === item.value">{{ $t(item.label) }}</span>
           </template>
         </template>
       </el-table-column>
@@ -101,13 +99,14 @@
 import { getDeptInfo, getConfiguredPosts, removeDeptPosts } from '@/api/system/dept'
 import {checkPermit} from "@/utils/permission";
 import selectPost from '@/views/system/dept/selectPost.vue'
-
+import { yes_no } from '@/utils/constants';
 export default {
   name: "DeptPost",
   components: { selectPost },
-  dicts: ['post_type', 'yes_no'],
+  dicts: ['post_type'],
   data() {
     return {
+      yes_no: yes_no,
        // 遮罩层
       loading: false,
       // 非多个禁用
