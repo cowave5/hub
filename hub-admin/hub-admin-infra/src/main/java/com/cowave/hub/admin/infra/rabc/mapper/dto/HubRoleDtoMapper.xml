@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2025 Cowave All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.rabc.mapper.dto.HubRoleDtoMapper">
+	<sql id="roleField">
+        r.role_id,
+        r.role_name,
+        r.role_code,
+        r.role_type,
+        r.create_by,
+        r.create_time,
+        r.update_by,
+        r.update_time,
+        r.remark
+	</sql>
+
+	<resultMap id="roleMap" type="com.cowave.hub.admin.domain.rabc.dto.RoleInfoDto">
+        <result column="role_id"       property="roleId"/>
+        <result column="role_name"     property="roleName"/>
+        <result column="role_code"     property="roleCode"/>
+        <result column="role_type"     property="roleType"/>
+        <result column="remark"       property="remark"/>
+        <result column="create_by"     property="createBy"/>
+        <result column="create_time"   property="createTime"/>
+        <result column="update_by"     property="updateBy"/>
+        <result column="update_time"   property="updateTime"/>
+        <collection property="menuScopes" javaType="list" ofType="com.cowave.hub.admin.domain.rabc.dto.MenuScopeDto">
+            <result column="menuId"       property="menuId"/>
+            <result column="scopeId"      property="scopeId"/>
+        </collection>
+    </resultMap>
+
+    <select id="info" resultMap="roleMap">
+	    select
+	    m.menu_id  menuId,
+	    m.scope_id scopeId,
+	    <include refid="roleField"/>
+	    from hub_role r
+	    left join hub_role_menu m on r.role_id = m.role_id
+	    where r.role_id = #{roleId} and r.tenant_id in ('#', #{tenantId})
+	</select>
+
+	<select id="getAuthedUser" resultType="com.cowave.hub.admin.domain.rabc.dto.RoleUserDto">
+        select DISTINCT on(u.user_id)
+        d.dept_name deptName,
+        p.post_name postName,
+        u.user_id      userId,
+        u.user_name    userName,
+        u.user_phone   userPhone,
+        u.user_rank    userRank
+        from hub_user_role r
+        join hub_user u on r.user_id = u.user_id
+        left join hub_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
+        left join hub_dept d on ud.dept_id = d.dept_id
+        left join hub_post p on ud.post_id = p.post_id
+        where u.tenant_id = #{tenantId} and r.role_id = #{query.roleId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+	</select>
+
+	<select id="getUnAuthedUser" resultType="com.cowave.hub.admin.domain.rabc.dto.RoleUserDto">
+		with uids as(select user_id from hub_user except select user_id from hub_user_role where role_id = #{query.roleId})
+        select DISTINCT on(u.user_id)
+        d.dept_name deptName,
+        p.post_name postName,
+        u.user_id      userId,
+        u.user_name    userName,
+        u.user_phone   userPhone,
+        u.user_rank    userRank
+        from uids
+        join hub_user u on uids.user_id = u.user_id
+        left join hub_user_dept ud on u.user_id = ud.user_id and ud.is_default = 1
+        left join hub_dept d on ud.dept_id = d.dept_id
+        left join hub_post p on ud.post_id = p.post_id
+        where u.tenant_id = #{tenantId}
+        <if test="query.userName != null and query.userName != ''">
+            and u.user_name like concat('%', #{query.userName}, '%')
+        </if>
+        <if test="query.userPhone != null and query.userPhone != ''">
+            and u.user_phone like concat('%', #{query.userPhone}, '%')
+        </if>
+	</select>
+
+    <insert id="addRoleUser">
+        with data(role_id, user_id) as (
+        values
+        <foreach collection="role.userIds" item="userId" index="index" separator=",">
+            (#{role.roleId}, #{userId})
+        </foreach>
+        )
+        insert into hub_user_role(role_id, user_id)
+        select data.role_id, data.user_id
+        from data
+        where exists (select 1 from hub_user where hub_user.user_id = data.user_id and hub_user.tenant_id = #{tenantId})
+        on conflict do nothing
+    </insert>
+
+    <select id="getRoleCodesByUserId" resultType="java.lang.String">
+        select r.role_code
+        from hub_role r, hub_user_role ur
+        where r.role_id = ur.role_id and ur.user_id = #{userId}
+    </select>
+
+     <select id="getPermitsByRoleCode" resultType="java.lang.String">
+         select m.menu_permit
+         from hub_role r
+         join hub_role_menu rm on r.role_id = rm.role_id
+         join hub_menu m on rm.menu_id = m.menu_id
+         where r.role_code = #{roleCode}
+           and m.menu_status = 1
+           and m.menu_permit is not null
+         UNION
+         select m.menu_permit
+         from hub_menu m
+         where m.is_protected = 0
+           and m.menu_permit is not null
+    </select>
+</mapper>

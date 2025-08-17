@@ -1,0 +1,798 @@
+export default {
+  commons: {
+    label: {
+      index: "序号",
+      status: "状态",
+      remark: "备注",
+      options: "操作",
+      createUser: "创建人",
+      createTime: "创建时间",
+      updateTime: "修改时间",
+      beginDate: "开始日期",
+      endDate: "结束日期",
+    },
+    button: {
+      refresh: "刷新",
+      search: "搜索",
+      search_hide: "隐藏搜索",
+      search_show: "显示搜索",
+      reset: "重置",
+      hide: "隐藏",
+      show: "显示",
+      enable: "启用",
+      disable: "停用",
+      save: "保存",
+      cancel: "取消",
+      confirm: "确定",
+      close: "关闭",
+      status: '修改状态',
+      query: "查询",
+      detail: "详情",
+      create: "新增",
+      edit: "修改",
+      delete: "删除",
+      clean: "清除",
+      remove: "移除",
+      preview: "预览",
+      download: "下载",
+      publish: "发布",
+      recall: "撤回",
+      exec: "执行",
+      config: "配置",
+      test: "测试",
+      quit: "强退",
+      more: "更多",
+      upload: "上传",
+      import: "导入",
+      export: "导出",
+      cache: "刷新缓存",
+      diagram: "组织架构",
+      expand: "展开",
+      collapse: "折叠",
+      logout: "退出登录",
+      check: "全选/全不选",
+      parent: "父子联动",
+      select_column: "选择列",
+    },
+    menu: {
+      root: "控维通信",
+      cowave: "控维官网",
+      dashboard: "首页",
+      meter: {
+        root: "持续集成",
+        env: {
+          root: "环境资源",
+          credential: "凭据管理",
+
+        },
+        build: {
+          root: "构建管理",
+
+        },
+        test: {
+          root: "测试管理",
+          ui: "Ui测试",
+
+        },
+        archive: {
+          root: "版本归档",
+
+        },
+        develop: {
+          root: "开发设计",
+          form: "表单构建",
+          application: "应用管理",
+          model: "模型管理",
+          database: "数据库",
+          table: "数据库表"
+        }
+      },
+      flow: {
+        root: "流程管理",
+        manage: '流程配置',
+        model: '模型设计',
+        deploy: '流程部署',
+        instance: '流程实例',
+        owner: {
+          task: '我的流程',
+          leave: '请假申请',
+          meeting: '会议预约',
+          purchase: '采购申请'
+        }
+      },
+      monitor: {
+        root: "系统监控",
+        actuator: "服务健康",
+        nacos: "服务注册",
+        grafana: "环境监控",
+        prometheus: "环境指标",
+        alert: "故障告警",
+        log: "操作日志",
+        online: "在线用户",
+        cache: "缓存监控",
+      },
+      sys: {
+        root: "系统管理",
+        tenant: "租户管理",
+        user: '用户管理',
+        role: "角色管理",
+        menu: "菜单管理",
+        scope: "数据权限",
+        attach: "文件管理",
+        dept: "部门管理",
+        post: "岗位管理",
+        dict: "字典管理",
+        config: "系统参数",
+        ldap: "Ldap认证",
+        doc: {
+          api: "Api文档",
+          admin: "系统管理",
+          job: "定时任务",
+          meter: "持续集成"
+        },
+        schedule: {
+          root: "定时任务",
+          refresh: "重新加载",
+          logQuery: "日志查询",
+          logExport: "日志导出",
+          logDelete: "日志删除"
+        },
+        oauth2: {
+          root: "OAuth2认证",
+          client: "授权应用",
+          gitlab: "Gitlab",
+          userQuery: "用户查询",
+          userEdit: "用户修改",
+          userDelete: "用户删除"
+        },
+      },
+    },
+    confirm: {
+        logout: '确定注销并退出系统？'
+    },
+    msg: {
+      success: {
+        create: '新增成功',
+        edit: '修改成功',
+        delete: '删除成功',
+        reset: '重置成功',
+        grant: '授权成功',
+        refresh: '刷新成功',
+      },
+    },
+    theme: {
+      title: '主题风格',
+      color: '主题颜色',
+      enable: '开启',
+      fix: '固定',
+      show: '显示',
+      dynamic: '动态标题',
+      preference: "偏好设置",
+      profile: "个人中心",
+      notice: "系统消息",
+      token: "访问令牌",
+    },
+    frame: {
+      layout: '系统布局',
+      refresh: '刷新页面',
+      close: '关闭页面',
+      close_all: '全部关闭',
+      close_other: '关闭其他',
+      close_left: '关闭左侧',
+      close_right: '关闭右侧',
+    },
+    text: {
+      limit: "限制",
+      format: "格式"
+    }
+  },
+  tenant: {
+    title: {
+      system: 'Cowave',
+      cowave: '控维通信',
+      open: '在线演示',
+    },
+    label: {
+      id: "租户标识",
+      name: "租户名称",
+      title: "租户标题",
+      logo: "租户Logo",
+      addr: "租户地址",
+      phone: "联系电话",
+      email: "联系邮箱",
+      contact: "联系人",
+      staff: "人员规模",
+      status: "状态",
+      expire: "到期时间",
+    },
+    button: {
+      manager: '管理员设置',
+      manager_add: "新增管理员",
+      manager_remove: "移除管理员",
+    },
+    dialog: {
+      new: "新增租户",
+      edit: "修改租户",
+    },
+    rules: {
+      id: "租户标识不能为空",
+      title: "租户标题不能为空",
+      name: "租户名称不能为空",
+    },
+    confirm: {
+      status_enable: "确认要启用租户“{arg1}”吗？",
+      status_disable: "确认要停用租户“{arg1}”吗？",
+      remove_select: "确认移除所选管理员？",
+      remove_manager: "确认移除管理员“{arg1}”？",
+    },
+    text: {
+      info: "租户信息"
+    },
+    msg: {
+      remove_success: "取消授权成功",
+    },
+  },
+  user: {
+    label: {
+      id: "用户Id",
+      type: "用户类型",
+      name: "用户名称",
+      account: "用户账号",
+      passwd: "用户密码",
+      sex: "性别",
+      phone: "手机号码",
+      email: "邮箱",
+      rank: "职级",
+      status: "状态",
+      dept: "部门/岗位",
+      post: "用户岗位",
+      role: "用户角色",
+      report: "汇报对象",
+      pwd_old: "旧密码",
+      pwd_new: "新密码",
+      pwd_confirm: "确认密码",
+    },
+    button: {
+      grant: '分配角色',
+      passwd: '重置密码',
+      add: "添加用户",
+      remove: "移除成员",
+      select: "选择用户",
+    },
+    placeholder: {
+      account: "请输入用户账号",
+      passwd: "请输入用户密码",
+      name: "请输入用户名称",
+      phone: "请输入手机号码",
+      email: "请输入邮箱地址",
+      status: "选择用户状态",
+      sex: "请选择性别",
+      dept: "请选择部门/岗位",
+      role: "请选择角色",
+      rank: "请选择职级",
+      post: "请选择岗位",
+      report: "请选择汇报对象",
+      pwd_old: "请输入旧密码",
+      pwd_new: "请输入新密码",
+      pwd_confirm: "请确认密码"
+    },
+    dialog: {
+      diagram: "人员组织架构",
+      new: "新增用户",
+      edit: "修改用户",
+      passwd: "修改密码",
+      avatar: "修改头像",
+      import: "导入用户",
+      import_text1: "将文件拖到此处，或",
+      import_text2: "点击上传",
+      import_text3: "",
+      import_text4: "是否更新已经存在的用户数据",
+      import_text5: "仅允许导入xls、xlsx格式文件, ",
+      import_text6: "下载模板",
+      import_text7: "导入结果",
+    },
+    rules: {
+      account: "用户账号不能为空",
+      name: "用户名称不能为空",
+      name_len: "用户名称长度必须介于 2 和 20 之间",
+      passwd: "用户密码不能为空",
+      passwd_len: "密码长度必须介于 6 和 20 之间",
+      email: "请输入正确的邮箱地址",
+      phone: "请输入正确的手机号码",
+      pwd_old: "旧密码不能为空",
+      pwd_new: "新密码不能为空",
+      pwd_confirm: "确认密码不能为空",
+      pwd_compare: "两次输入的密码不一致"
+    },
+    confirm: {
+      status_enable: "确认要启用用户“{arg1}”吗？",
+      status_disable: "确认要停用用户“{arg1}”吗？",
+      delete: "确认删除用户“{arg1}”？",
+      delete_select: "确认删除所选用户？",
+      remove: "确认移除成员“{arg1}”？",
+      remove_select: "确认移除所选成员？",
+      passwd: "请输入用户“{arg1}”的新密码",
+    },
+    msg: {
+      avatar_failed: "文件格式错误，请上传图片类型，如：JPG，PNG"
+    },
+    text: {
+      profile: "个人信息",
+      info: "用户信息",
+      basic: "基本信息",
+      mfa: "MFA认证",
+      data: "用户数据",
+      list: "成员列表",
+      template: "用户数据模板",
+      unselect: "未选择用户",
+    },
+  },
+  role: {
+    label: {
+      id: "角色Id",
+      name: "角色名称",
+      code: "角色编码",
+    },
+    button: {
+      menus: '菜单权限',
+      scope: '数据权限',
+      remove: "取消授权",
+      members: '角色成员',
+      members_grant: '角色成员授权',
+      members_cancel: '角色成员取消',
+    },
+    placeholder: {
+      name: "请输入角色名称",
+      code: "请输入角色编码",
+    },
+    dialog: {
+      new: "新增角色",
+      edit: "修改角色",
+    },
+    rules: {
+      name: "角色名称不能为空",
+      code: "角色编码不能为空"
+    },
+    confirm: {
+      delete: "确认删除角色“{arg1}”？",
+      delete_select: "确认删除所选角色？",
+      remove_grant: "确认取消用户“{arg1}”的角色？",
+      remove_grant_select: "确认取消所选用户的角色？",
+    },
+    msg: {
+      grant: "授权成功",
+      remove_grant: "取消授权成功",
+    },
+    text: {
+      info: "角色信息",
+      members: "成员列表",
+      data: "角色数据"
+    },
+  },
+  menu: {
+    label: {
+      root: "根目录",
+      tenant: "所属租户",
+      module: "所属模块",
+      name: "菜单名称",
+      status: "菜单状态",
+      order: "显示排序",
+      component: "组件路径",
+      permission: "权限标识",
+      parent: "上级菜单",
+      type: "菜单类型",
+      icon: "菜单图标",
+      frame: "是否内链",
+      visible: "是否显示",
+      path: "路由地址",
+      cacheable: "是否缓存",
+      param: "路由参数",
+      visibility: "访问控制",
+      shared: "共享菜单"
+    },
+    button: {
+      select: "选择菜单: ",
+    },
+    placeholder: {
+      name: "请输入菜单名称",
+      status: "选择菜单状态",
+      parent: "选择上级菜单",
+      icon: "选择菜单图标",
+      path: "请输入路由地址",
+      param: "请输入路由参数",
+      permission: "请输入权限标识",
+      component: "请输入组件路径"
+    },
+    dialog: {
+      new: "新增菜单",
+      edit: "修改菜单",
+    },
+    rules: {
+      name: "菜单名称不能为空",
+      path: "路由地址不能为空",
+      order: "菜单顺序不能为空",
+      tenant: "所属租户不能为空"
+    },
+    confirm: {
+      delete: "确认要删除菜单“{arg1}”吗？",
+    },
+    content: {
+      name: "名称支持国际化，可以定义成国际化资源中的key",
+      module: "针对菜单和按钮，用于筛选数据权限选项",
+      status: "停用的路由不会出现在侧边栏，也不能被访问",
+      frame: "外链路由需要以`http(s)://`开头",
+      visible: "隐藏的路由不会出现在侧边栏，但仍然可以访问",
+      cacheable: "缓存的路由会被`keep-alive`缓存，需要匹配组件的`name`和地址保持一致",
+      param: "访问路由的默认参数，如：`{\"id\": 1, \"name\": \"cowave\"}`",
+      visibility: "公开的菜单可以被任何人访问",
+      permission: "如果菜单是受保护的，则访问时需要此权限定义",
+      component: "访问的组件路径，如：system/user/index，默认在views目录下"
+    },
+    text: {
+      data: "菜单数据",
+    },
+  },
+  dept: {
+    label: {
+      name: "部门名称",
+      phone: "部门电话",
+      leader: "部门负责人",
+      addr: "部门地址",
+      parent: "上级部门"
+    },
+    button: {
+      members: "部门成员",
+      members_add: "新增部门成员",
+      members_remove: "移除部门成员",
+      positions: "部门岗位",
+      positions_add: "新增部门岗位",
+      positions_remove: "移除部门岗位",
+    },
+    placeholder: {
+      name: "请输入部门名称",
+      phone: "请输入部门电话",
+      addr: "请输入部门地址",
+    },
+    dialog: {
+      diagram: "部门组织架构",
+      new: "新增部门",
+      edit: "修改部门",
+    },
+    rules: {
+      name: "部门名称不能为空",
+      parent: "上级部门不能为空"
+    },
+    confirm: {
+      delete: "确认删除部门“{arg1}”？",
+    },
+    text: {
+      name: "部门",
+      info: "部门信息",
+      data: "部门数据",
+      leader: "部门负责人",
+      default_post: "默认岗位",
+      default_user_post: "用户默认岗位",
+    },
+  },
+  post: {
+    label: {
+      name: "岗位名称",
+      type: "岗位类型",
+      parent: "上级岗位",
+      level: "岗位级别",
+      status: "岗位状态",
+    },
+    button: {
+      add: "新增岗位",
+      remove: "取消岗位",
+      select: "选择岗位"
+    },
+    placeholder: {
+      name: "请输入岗位名称",
+      type: "选择岗位类型",
+      parent: "选择上级岗位",
+    },
+    dialog: {
+      diagram: "岗位组织架构",
+      new: "新增岗位",
+      edit: "修改岗位",
+    },
+    rules: {
+      name: "岗位名称不能为空",
+      type: "岗位类型不能为空",
+      level: "岗位级别不能为空",
+    },
+    confirm: {
+      delete: "确认删除岗位“{arg1}”？",
+      delete_select: "确认删除所选岗位？",
+      remove: "确认移除岗位“{arg1}”？",
+      remove_select: "确认移除所选岗位？",
+    },
+    text: {
+      name: "岗位",
+      list: "岗位列表",
+      data: "岗位数据",
+      unselect: "未选择岗位",
+    },
+  },
+  dict: {
+    label: {
+      name: "字典名称",
+      code: "字典编码",
+      type: "字典类型",
+      order: "排序",
+      css: "字典样式",
+      value: "字典值",
+      valueType: "值类型",
+      parser: "值转换",
+      default: "是否默认",
+      parent: "上级字典"
+    },
+    placeholder: {
+      name: "请输入字典名称",
+      code: "请输入字典编码",
+      value: "请输入字典值",
+      parser: "请输入值转换器类名"
+    },
+    dialog: {
+      new: "新增字典",
+      edit: "修改字典",
+    },
+    button: {
+      reset: "重置缓存",
+    },
+    rules: {
+      groupcode: "分组编码不能为空",
+      typecode: "类型编码不能为空",
+      name: "字典名称不能为空",
+      english: "英文名称不能为空",
+      code: "字典编码不能为空",
+      value: "字典值不能为空",
+    },
+    confirm: {
+      delete: "确认删除字典“{arg1}”？删除操作将会删除所有关联的子字典",
+      delete_select: "确认删除所选字典？删除操作将会删除所有关联的子字典！",
+    },
+    text: {
+      data: "字典数据",
+      parser: "如果值类型是custom, 需要提供一个值类型转换器（CustomValueParser的实现类）"
+    },
+    name: {
+      root: "根字典",
+      sys: "系统字典",
+      yes_no: "是/否",
+      yes: "是",
+      no: "否",
+      enable_disable: "启用/停用",
+      enable: "启用",
+      disable: "停用",
+      success_failed: "成功/失败",
+      success: "成功",
+      failed: "失败",
+      show_hide: "显示/隐藏",
+      show: "显示",
+      hide: "隐藏",
+      public_protected: "公开的/受限的",
+      public: "公开的",
+      protected: "受限的",
+      sys_user: "系统用户",
+      ldap_user: "Ldap用户",
+      gitlab_user: "Gitlab用户",
+
+      attach_type: "文件类型",
+      avatar: "头像",
+      logo: "Logo",
+      image: "图片",
+
+      flow: "流程字典",
+      leave: "请假类型",
+      annual: "年假",
+      personal: "事假",
+      sick: "病假",
+      bereavement: "丧假",
+      maternity: "产假",
+
+      user: "用户字典",
+      sex: "用户性别",
+      post_type: "岗位类型",
+      post_level: "岗位级别",
+      male: "男",
+      female: "女",
+      unknown: "未知",
+      M: "管理岗",
+      T: "技术岗",
+      A: "行政岗",
+      S: "销售岗",
+      F: "财务岗",
+      T0: "见习工程师",
+      T1: "初级工程师",
+      T2: "中级工程师",
+      T3: "高级工程师",
+      T4: "资深工程师",
+      T5: "技术专家",
+      T6: "高级技术专家",
+      T7: "资深技术专家",
+      M0: "实习生",
+      M1: "专员",
+      M2: "高级专员",
+      M3: "经理",
+      M4: "高级经理",
+      M5: "总监",
+      M6: "高级总监",
+      M7: "公司高管",
+
+      notice: "公告字典",
+      notice_status: "公告状态",
+      notice_type: "公告类型",
+      notice_level: "公告等级",
+      notice_common: "普通",
+      notice_urgent: "紧急",
+      notice_draft: "草稿",
+      notice_publish: "已发布",
+      notice_recall: "已撤回",
+      notice_announcement: "公告",
+      notice_notice: "通知",
+      notice_press: "催办提醒",
+
+      op_action: "日志动作",
+      op_create: "新增",
+      op_delete: "删除",
+      op_edit: "修改",
+      op_status: "状态修改",
+      op_passwd: "密码修改",
+      op_grant: "角色修改",
+      op_login: "登录",
+      op_login_oauth: "OAuth授权",
+      op_logout: "退出",
+      op_logout_force: "强制退出",
+
+      domain_module: "领域模型",
+
+      domain_system: "系统管理",
+      module_auth: "鉴权管理",
+      module_tenant: "租户管理",
+      module_user: "用户管理",
+      module_dept: "部门管理",
+      module_role: "角色管理",
+      module_post: "岗位管理",
+      module_menu: "菜单管理",
+      module_scope: "数据权限",
+      module_dict: "字典管理",
+      module_config: "系统参数",
+      module_task: "任务管理",
+      module_ldap: "Ldap用户",
+      module_oauth: "oauth用户",
+      module_notice: "通知公告",
+      module_attach: "文件管理",
+
+      domain_monitor: "系统监控",
+      module_online: "在线用户",
+      module_oplog: "操作日志",
+
+      domain_flow: "流程管理",
+
+      domain_meter: "软件测试",
+
+      menu: "菜单字典",
+      menu_type: "菜单类型",
+      menu_cache: "菜单是否缓存",
+      menu_frame: "菜单内链/外链",
+      menu_cache_1: "缓存",
+      menu_cache_0: "不缓存",
+      menu_internal: "内链",
+      menu_external: "外链",
+      menu_M: "目录",
+      menu_C: "菜单",
+      menu_B: "按钮",
+
+      job: "定时任务",
+      quartz_group: "任务分组",
+      quartz_default: "默认分组",
+      quartz_test: "测试分组",
+
+      credential_username: "用户名/密码",
+      credential_secret: "密文",
+
+      credential_personal: "个人的",
+      credential_specified: "指定人员",
+      credential_everyone: "所有人"
+    }
+  },
+  config: {
+    label: {
+      name : "参数名称",
+      key: "参数标识",
+      value: "参数值",
+      remark: "备注",
+      default: "系统内置",
+      parser: "值转换器",
+      param: "转换参数"
+    },
+    placeholder: {
+      name: "请输入参数名称",
+      key: "请输入参数标识",
+      value: "请输入参数值",
+      parser: "请输入配置值转换器类名",
+      param: "请输入配置值转换参数"
+    },
+    button: {
+      reset: "重置配置",
+    },
+    dialog: {
+      new: "新增配置",
+      edit: "修改配置"
+    },
+    rules: {
+      name: "参数名称不能为空",
+      key: "参数标识不能为空",
+      value: "参数值不能为空"
+    },
+    confirm: {
+      delete: "确认删除配置“{arg1}”？",
+      delete_select: "确认删除所选配置？",
+    },
+    text: {
+      parser: "ValueParser的实现类",
+      param: "转换参数类型为字符串",
+      data: "系统参数",
+    },
+  },
+  notice: {
+    label: {
+      title: "标题",
+      type: "类型",
+      level: "级别",
+      publishTime: "发布时间",
+      read: "已读统计"
+    },
+    placeholder: {
+      title: "请输入标题",
+      type: "请选择类型",
+      status: "请选择状态"
+    }
+  },
+  attach: {
+    label: {
+      tenant: "所属租户",
+      type: "文件类型",
+      module: "所属模块",
+      owner: "所属名称",
+      name: "文件名称",
+      size: "文件大小",
+      private: "是否私有",
+      expire: "到期时间",
+    },
+    placeholder: {
+      tenant: "请选择租户",
+      type: "请选择文件类型",
+    },
+    confirm: {
+      delete_select: "确认删除所选文件？",
+    },
+  },
+  scope: {
+    label: {
+      module: "数据模块",
+      name: "权限名称",
+    },
+    button: {
+      scope: "编辑权限",
+    },
+    placeholder: {
+      module: "选择数据模块",
+    },
+    dialog: {
+      new: "新增数据权限",
+      edit: "修改数据权限",
+    },
+    rules: {
+      name: "权限名称不能为空",
+      module: "数据模块不能为空",
+    },
+    confirm: {
+      delete_select: "确认删除所选权限？",
+      status_enable: "确认启用数据权限“{arg1}”吗？",
+      status_disable: "确认停用数据权限“{arg1}”吗？",
+    },
+  }
+}

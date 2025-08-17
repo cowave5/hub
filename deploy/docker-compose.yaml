@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  sys-ui:
-    image: sys-ui:1.0.3
-    container_name: sys-ui
+  hub-ui:
+    image: hub-ui:1.0.3
+    container_name: hub-ui
     ports:
       - 81:81
       - 82:82
@@ -12,7 +12,7 @@ services:
       - 85:85
       - 86:86
     volumes:
-      - ./sys-ui:/var/log/nginx
+      - ./hub-ui:/var/log/nginx
       - /etc/localtime:/etc/localtime
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:81"]
@@ -111,9 +111,9 @@ services:
       default:
         ipv4_address: 192.168.64.13
 
-  sys-admin:
-    image: sys-admin:1.0.3
-    container_name: sys-admin
+  hub-admin:
+    image: hub-admin:1.0.3
+    container_name: hub-admin
     ports:
       - 19010:19010
       - 19011:19011
@@ -133,13 +133,13 @@ services:
       redis_port: 6379
       datasource_username: postgres
       datasource_password: postgres
-      datasource_url: jdbc:postgresql://sys-postgres:5432/sys-admin
+      datasource_url: jdbc:postgresql://sys-postgres:5432/hub-admin
       minio_endpoint: http://10.64.4.74:39000
       minio_accessKey: admin
       minio_secretKey: admin123
       TZ: Asia/Shanghai
     volumes:
-      - ./sys-admin:/opt/cowave/sys-admin/log
+      - ./hub-admin:/opt/cowave/hub-admin/log
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:19010/admin/actuator/health"]
       interval: 5s
@@ -174,7 +174,7 @@ services:
       nacos_group: DEFAULT_GROUP
       datasource_username: postgres
       datasource_password: postgres
-      datasource_url: jdbc:postgresql://sys-postgres:5432/sys-admin
+      datasource_url: jdbc:postgresql://sys-postgres:5432/hub-admin
       TZ: Asia/Shanghai
     volumes:
       - ./sys-flow:/opt/cowave/sys-flow/log
@@ -188,7 +188,7 @@ services:
         condition: service_healthy
       sys-nacos:
         condition: service_healthy
-      sys-admin:
+      hub-admin:
         condition: service_healthy
     networks:
       default:

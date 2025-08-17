@@ -3,11 +3,9 @@
 ![Maven central](https://img.shields.io/badge/release-1.0.3-brightgreen)
 [![License](https://img.shields.io/badge/license-Apache--2.0-brightgreen)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-## sys
+## Hub管理系统
 
-示例：通用管理系统
-
-> 开源项目参考：
+> 感谢开源项目：
 
 - 若依管理系统：https://github.com/yangzongzhuan/RuoYi-Vue
 - 若依工作流：https://gitee.com/shenzhanwang/Ruoyi-flowable

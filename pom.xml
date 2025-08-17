@@ -7,22 +7,22 @@
         <version>2.7.6</version>
     </parent>
 
-    <groupId>com.cowave.sys</groupId>
+    <groupId>com.cowave.hub</groupId>
     <artifactId>parent</artifactId>
     <version>1.0.3</version>
     <packaging>pom</packaging>
 
-    <name>sys</name>
+    <name>hub</name>
     <url>https://www.cowave.com/</url>
     <description>管理应用</description>
 
     <modules>
-        <module>sys-ui</module>
-        <module>sys-gateway</module>
-        <module>sys-blog</module>
-        <module>sys-admin</module>
-        <module>sys-flow</module>
-        <module>sys-job</module>
-        <module>sys-meter</module>
+        <module>hub-ui</module>
+        <module>hub-gateway</module>
+        <module>hub-admin</module>
+        <module>hub-blog</module>
+        <module>hub-flow</module>
+        <module>hub-job</module>
+        <module>hub-meter</module>
     </modules>
 </project>

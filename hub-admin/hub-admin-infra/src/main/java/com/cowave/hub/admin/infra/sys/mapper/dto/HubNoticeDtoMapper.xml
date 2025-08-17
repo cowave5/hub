@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (c) 2017～2025 Cowave All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0.txt
+
+    Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+-->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cowave.hub.admin.infra.sys.mapper.dto.HubNoticeDtoMapper">
+
+    <insert id="insertReadOfAll">
+        insert into hub_notice_user(notice_id, user_code)
+        select #{noticeId}, user_code from hub_user where user_status = 1 and tenant_id = #{tenantId}
+        on conflict(user_code, notice_id) do nothing
+    </insert>
+
+    <insert id="insertReadOfDept">
+        <if test="list != null and list.size() > 0">
+            insert into hub_notice_user(notice_id, user_code)
+            select #{noticeId}, u.user_code
+            from hub_user_dept d
+            join hub_user u on d.user_id = u.user_id
+            where u.tenant_id = #{tenantId} and u.user_status = 1 and d.dept_id in
+            <foreach collection="list" item="deptId" open="(" separator="," close=")">
+                #{deptId}
+            </foreach>
+            on conflict(user_code, notice_id) do nothing
+        </if>
+    </insert>
+
+    <insert id="insertReadOfRole">
+        <if test="list != null and list.size() > 0">
+            insert into hub_notice_user(notice_id, user_code)
+            select #{noticeId}, u.user_code
+            from hub_user_role r
+            join hub_user u on r.user_id = u.user_id
+            where u.tenant_id = #{tenantId} and u.user_status = 1 and r.role_id in
+            <foreach collection="list" item="roleId" open="(" separator="," close=")">
+                #{roleId}
+            </foreach>
+            on conflict(user_code, notice_id) do nothing
+        </if>
+    </insert>
+
+    <insert id="insertReadOfUser">
+        <if test="list != null and list.size() > 0">
+            insert into hub_notice_user(notice_id, user_code)
+            select #{noticeId}, u.user_code
+            from hub_user u
+            where u.tenant_id = #{tenantId} and u.user_id in
+            <foreach collection="list" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+            on conflict(user_code, notice_id) do nothing
+        </if>
+    </insert>
+
+    <update id="updateMsgStat">
+        update hub_notice
+        set notice_status = #{noticeStatus},
+            publish_time  = #{publishTime},
+            stat_total    = (select count(1) from hub_notice_user where notice_id = #{noticeId})
+        where notice_id = #{noticeId}
+    </update>
+
+    <select id="msgList" resultType="com.cowave.hub.admin.domain.sys.dto.NoticeMsgDto">
+        select r.read_status,
+               r.read_back,
+               n.notice_id,
+               n.notice_title,
+               n.notice_status,
+               n.notice_type,
+               n.notice_level,
+               n.is_system,
+               n.publish_time,
+               n.create_by
+        from hub_notice_user r, hub_notice n
+        where n.notice_id = r.notice_id
+          and r.read_status in (0, 10)
+          and r.user_code = #{userCode}
+        order by n.publish_time desc
+    </select>
+
+    <update id="updateReadStat">
+        update hub_notice set stat_read = t.count
+        from (select count(1) from hub_notice_user where read_status >= 10 and notice_id = #{noticeId}) t
+        where notice_id = #{noticeId}
+    </update>
+
+    <update id="msgDelete">
+        update hub_notice_user
+        set read_status = case when read_status = 0 then 1
+                               when read_status = 10 then 11
+                               else read_status end
+        where user_code = #{userCode} and id = #{msgId}
+    </update>
+
+    <insert id="initNoticeMsgForNewUser">
+        insert into hub_notice_user(notice_id, user_code)
+        select notice_id, #{userCode} from hub_notice where notice_status = 1 and goals_all = 1
+        on conflict(notice_id, user_code) do nothing
+    </insert>
+
+    <update id="updateNoticeStatForNewUser">
+        update hub_notice set stat_total = stat_total + 1
+        where notice_status = 1 and goals_all = 1
+    </update>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.cowave.hub</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.0.3</version>
+	</parent>
+
+	<artifactId>hub-meter</artifactId>
+	<packaging>pom</packaging>
+
+	<name>hub-meter</name>
+	<url>https://www.cowave.com/</url>
+	<description>CI/CD管理</description>
+
+	<properties>
+        <skip.pmd>true</skip.pmd>
+    </properties>
+
+	<modules>
+		<module>hub-meter-plugin</module>
+		<module>hub-meter-app</module>
+		<module>hub-meter-service</module>
+		<module>hub-meter-infra</module>
+		<module>hub-meter-client</module>
+		<module>hub-meter-domain</module>
+		<module>hub-meter-core</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.cowave.commons</groupId>
+			<artifactId>commons-framework</artifactId>
+		</dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,39 @@
+package com.cowave.sys.meter.domain.torna.enums;
+
+import java.util.Objects;
+
+/**
+ * @author tanghc
+ */
+public enum DocTypeEnum {
+    HTTP((byte) 0),
+    DUBBO((byte) 1),
+    /** 富文本 */
+    CUSTOM((byte) 2),
+    /** markdown */
+    MARKDOWN((byte) 3),
+    ;
+
+    DocTypeEnum(byte type) {
+        this.type = type;
+    }
+
+    public static DocTypeEnum of(Byte type) {
+        for (DocTypeEnum value : DocTypeEnum.values()) {
+            if (Objects.equals(value.getType(), type)) {
+                return value;
+            }
+        }
+        return HTTP;
+    }
+
+    public static boolean isTextType(Byte type) {
+        return Objects.equals(CUSTOM.type, type) || Objects.equals(MARKDOWN.type, type);
+    }
+
+    private final byte type;
+
+    public byte getType() {
+        return type;
+    }
+}
